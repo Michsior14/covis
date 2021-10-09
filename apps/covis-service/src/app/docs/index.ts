@@ -1,0 +1,1 @@
+export { setupDocs } from './docs';

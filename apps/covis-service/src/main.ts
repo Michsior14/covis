@@ -1,21 +1,33 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
-import { Logger } from '@nestjs/common';
+import { Logger, ShutdownSignal, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-
+import { send } from 'process';
 import { AppModule } from './app/app.module';
+import { setupDocs } from './app/docs';
 
-async function bootstrap() {
+const globalPrefix = 'api';
+const port = process.env.PORT || 3000;
+
+const bootstrap = async () => {
   const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3333;
-  await app.listen(port, () => {
-    Logger.log('Listening at http://localhost:' + port + '/' + globalPrefix);
-  });
-}
 
-bootstrap();
+  app.useGlobalPipes(new ValidationPipe());
+  app.setGlobalPrefix(globalPrefix);
+
+  // Attach docs route
+  await setupDocs(app);
+
+  /**
+   * Graceful service stop
+   * e.g. shutdown database connections, ...
+   *
+   * @see http://pm2.keymetrics.io/docs/usage/signals-clean-restart/#graceful-stop
+   */
+  app.enableShutdownHooks([ShutdownSignal.SIGINT]);
+
+  await app.listen(port, async () => {
+    Logger.log(`Listening at http://localhost:${port}/${globalPrefix}`);
+    send?.('ready');
+  });
+};
+
+void bootstrap();
