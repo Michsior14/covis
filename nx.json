@@ -34,7 +34,13 @@
       "tags": [],
       "implicitDependencies": ["covis-app"]
     },
+    "covis-converter": {
+      "tags": []
+    },
     "covis-service": {
+      "tags": []
+    },
+    "shared-backend": {
       "tags": []
     }
   }

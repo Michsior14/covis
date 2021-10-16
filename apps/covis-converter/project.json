@@ -1,0 +1,46 @@
+{
+  "root": "apps/covis-converter",
+  "sourceRoot": "apps/covis-converter/src",
+  "projectType": "application",
+  "architect": {
+    "build": {
+      "builder": "@nrwl/node:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/covis-converter",
+        "main": "apps/covis-converter/src/main.ts",
+        "tsConfig": "apps/covis-converter/tsconfig.app.json",
+        "assets": []
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": []
+        }
+      }
+    },
+    "serve": {
+      "builder": "@nrwl/node:execute",
+      "options": {
+        "buildTarget": "covis-converter:build"
+      }
+    },
+    "lint": {
+      "builder": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/covis-converter/**/*.ts"]
+      }
+    },
+    "test": {
+      "builder": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/covis-converter"],
+      "options": {
+        "jestConfig": "apps/covis-converter/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

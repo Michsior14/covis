@@ -1,0 +1,96 @@
+{
+  "projectType": "application",
+  "root": "apps/covis-app",
+  "sourceRoot": "apps/covis-app/src",
+  "prefix": "covis",
+  "architect": {
+    "build": {
+      "builder": "@angular-devkit/build-angular:browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/covis-app",
+        "index": "apps/covis-app/src/index.html",
+        "main": "apps/covis-app/src/main.ts",
+        "polyfills": "apps/covis-app/src/polyfills.ts",
+        "tsConfig": "apps/covis-app/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          "apps/covis-app/src/favicon.ico",
+          "apps/covis-app/src/assets"
+        ],
+        "styles": ["apps/covis-app/src/styles.scss"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "fileReplacements": [
+            {
+              "replace": "apps/covis-app/src/environments/environment.ts",
+              "with": "apps/covis-app/src/environments/environment.prod.ts"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "builder": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "proxyConfig": "apps/covis-app/proxy.conf.json"
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "covis-app:build:production"
+        },
+        "development": {
+          "browserTarget": "covis-app:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "builder": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "covis-app:build"
+      }
+    },
+    "lint": {
+      "builder": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/covis-app/src/**/*.ts",
+          "apps/covis-app/src/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "builder": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/covis-app"],
+      "options": {
+        "jestConfig": "apps/covis-app/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

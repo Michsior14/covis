@@ -45,4 +45,5 @@ testem.log
 .DS_Store
 Thumbs.db
 
-apps/covis-service/src/assets/personDump.csv
+apps/covis-service/src/assets/*
+apps/covis-converter/src/assets/*

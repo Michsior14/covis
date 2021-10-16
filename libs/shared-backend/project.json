@@ -1,0 +1,22 @@
+{
+  "root": "libs/shared-backend",
+  "sourceRoot": "libs/shared-backend/src",
+  "projectType": "library",
+  "architect": {
+    "lint": {
+      "builder": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/shared-backend/**/*.ts"]
+      }
+    },
+    "test": {
+      "builder": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/shared-backend"],
+      "options": {
+        "jestConfig": "libs/shared-backend/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

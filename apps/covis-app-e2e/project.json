@@ -1,0 +1,27 @@
+{
+  "root": "apps/covis-app-e2e",
+  "sourceRoot": "apps/covis-app-e2e/src",
+  "projectType": "application",
+  "architect": {
+    "e2e": {
+      "builder": "@nrwl/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/covis-app-e2e/cypress.json",
+        "devServerTarget": "covis-app:serve:development",
+        "tsConfig": "apps/covis-app-e2e/tsconfig.json"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "covis-app:serve:production"
+        }
+      }
+    },
+    "lint": {
+      "builder": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/covis-app-e2e/**/*.{js,ts}"]
+      }
+    }
+  }
+}
