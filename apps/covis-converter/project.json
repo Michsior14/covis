@@ -2,9 +2,9 @@
   "root": "apps/covis-converter",
   "sourceRoot": "apps/covis-converter/src",
   "projectType": "application",
-  "architect": {
+  "targets": {
     "build": {
-      "builder": "@nrwl/node:build",
+      "executor": "@nrwl/node:build",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/covis-converter",
@@ -22,25 +22,26 @@
       }
     },
     "serve": {
-      "builder": "@nrwl/node:execute",
+      "executor": "@nrwl/node:execute",
       "options": {
         "buildTarget": "covis-converter:build"
       }
     },
     "lint": {
-      "builder": "@nrwl/linter:eslint",
+      "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/covis-converter/**/*.ts"]
       }
     },
     "test": {
-      "builder": "@nrwl/jest:jest",
+      "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/covis-converter"],
       "options": {
         "jestConfig": "apps/covis-converter/jest.config.js",
         "passWithNoTests": true
       }
     }
-  }
+  },
+  "tags": []
 }

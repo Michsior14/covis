@@ -3,9 +3,9 @@
   "root": "apps/covis-app",
   "sourceRoot": "apps/covis-app/src",
   "prefix": "covis",
-  "architect": {
+  "targets": {
     "build": {
-      "builder": "@angular-devkit/build-angular:browser",
+      "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/covis-app",
@@ -55,7 +55,7 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "builder": "@angular-devkit/build-angular:dev-server",
+      "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
         "proxyConfig": "apps/covis-app/proxy.conf.json"
       },
@@ -70,13 +70,13 @@
       "defaultConfiguration": "development"
     },
     "extract-i18n": {
-      "builder": "@angular-devkit/build-angular:extract-i18n",
+      "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
         "browserTarget": "covis-app:build"
       }
     },
     "lint": {
-      "builder": "@nrwl/linter:eslint",
+      "executor": "@nrwl/linter:eslint",
       "options": {
         "lintFilePatterns": [
           "apps/covis-app/src/**/*.ts",
@@ -85,12 +85,13 @@
       }
     },
     "test": {
-      "builder": "@nrwl/jest:jest",
+      "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/covis-app"],
       "options": {
         "jestConfig": "apps/covis-app/jest.config.js",
         "passWithNoTests": true
       }
     }
-  }
+  },
+  "tags": []
 }

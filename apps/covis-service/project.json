@@ -2,9 +2,9 @@
   "root": "apps/covis-service",
   "sourceRoot": "apps/covis-service/src",
   "projectType": "application",
-  "architect": {
+  "targets": {
     "build": {
-      "builder": "@nrwl/node:build",
+      "executor": "@nrwl/node:build",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/covis-service",
@@ -27,25 +27,26 @@
       }
     },
     "serve": {
-      "builder": "@nrwl/node:execute",
+      "executor": "@nrwl/node:execute",
       "options": {
         "buildTarget": "covis-service:build"
       }
     },
     "lint": {
-      "builder": "@nrwl/linter:eslint",
+      "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/covis-service/**/*.ts"]
       }
     },
     "test": {
-      "builder": "@nrwl/jest:jest",
+      "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/covis-service"],
       "options": {
         "jestConfig": "apps/covis-service/jest.config.js",
         "passWithNoTests": true
       }
     }
-  }
+  },
+  "tags": []
 }
