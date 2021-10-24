@@ -1,12 +1,18 @@
-export abstract class Person {
-  id!: string;
-  type!: string;
-  age!: number;
-  gender!: string;
-  homeId!: string;
-  homeSubId!: string;
-  homeLat!: number;
-  homeLon!: number;
-  workId!: string;
-  schoolId!: string;
+import type { Point } from 'geojson';
+
+export enum Gender {
+  famale = 'F',
+  male = 'M',
+}
+
+export interface Person {
+  id: number;
+  type: string;
+  age: number;
+  gender: Gender;
+  homeId: number;
+  homeSubId: number;
+  workId: number;
+  schoolId: number;
+  location: Point;
 }

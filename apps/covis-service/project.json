@@ -10,7 +10,15 @@
         "outputPath": "dist/apps/covis-service",
         "main": "apps/covis-service/src/main.ts",
         "tsConfig": "apps/covis-service/tsconfig.app.json",
-        "assets": ["apps/covis-service/src/assets"]
+        "assets": ["apps/covis-service/src/assets"],
+        "tsPlugins": [
+          {
+            "name": "@nestjs/swagger/plugin",
+            "options": {
+              "introspectComments": true
+            }
+          }
+        ]
       },
       "configurations": {
         "production": {

@@ -19,8 +19,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@covis/shared": ["libs/shared/src/index.ts"],
-      "@covis/shared-backend": ["libs/shared-backend/src/index.ts"]
+      "@covis/shared": ["libs/shared/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

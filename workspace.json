@@ -3,9 +3,7 @@
   "projects": {
     "covis-app": "apps/covis-app",
     "covis-app-e2e": "apps/covis-app-e2e",
-    "covis-converter": "apps/covis-converter",
     "covis-service": "apps/covis-service",
-    "shared": "libs/shared",
-    "shared-backend": "libs/shared-backend"
+    "shared": "libs/shared"
   }
 }

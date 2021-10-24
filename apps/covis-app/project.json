@@ -57,15 +57,14 @@
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
-        "proxyConfig": "apps/covis-app/proxy.conf.json"
+        "proxyConfig": "apps/covis-app/proxy.conf.json",
+        "browserTarget": "covis-app:build:development"
       },
       "configurations": {
         "production": {
           "browserTarget": "covis-app:build:production"
         },
-        "development": {
-          "browserTarget": "covis-app:build:development"
-        }
+        "development": {}
       },
       "defaultConfiguration": "development"
     },

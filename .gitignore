@@ -44,6 +44,7 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+.env
 
 apps/covis-service/src/assets/*
 apps/covis-converter/src/assets/*
