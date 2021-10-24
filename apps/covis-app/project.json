@@ -18,7 +18,10 @@
           "apps/covis-app/src/favicon.ico",
           "apps/covis-app/src/assets"
         ],
-        "styles": ["apps/covis-app/src/styles.scss"],
+        "styles": [
+          "apps/covis-app/src/styles.scss",
+          "node_modules/maplibre-gl/dist/maplibre-gl.css"
+        ],
         "scripts": []
       },
       "configurations": {
