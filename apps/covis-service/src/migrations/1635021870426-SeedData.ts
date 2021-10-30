@@ -4,7 +4,7 @@ import { join } from 'path';
 import { Pool } from 'pg';
 import { from } from 'pg-copy-streams';
 import { cwd } from 'process';
-import { pipeline as nonPromisePipeline } from 'stream';
+import { PassThrough, pipeline as nonPromisePipeline } from 'stream';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import { PostgresDriver } from 'typeorm/driver/postgres/PostgresDriver';
 import { promisify } from 'util';
@@ -19,6 +19,7 @@ export class SeedData1635021870426 implements MigrationInterface {
     const tasks = [
       {
         table: 'location',
+        stream: new PassThrough({ objectMode: true }),
         changeLine: (line: string[]) => {
           if (++count % reportOn === 0) {
             console.log(`${count / reportOn} milions of rows processed.`);
@@ -33,6 +34,7 @@ export class SeedData1635021870426 implements MigrationInterface {
       },
       {
         table: 'person',
+        stream: new PassThrough({ objectMode: true }),
         changeLine: (line: string[]) =>
           line[0] === '0.0'
             ? [
@@ -53,18 +55,19 @@ export class SeedData1635021870426 implements MigrationInterface {
     const pool = (queryRunner.connection.driver as PostgresDriver)
       .master as Pool;
 
-    const createDataStream = () =>
-      createReadStream(
-        join(cwd(), 'apps/covis-service/src/assets/data.csv.gz')
-      ).pipe(createGunzip());
+    const dataStream = createReadStream(
+      join(cwd(), 'apps/covis-service/src/assets/data.csv.gz')
+    )
+      .pipe(createGunzip())
+      .pipe(parse({ from: 2 }));
 
     await Promise.all(
-      tasks.map(async ({ table, changeLine }) => {
+      tasks.map(async ({ table, changeLine, stream }) => {
         const client = await pool.connect();
+        dataStream.pipe(stream);
 
         await pipeline(
-          createDataStream(),
-          parse({ from: 2 }),
+          stream,
           transform(changeLine.bind(this)),
           stringify(),
           client.query(from(`COPY ${table} FROM STDIN WITH (FORMAT csv)`))
@@ -73,6 +76,8 @@ export class SeedData1635021870426 implements MigrationInterface {
         client.release();
       })
     );
+
+    dataStream.destroy();
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
