@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { ReadStream } from 'typeorm/platform/PlatformTools';
-import { LocationEntity } from './location.entity';
+import { FindManyOptions, Raw, Repository } from 'typeorm';
+import { LocationEntity, Page } from './location.entity';
 
 @Injectable()
 export class LocationService {
@@ -15,24 +14,26 @@ export class LocationService {
     return this.repository.findOne(id);
   }
 
-  public findAll(skip?: number, take = 50): Promise<LocationEntity[]> {
-    return this.repository.find({
-      skip,
-      take,
-      order: { hour: 'ASC', personId: 'ASC' },
-    });
+  public findAllForHour(hour: number, page: Page): Promise<LocationEntity[]> {
+    return this.findAll(page, { where: { hour } });
   }
 
-  public findAllStream(skip?: number, take = 50): Promise<ReadStream> {
-    return this.repository
-      .createQueryBuilder('location')
-      .select('*')
-      .orderBy({
-        'location.hour': 'ASC',
-        'location.personId': 'ASC',
-      })
-      .offset(skip)
-      .limit(take)
-      .stream();
+  public findAll(
+    { from, take }: Page,
+    options?: FindManyOptions<LocationEntity>
+  ): Promise<LocationEntity[]> {
+    return this.repository.find({
+      ...options,
+      order: {
+        hour: 'ASC',
+        personId: 'ASC',
+      },
+      where: {
+        personId: Raw((alias) => `${alias} % 10000 = 0`),
+      },
+      skip: from,
+      take: take ?? 1000,
+      cache: true,
+    });
   }
 }

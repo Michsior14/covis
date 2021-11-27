@@ -24,7 +24,7 @@ export class LocationEntity implements Location {
   location!: Point;
 }
 
-export class LocationGetAllQuery {
+export class Page {
   /**
    * The start index of items to return.
    */
@@ -32,5 +32,5 @@ export class LocationGetAllQuery {
   /**
    * The number of items to return
    */
-  to?: number = 50;
+  take?: number = 100;
 }

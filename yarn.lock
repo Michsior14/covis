@@ -6186,6 +6186,7 @@ __metadata:
     prettier: ^2.4.1
     reflect-metadata: ^0.1.13
     rxjs: ^7.4.0
+    threebox-plugin: ^2.2.5
     ts-jest: ^27.0.7
     ts-node: ^10.4.0
     tsconfig-paths: ^3.11.0
@@ -16327,6 +16328,13 @@ fsevents@^1.2.7:
   dependencies:
     any-promise: ^1.0.0
   checksum: 84e1b804bfec49f3531215f17b4a6e50fd4397b5f7c1bccc427b9c656e1ecfb13ea79d899930184f78bc2f57285c54d9a50a590c8868f4f0cef5c1d9f898b05e
+  languageName: node
+  linkType: hard
+
+"threebox-plugin@npm:^2.2.5":
+  version: 2.2.5
+  resolution: "threebox-plugin@npm:2.2.5"
+  checksum: 5ba742ff26717dfeb556d5aac1578bd4cb76f00a36eb05b182d7119fde136cc4337d8e0e21c715ce25c76d54b0b6d2d6d594b699c012b74dae79e47ee7d910aa
   languageName: node
   linkType: hard
 
