@@ -31,13 +31,6 @@ export class MapComponent implements OnInit {
   constructor(private readonly locationService: LocationService) {}
 
   public ngOnInit(): void {
-    // const pointLayer: CustomLayerInterface = {
-    //   id: 'points',
-    //   type: 'custom',
-    //   renderingMode: '2d',
-    //   render(gl, matrix);
-    // };
-
     this.map = new Map({
       container: this.container.nativeElement,
       style: {
@@ -58,22 +51,24 @@ export class MapComponent implements OnInit {
             id: 'map',
             type: 'raster',
             source: 'basemap',
-            minzoom: 0,
-            maxzoom: 22,
           },
         ],
       },
-      center: [4.3240294, 52.0697438],
-      zoom: 12,
-      antialias: true,
+      minZoom: 0,
+      maxZoom: 18,
+      maxBounds: [
+        [4.156124, 52.025582],
+        [4.450131, 52.125786],
+      ],
+      dragRotate: false,
     });
-    this.map.addControl(new NavigationControl());
+    this.map.addControl(new NavigationControl({}));
 
     this.map.on('load', () => {
       this.map.addLayer({
         id: 'custom_layer',
         type: 'custom',
-        renderingMode: '3d',
+        renderingMode: '2d',
         onAdd: (map, context) => {
           (window as any).tb = this.treebox = new Threebox(map, context, {
             multiLayer: true,
@@ -82,6 +77,8 @@ export class MapComponent implements OnInit {
         render: () => {
           this.treebox.update();
         },
+        prerender: () => void 0,
+        onRemove: () => void 0,
       });
     });
   }

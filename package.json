@@ -33,7 +33,7 @@
     "class-validator": "^0.13.2",
     "csv": "^6.0.4",
     "json-stream-stringify": "^2.0.4",
-    "maplibre-gl": "^1.15.2",
+    "maplibre-gl": "^2.0.0-pre.6",
     "nestjs-redoc": "^2.2.2",
     "pg": "^8.7.1",
     "pg-copy-streams": "^6.0.2",

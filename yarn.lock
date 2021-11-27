@@ -2296,13 +2296,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/geojson-types@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@mapbox/geojson-types@npm:1.0.2"
-  checksum: aa0a2cb95a358d8756ab5aa70356bcbd6f554a4571703a88a09e7db6580061d6ef4054db5fe3ecb2817c383b8b5433746a8f46712dc606b32063f73b154f99fc
-  languageName: node
-  linkType: hard
-
 "@mapbox/jsonlint-lines-primitives@npm:^2.0.2":
   version: 2.0.2
   resolution: "@mapbox/jsonlint-lines-primitives@npm:2.0.2"
@@ -2310,33 +2303,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/mapbox-gl-supported@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "@mapbox/mapbox-gl-supported@npm:1.5.0"
-  peerDependencies:
-    mapbox-gl: ">=0.32.1 <2.0.0"
-  checksum: 5b7712e8b546e598dc5152632504cad53081211b64ddc4447825840ddca703275bc36599167b9550ab906ca8a9554936bcdae562073fdef24b8d38d78ee262fb
+"@mapbox/mapbox-gl-supported@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@mapbox/mapbox-gl-supported@npm:2.0.1"
+  checksum: d4876381cbc2fb401851eebb5195bd2e14b08c0351e9628fb18cfa15e89ce0ab19ac98bdbe6a6c13c6de359b44e07cad0fd2189cd2bfd981a16727618204551d
   languageName: node
   linkType: hard
 
-"@mapbox/point-geometry@npm:0.1.0, @mapbox/point-geometry@npm:^0.1.0, @mapbox/point-geometry@npm:~0.1.0":
+"@mapbox/point-geometry@npm:0.1.0, @mapbox/point-geometry@npm:~0.1.0":
   version: 0.1.0
   resolution: "@mapbox/point-geometry@npm:0.1.0"
   checksum: e4d861908574cb3165f5ad37b000416ebc90a2d6b3e0073191e6b6dc5074a6159d84ac5114d78557399bb429134f0d05bfb529e7902d1cb2b36d722b72ab662c
   languageName: node
   linkType: hard
 
-"@mapbox/tiny-sdf@npm:^1.1.1":
-  version: 1.2.5
-  resolution: "@mapbox/tiny-sdf@npm:1.2.5"
-  checksum: de0252388a628ddb491c986c715f0b63ca6a74f5dac16d3e51eb75a21935a31e34fba5db47c81cc59a462d782021fc68b2e3cc119b2d6cabe15d31e311674d6c
+"@mapbox/tiny-sdf@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@mapbox/tiny-sdf@npm:2.0.4"
+  checksum: 03413995614a515ff53eab25c7676ce34282bd45e40562fb86f4032f21f4a8c8c9462ad25e871a0b2b956b746c40a4d77fad07c8c8749341df95baa46f1d75af
   languageName: node
   linkType: hard
 
-"@mapbox/unitbezier@npm:^0.0.0":
-  version: 0.0.0
-  resolution: "@mapbox/unitbezier@npm:0.0.0"
-  checksum: af1943ebeb7532317a5cedfc38d0e580b7bd76cc5c43988df65541d377f3e3fa7d68c201dda20f5239213a4bc81ec5d13146354107196ffc4f14d6f39b8343b5
+"@mapbox/unitbezier@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "@mapbox/unitbezier@npm:0.0.1"
+  checksum: 97f39d4fbdf9579d0a1a8be0d536eb113a805d36459e774014f488a7ca6cc9dcfc77ab7a2ebe5af395ad50da6efb4dbf2566de0db3f62b6b8675cddbace8f86a
   languageName: node
   linkType: hard
 
@@ -3449,6 +3440,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/offscreencanvas@npm:^2019.6.3":
+  version: 2019.6.4
+  resolution: "@types/offscreencanvas@npm:2019.6.4"
+  checksum: 07c929d9bccb23d6400bb812712d3aca3564b91886175149bbbd404fc1d7b3da71933c173b2c43ceee3f0b1ea785499cec207a57a745f4a29d739a6893869eee
+  languageName: node
+  linkType: hard
+
 "@types/parse-json@npm:^4.0.0":
   version: 4.0.0
   resolution: "@types/parse-json@npm:4.0.0"
@@ -4006,6 +4004,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"acorn-dynamic-import@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "acorn-dynamic-import@npm:4.0.0"
+  peerDependencies:
+    acorn: ^6.0.0
+  checksum: 5450c917d28f39cabf64495928a711f446cb6a4731d45fcd8f160cc3ceb6fee3e1b4a8cb308b5ba4e9a0e450742f67d7295322033ffaa378a355af6cd2232693
+  languageName: node
+  linkType: hard
+
 "acorn-globals@npm:^6.0.0":
   version: 6.0.0
   resolution: "acorn-globals@npm:6.0.0"
@@ -4025,7 +4032,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn-jsx@npm:^5.3.1":
+"acorn-jsx@npm:^5.0.1, acorn-jsx@npm:^5.3.1":
   version: 5.3.2
   resolution: "acorn-jsx@npm:5.3.2"
   peerDependencies:
@@ -4045,6 +4052,15 @@ __metadata:
   version: 8.2.0
   resolution: "acorn-walk@npm:8.2.0"
   checksum: dbe92f5b2452c93e960c5594e666dd1fae141b965ff2cb4a1e1d0381e3e4db4274c5ce4ffa3d681a86ca2a8d4e29d5efc0670a08e23fd2800051ea387df56ca2
+  languageName: node
+  linkType: hard
+
+"acorn@npm:^6.1.1":
+  version: 6.4.2
+  resolution: "acorn@npm:6.4.2"
+  bin:
+    acorn: bin/acorn
+  checksum: 52a72d5d785fa64a95880f2951021a38954f8f69a4944dfeab6fb1449b0f02293eae109a56d55b58ff31a90a00d16a804658a12db8ef834c20b3d1201fe5ba5b
   languageName: node
   linkType: hard
 
@@ -4855,6 +4871,24 @@ __metadata:
   dependencies:
     node-int64: ^0.4.0
   checksum: 24d8dfb7b6d457d73f32744e678a60cc553e4ec0e9e1a01cf614b44d85c3c87e188d3cc78ef0442ce5032ee6818de20a0162ba1074725c0d08908f62ea979227
+  languageName: node
+  linkType: hard
+
+"buble@npm:^0.19.8":
+  version: 0.19.8
+  resolution: "buble@npm:0.19.8"
+  dependencies:
+    acorn: ^6.1.1
+    acorn-dynamic-import: ^4.0.0
+    acorn-jsx: ^5.0.1
+    chalk: ^2.4.2
+    magic-string: ^0.25.3
+    minimist: ^1.2.0
+    os-homedir: ^2.0.0
+    regexpu-core: ^4.5.4
+  bin:
+    buble: ./bin/buble
+  checksum: 6f01f0d60c75e1ce3aad05817dc4e58fa8187ed9a60bb48dc8c59b64075cf1d772d188a5310696934d17c98d22e4f35db12194ad4f500bd4582dd34a946e6407
   languageName: node
   linkType: hard
 
@@ -5710,7 +5744,7 @@ __metadata:
     jest: ^27.3.1
     jest-preset-angular: ^11.0.1
     json-stream-stringify: ^2.0.4
-    maplibre-gl: ^1.15.2
+    maplibre-gl: ^2.0.0-pre.6
     nestjs-redoc: ^2.2.2
     pg: ^8.7.1
     pg-copy-streams: ^6.0.2
@@ -10480,7 +10514,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:0.25.7, magic-string@npm:^0.25.0, magic-string@npm:^0.25.7":
+"magic-string@npm:0.25.7, magic-string@npm:^0.25.0, magic-string@npm:^0.25.3, magic-string@npm:^0.25.7":
   version: 0.25.7
   resolution: "magic-string@npm:0.25.7"
   dependencies:
@@ -10571,19 +10605,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"maplibre-gl@npm:^1.15.2":
-  version: 1.15.2
-  resolution: "maplibre-gl@npm:1.15.2"
+"maplibre-gl@npm:^2.0.0-pre.6":
+  version: 2.0.0-pre.6
+  resolution: "maplibre-gl@npm:2.0.0-pre.6"
   dependencies:
     "@mapbox/geojson-rewind": ^0.5.0
-    "@mapbox/geojson-types": ^1.0.2
     "@mapbox/jsonlint-lines-primitives": ^2.0.2
-    "@mapbox/mapbox-gl-supported": ^1.5.0
-    "@mapbox/point-geometry": ^0.1.0
-    "@mapbox/tiny-sdf": ^1.1.1
-    "@mapbox/unitbezier": ^0.0.0
+    "@mapbox/mapbox-gl-supported": ^2.0.1
+    "@mapbox/tiny-sdf": ^2.0.4
+    "@mapbox/unitbezier": ^0.0.1
     "@mapbox/vector-tile": ^1.3.1
     "@mapbox/whoots-js": ^3.1.0
+    "@types/offscreencanvas": ^2019.6.3
     csscolorparser: ~1.0.3
     earcut: ^2.2.2
     geojson-vt: ^3.2.1
@@ -10594,11 +10627,12 @@ __metadata:
     pbf: ^3.2.1
     potpack: ^1.0.1
     quickselect: ^2.0.0
+    rollup-plugin-buble: ^0.19.8
     rw: ^1.3.3
     supercluster: ^7.1.0
     tinyqueue: ^2.0.3
     vt-pbf: ^3.1.1
-  checksum: 099c169f438e392bdc21607dcdf9d16ad9bef524558d67182291ab966acdf0784a3cba09e813879a717805831eb86e61d22cf5015ab611fb47e6c4443a02d513
+  checksum: 2fc8e1069e876ec2c32fb94d074304c386cc82ab5e3774dafff65198518a6ed41bec7623e8cbf627b10817d796e8c3bc6f13867a834cac2c99946e618fae85ab
   languageName: node
   linkType: hard
 
@@ -11501,6 +11535,13 @@ __metadata:
     strip-ansi: ^6.0.0
     wcwidth: ^1.0.1
   checksum: 10ff14aace236d0e2f044193362b22edce4784add08b779eccc8f8ef97195cae1248db8ec1ec5f5ff076f91acbe573f5f42a98c19b78dba8c54eefff983cae85
+  languageName: node
+  linkType: hard
+
+"os-homedir@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "os-homedir@npm:2.0.0"
+  checksum: 6f3279a24aca3b41b0d3c38e3bfa572109de3a0343d9a649acc69079946c9e6bc20e22283936475578ec9cea6f32303280b88349ab55665fdaf7f8e6b8d545b0
   languageName: node
   linkType: hard
 
@@ -13297,7 +13338,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"regexpu-core@npm:^4.7.1":
+"regexpu-core@npm:^4.5.4, regexpu-core@npm:^4.7.1":
   version: 4.8.0
   resolution: "regexpu-core@npm:4.8.0"
   dependencies:
@@ -13488,6 +13529,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rollup-plugin-buble@npm:^0.19.8":
+  version: 0.19.8
+  resolution: "rollup-plugin-buble@npm:0.19.8"
+  dependencies:
+    buble: ^0.19.8
+    rollup-pluginutils: ^2.3.3
+  checksum: ad6a854f756b8aeb1874e5d3a33ef7e20f7b49296aafed739960fb82ff2b2b46e66f392199c239be0db4fbfdbb2d63e2a01c0820f667dd85f20d80a5d3266bfd
+  languageName: node
+  linkType: hard
+
 "rollup-plugin-copy@npm:^3.4.0":
   version: 3.4.0
   resolution: "rollup-plugin-copy@npm:3.4.0"
@@ -13549,7 +13600,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup-pluginutils@npm:^2.8.2":
+"rollup-pluginutils@npm:^2.3.3, rollup-pluginutils@npm:^2.8.2":
   version: 2.8.2
   resolution: "rollup-pluginutils@npm:2.8.2"
   dependencies:
