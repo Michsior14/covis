@@ -1,6 +1,5 @@
 import { Logger, ShutdownSignal, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { send } from 'process';
 import { AppModule } from './app/app.module';
 import { setupDocs } from './app/docs';
 
@@ -26,7 +25,6 @@ const bootstrap = async () => {
 
   await app.listen(port, async () => {
     Logger.log(`Listening at http://localhost:${port}/${globalPrefix}`);
-    send?.('ready');
   });
 };
 
