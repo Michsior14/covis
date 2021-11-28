@@ -1,7 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Location } from '@covis/shared';
+import { LngLat } from 'maplibre-gl';
 import { EMPTY, expand } from 'rxjs';
+
+interface Area {
+  hour: number;
+  zoom: number;
+  sw: LngLat;
+  ne: LngLat;
+}
 
 const batchSize = 10_000;
 
@@ -11,14 +19,17 @@ const batchSize = 10_000;
 export class LocationService {
   constructor(private readonly httpClient: HttpClient) {}
 
-  public getAllForHour(hour: number) {
+  public getAllForArea({ sw, ne, hour, zoom }: Area) {
     const getRequest = (page = 0) =>
-      this.httpClient.get<Location[]>(`/api/location/${hour}`, {
-        params: {
-          from: page * batchSize,
-          take: batchSize,
-        },
-      });
+      this.httpClient.get<Location[]>(
+        `/api/location/${sw.lng}/${sw.lat}/${ne.lng}/${ne.lat}/${zoom}/${hour}`,
+        {
+          params: {
+            from: page * batchSize,
+            take: batchSize,
+          },
+        }
+      );
 
     let page = 1;
     return getRequest().pipe(

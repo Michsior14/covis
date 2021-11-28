@@ -1,10 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, Raw, Repository } from 'typeorm';
-import { LocationEntity, Page } from './location.entity';
+import { AreaRequest, LocationEntity, Page } from './location.entity';
 
 @Injectable()
 export class LocationService {
+  private zoomDetails = [
+    { zoom: 11, value: 1000 },
+    { zoom: 13, value: 500 },
+    { zoom: 15, value: 100 },
+    { zoom: 16, value: 1 },
+  ];
+
   constructor(
     @InjectRepository(LocationEntity)
     private repository: Repository<LocationEntity>
@@ -14,8 +21,25 @@ export class LocationService {
     return this.repository.findOne(id);
   }
 
-  public findAllForHour(hour: number, page: Page): Promise<LocationEntity[]> {
-    return this.findAll(page, { where: { hour } });
+  public findAllInArea(
+    { hour, zoom, ...area }: AreaRequest,
+    page: Page
+  ): Promise<LocationEntity[]> {
+    const detail = this.zoomDetails.find((z) => z.zoom >= zoom)?.value ?? 1;
+    return this.findAll(page, {
+      where: {
+        hour,
+        location: Raw(
+          (alias) =>
+            `st_intersects(
+              ${alias},
+              ST_MakeEnvelope(:lngw, :lats, :lnge, :latn, 4326)
+            )`,
+          area
+        ),
+        personId: Raw((alias) => `${alias} % :detail = 0`, { detail }),
+      },
+    });
   }
 
   public findAll(
@@ -27,9 +51,6 @@ export class LocationService {
       order: {
         hour: 'ASC',
         personId: 'ASC',
-      },
-      where: {
-        personId: Raw((alias) => `${alias} % 10000 = 0`),
       },
       skip: from,
       take: take ?? 1000,

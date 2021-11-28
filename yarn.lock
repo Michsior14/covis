@@ -3550,6 +3550,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/three@npm:~0.132.0":
+  version: 0.132.2
+  resolution: "@types/three@npm:0.132.2"
+  checksum: 72d634781d717f64c36cceb9324711b0f5902af4caee707488ee7666312aba7e5f2911d9dc3a0b81a77a1ffced6d18fd5ce03b6625d32200b73923c008391552
+  languageName: node
+  linkType: hard
+
 "@types/webpack-sources@npm:^0.1.5":
   version: 0.1.9
   resolution: "@types/webpack-sources@npm:0.1.9"
@@ -5732,6 +5739,7 @@ __metadata:
     "@types/node": ^16.11.10
     "@types/pg": ^8.6.1
     "@types/pg-copy-streams": ^1.2.1
+    "@types/three": ~0.132.0
     "@typescript-eslint/eslint-plugin": ^5.4.0
     "@typescript-eslint/parser": ^5.4.0
     class-transformer: ^0.5.1
@@ -5752,6 +5760,7 @@ __metadata:
     prettier: ^2.5.0
     reflect-metadata: ^0.1.13
     rxjs: ^7.4.0
+    three: ~0.132.0
     threebox-plugin: ^2.2.5
     ts-jest: ^27.0.7
     ts-node: ^10.4.0
@@ -14773,6 +14782,13 @@ __metadata:
   dependencies:
     any-promise: ^1.0.0
   checksum: f375aeb2b05c100a456a30bc3ed07ef03a39cbdefe02e0403fb714b8c7e57eeaad1a2f5c4ecfb9ce554ce3db9c2b024eba144843cd9e344566d9fcee73b04767
+  languageName: node
+  linkType: hard
+
+"three@npm:~0.132.0":
+  version: 0.132.2
+  resolution: "three@npm:0.132.2"
+  checksum: 2a2526567632316c457bd1e3993767c9369ba977742076a9336b7f9f2921e94034f986cd84c518edb0edcb55bc5bf15c136da31536d2213520d23a19e4343e9e
   languageName: node
   linkType: hard
 

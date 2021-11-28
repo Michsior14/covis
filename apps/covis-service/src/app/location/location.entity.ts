@@ -34,3 +34,12 @@ export class Page {
    */
   take?: number = 100;
 }
+
+export class AreaRequest {
+  lngw!: number;
+  lats!: number;
+  lnge!: number;
+  latn!: number;
+  hour!: number;
+  zoom!: number;
+}

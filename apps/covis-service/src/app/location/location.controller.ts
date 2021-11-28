@@ -1,6 +1,6 @@
 import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import { LocationEntity, Page } from './location.entity';
+import { AreaRequest, LocationEntity, Page } from './location.entity';
 import { LocationService } from './location.service';
 
 @Controller('location')
@@ -13,12 +13,12 @@ export class LocationController {
     return this.locationService.findAll(page);
   }
 
-  @Get(':hour')
+  @Get(':lats/:lngw/:latn/:lnge/:zoom/:hour')
   @ApiResponse({ type: LocationEntity, isArray: true, status: HttpStatus.OK })
   public async getAllHour(
-    @Param('hour') hour: number,
+    @Param() area: AreaRequest,
     @Query() page: Page
   ): Promise<LocationEntity[]> {
-    return this.locationService.findAllForHour(hour, page);
+    return this.locationService.findAllInArea(area, page);
   }
 }
