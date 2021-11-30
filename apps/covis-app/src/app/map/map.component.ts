@@ -10,9 +10,21 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { Map, NavigationControl } from 'maplibre-gl';
+import {
+  delay,
+  EMPTY,
+  expand,
+  last,
+  lastValueFrom,
+  range,
+  switchMap,
+  take,
+  withLatestFrom,
+} from 'rxjs';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
-import { THREE, Threebox } from 'threebox-plugin';
+import { Threebox } from 'threebox-plugin';
 import { LocationService } from './location/location.service';
+import { PointService } from './point/point.service';
 
 @Component({
   selector: 'covis-map',
@@ -31,6 +43,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   private stats = Stats();
 
   constructor(
+    private readonly pointService: PointService,
     private readonly locationService: LocationService,
     private readonly ngZone: NgZone
   ) {}
@@ -81,6 +94,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     );
     (window as any).tb = this.threebox;
+    this.pointService.threebox = this.threebox;
 
     this.map.on('style.load', () => {
       this.map.addLayer({
@@ -109,68 +123,29 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.map.remove();
   }
 
-  public loadPoints(): void {
+  public async loadPoints(): Promise<Promise<void>> {
     const bounds = this.map.getBounds();
     const zoom = this.map.getZoom();
 
-    const dotGeometry = new THREE.BufferGeometry();
-    dotGeometry.setAttribute(
-      'position',
-      new THREE.Float32BufferAttribute(new THREE.Vector3().toArray(), 3)
-    );
-    const dotMaterial = new THREE.ShaderMaterial({
-      vertexShader: `
-              uniform float size;
+    const loadHour = (hour: number) =>
+      this.locationService
+        .getAllForArea({
+          hour,
+          zoom,
+          sw: bounds.getSouthWest(),
+          ne: bounds.getNorthEast(),
+        })
+        .pipe(
+          take(1),
+          switchMap((locations) =>
+            this.pointService.add(locations).pipe(last())
+          )
+        );
 
-              void main() {
-                vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-                gl_PointSize = size;
-                gl_Position = projectionMatrix * mvPosition;
-              }
-            `,
-      fragmentShader: `
-              #ifdef GL_OES_standard_derivatives
-              #extension GL_OES_standard_derivatives : enable
-              #endif
-              uniform vec3 color;
-
-              void main() {
-                float alpha = 1.0;
-                vec2 cxy = 2.0 * gl_PointCoord - 1.0;
-                float r = dot(cxy, cxy);
-                #ifdef GL_OES_standard_derivatives
-                  float delta = fwidth(r);
-                  alpha = 1.0 - smoothstep(1.0 - delta, 1.0 + delta, r);
-                #endif
-                gl_FragColor = vec4( color, alpha );
-              }
-            `,
-      uniforms: {
-        size: { value: 10.0 },
-        color: { value: new THREE.Color(0xff0000) },
-      },
-      transparent: true,
-    });
-
-    // let count = 0;
-    this.locationService
-      .getAllForArea({
-        hour: 0,
-        zoom,
-        sw: bounds.getSouthWest(),
-        ne: bounds.getNorthEast(),
-      })
-      .subscribe((locations) => {
-        // count += locations.length;
-        // console.log(`${count} rows processed.`);
-        locations.forEach(({ location }) => {
-          const cube = this.threebox.Object3D({
-            obj: new THREE.Points(dotGeometry, dotMaterial),
-          });
-          cube.setCoords(location.coordinates.reverse());
-          this.threebox.add(cube);
-        });
-      });
+    let hour = 7;
+    loadHour(hour)
+      .pipe(expand(() => (hour < 18 ? loadHour(++hour) : EMPTY)))
+      .subscribe();
   }
 
   private animateStats(): void {
