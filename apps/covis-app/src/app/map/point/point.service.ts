@@ -62,6 +62,7 @@ export class PointService {
                 location.coordinates.reverse(),
               ],
               duration: 5000,
+              trackHeading: false,
             },
             () => {
               observer.next();
