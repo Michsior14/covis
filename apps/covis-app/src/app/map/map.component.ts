@@ -10,17 +10,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { Map, NavigationControl } from 'maplibre-gl';
-import {
-  delay,
-  EMPTY,
-  expand,
-  last,
-  lastValueFrom,
-  range,
-  switchMap,
-  take,
-  withLatestFrom,
-} from 'rxjs';
+import { EMPTY, expand, last, switchMap, take } from 'rxjs';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { Threebox } from 'threebox-plugin';
 import { LocationService } from './location/location.service';
@@ -102,7 +92,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         type: 'custom',
         renderingMode: '3d',
         onAdd: () => {
-          this.animateStats();
+          this.animationLoop();
         },
         render: () => {
           this.ngZone.runOutsideAngular(() => {
@@ -148,8 +138,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe();
   }
 
-  private animateStats(): void {
-    requestAnimationFrame(() => this.animateStats());
+  private animationLoop(): void {
+    requestAnimationFrame(() => this.animationLoop());
     this.stats.update();
+    this.pointService.tweens.update();
   }
 }

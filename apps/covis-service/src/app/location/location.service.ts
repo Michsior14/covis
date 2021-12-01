@@ -8,8 +8,8 @@ export class LocationService {
   private zoomDetails = [
     { zoom: 11, value: 1000 },
     { zoom: 13, value: 500 },
-    { zoom: 15, value: 100 },
-    { zoom: 16, value: 1 },
+    { zoom: 15, value: 300 },
+    { zoom: 16, value: 10 },
   ];
 
   constructor(
