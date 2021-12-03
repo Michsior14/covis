@@ -20,7 +20,8 @@ const sharedGeometry = new THREE.BufferGeometry().setFromPoints([
 enum DieaseColor {
   sick = 0xcd5c5c,
   healthy = 0x4fa64f,
-  susceptible = 0x4233ff,
+  susceptible = 0xff670e,
+  immunity = 0x4233ff,
 }
 
 @Injectable({
@@ -169,6 +170,8 @@ export class PointService {
         return DieaseColor.healthy;
       case 'susceptible':
         return DieaseColor.susceptible;
+      case 'immunity':
+        return DieaseColor.immunity;
       default:
         return DieaseColor.sick;
     }
