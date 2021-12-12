@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Location } from '@covis/shared';
+import { DiseasePhase, Location } from '@covis/shared';
+import { Group, Tween } from '@tweenjs/tween.js';
 import { Position } from 'geojson';
 import { Observable } from 'rxjs';
 import { THREE, Threebox } from 'threebox-plugin';
-import { Group, Tween } from '@tweenjs/tween.js';
 
 type Object3D = THREE.Object3D & {
   setCoords: (coords: number[]) => void;
@@ -17,13 +17,20 @@ const sharedGeometry = new THREE.BufferGeometry().setFromPoints([
   new THREE.Vector3(),
 ]);
 
-enum DieaseColor {
-  sick = 0xcd5c5c,
-  healthy = 0x4fa64f,
-  susceptible = 0xff670e,
-  immunity = 0x4233ff,
-  dead = 0x000000,
-}
+const dieaseColor: Record<DiseasePhase, number> = {
+  [DiseasePhase.asymptomaticContagiousEarlyStage]: 0xffe599,
+  [DiseasePhase.asymptomaticContagiousMiddleStage]: 0xffd966,
+  [DiseasePhase.asymptomaticContagiousLateStage]: 0xf1c232,
+  [DiseasePhase.dead]: 0x000000,
+  [DiseasePhase.healthy]: 0x4fa64f,
+  [DiseasePhase.hospitalized]: 0xc27ba0,
+  [DiseasePhase.intensiveCareUnit]: 0x8e7cc3,
+  [DiseasePhase.immunity]: 0x4233ff,
+  [DiseasePhase.susceptible]: 0xff670e,
+  [DiseasePhase.symptomaticEarlyStage]: 0xf9cb9c,
+  [DiseasePhase.symptomaticMiddleStage]: 0xf6b26b,
+  [DiseasePhase.symptomaticLateStage]: 0xe69138,
+};
 
 @Injectable({
   providedIn: 'root',
@@ -124,7 +131,7 @@ export class PointService {
   }
 
   private createMaterial(
-    color: THREE.ColorRepresentation = DieaseColor.healthy
+    color: THREE.ColorRepresentation = dieaseColor.healthy
   ): THREE.ShaderMaterial {
     return new THREE.ShaderMaterial({
       vertexShader: `
@@ -165,18 +172,7 @@ export class PointService {
     return a[0] === b[0] && a[1] === b[1];
   }
 
-  private getColor(diseasePhase: string): number {
-    switch (diseasePhase.toLowerCase()) {
-      case 'healthy':
-        return DieaseColor.healthy;
-      case 'susceptible':
-        return DieaseColor.susceptible;
-      case 'immunity':
-        return DieaseColor.immunity;
-      case 'dead':
-        return DieaseColor.dead;
-      default:
-        return DieaseColor.sick;
-    }
+  private getColor(diseasePhase: DiseasePhase): number {
+    return dieaseColor[diseasePhase] ?? dieaseColor.dead;
   }
 }

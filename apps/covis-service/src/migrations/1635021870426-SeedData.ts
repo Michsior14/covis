@@ -27,7 +27,7 @@ export class SeedData1635021870426 implements MigrationInterface {
           return [
             line[0], // hour
             line[1], // personId
-            line[12], // diseasePhase
+            line[12].toLowerCase(), // diseasePhase
             this.createPointValue(line[8], line[9]), // currentLat, currentLon
           ];
         },
@@ -39,9 +39,9 @@ export class SeedData1635021870426 implements MigrationInterface {
           line[0] === '0.0'
             ? [
                 line[1], // personId
-                line[2], // personType
+                line[2].toLowerCase(), // personType
                 line[3], // age
-                line[4], // gender
+                line[4].toLowerCase(), // gender
                 line[5], // homeId
                 line[6], // homeSubId
                 line[13], // workId
