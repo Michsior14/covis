@@ -22,6 +22,7 @@ enum DieaseColor {
   healthy = 0x4fa64f,
   susceptible = 0xff670e,
   immunity = 0x4233ff,
+  dead = 0x000000,
 }
 
 @Injectable({
@@ -172,6 +173,8 @@ export class PointService {
         return DieaseColor.susceptible;
       case 'immunity':
         return DieaseColor.immunity;
+      case 'dead':
+        return DieaseColor.dead;
       default:
         return DieaseColor.sick;
     }
