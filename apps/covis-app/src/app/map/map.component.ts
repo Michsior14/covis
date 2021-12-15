@@ -10,11 +10,22 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { Map, NavigationControl } from 'maplibre-gl';
-import { EMPTY, expand, last, switchMap, take } from 'rxjs';
+import {
+  EMPTY,
+  expand,
+  last,
+  map,
+  Subject,
+  switchMap,
+  take,
+  takeUntil,
+} from 'rxjs';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { Threebox } from 'threebox-plugin';
 import { LocationService } from './location/location.service';
 import { PointService } from './point/point.service';
+
+const startHour = 1878;
 
 @Component({
   selector: 'covis-map',
@@ -31,6 +42,10 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private threebox: typeof Threebox;
   private stats = Stats();
+
+  private currentHour = startHour;
+  private visualisationRunning = false;
+  private resetSignal = new Subject<void>();
 
   constructor(
     private readonly pointService: PointService,
@@ -86,41 +101,56 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     (window as any).tb = this.threebox;
     this.pointService.threebox = this.threebox;
 
-    this.map.on('style.load', () => {
-      this.map.addLayer({
-        id: 'custom_layer',
-        type: 'custom',
-        renderingMode: '3d',
-        onAdd: () => {
-          this.animationLoop();
-        },
-        render: () => {
-          this.ngZone.runOutsideAngular(() => {
-            this.threebox.update();
-          });
-        },
-        prerender: () => void 0,
-        onRemove: () => {
-          this.threebox.dispose();
-          (window as any).tb = null;
-        },
+    this.map
+      .on('style.load', () => {
+        this.map.addLayer({
+          id: 'custom_layer',
+          type: 'custom',
+          renderingMode: '3d',
+          onAdd: () => {
+            this.animationLoop();
+          },
+          render: () => {
+            this.ngZone.runOutsideAngular(() => this.threebox.update());
+          },
+          prerender: () => void 0,
+          onRemove: () => {
+            this.threebox.dispose();
+            (window as any).tb = null;
+          },
+        });
+        this.container.nativeElement.appendChild(this.stats.dom);
+      })
+      .on('zoomend', () => {
+        if (this.visualisationRunning) {
+          this.pointService.reset();
+          this.startVisalization();
+        }
       });
-      this.container.nativeElement.appendChild(this.stats.dom);
-    });
   }
 
   public ngOnDestroy(): void {
     this.map.remove();
+    this.resetSignal.next();
+    this.resetSignal.complete();
   }
 
-  public async loadPoints(): Promise<Promise<void>> {
-    const bounds = this.map.getBounds();
-    const zoom = this.map.getZoom();
+  public resetTime(): void {
+    this.currentHour = startHour;
+    this.pointService.reset();
+    this.resetSignal.next();
+  }
 
-    const loadHour = (hour: number) =>
-      this.locationService
+  public startVisalization(): void {
+    this.resetSignal.next();
+    this.visualisationRunning = true;
+
+    const loadHour = () => {
+      const bounds = this.map.getBounds();
+      const zoom = this.map.getZoom();
+      return this.locationService
         .getAllForArea({
-          hour,
+          hour: this.currentHour++,
           zoom,
           sw: bounds.getSouthWest(),
           ne: bounds.getNorthEast(),
@@ -128,14 +158,23 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         .pipe(
           take(1),
           switchMap((locations) =>
-            this.pointService.add(locations).pipe(last())
-          )
+            this.pointService.add(locations).pipe(
+              last(),
+              map(() => locations.length > 0)
+            )
+          ),
+          takeUntil(this.resetSignal)
         );
+    };
 
-    let hour = 7;
-    loadHour(hour)
-      .pipe(expand(() => (hour < 18 ? loadHour(++hour) : EMPTY)))
-      .subscribe();
+    loadHour()
+      .pipe(expand((loadMore) => (loadMore ? loadHour() : EMPTY)))
+      .subscribe({ complete: () => (this.visualisationRunning = false) });
+  }
+
+  public loadPoints(): void {
+    this.resetTime();
+    this.startVisalization();
   }
 
   private animationLoop(): void {

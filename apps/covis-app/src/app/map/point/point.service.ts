@@ -32,6 +32,8 @@ const dieaseColor: Record<DiseasePhase, number> = {
   [DiseasePhase.symptomaticLateStage]: 0xe69138,
 };
 
+const animationStep = 5000;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -40,9 +42,8 @@ export class PointService {
 
   #points = new Map<number, Entry>();
   #coordinates = new Map<string, boolean>();
+  #tweens: Tween<THREE.Vector3>[] = [];
   #threebox: typeof Threebox;
-
-  constructor() {}
 
   public set threebox(threebox: typeof Threebox) {
     this.#threebox = threebox;
@@ -97,26 +98,28 @@ export class PointService {
               coords,
             ]);
 
-            new Tween<THREE.Vector3>(start, this.tweens)
-              .to(end, 5000)
-              .onUpdate((position) => {
-                point.object.position.copy(position);
-                const newCoords =
-                  this.#threebox.utils.unprojectFromWorld(position);
-                point.object.coordinates = newCoords;
-                point.object.updateMatrixWorld();
-              })
-              .start()
-              .onComplete(() => {
-                finished++;
-                point.object.model.material.uniforms.color.value = newColor;
-                point.object.visibility = !this.#coordinates.get(hash);
-                this.#coordinates.set(hash, true);
-                if (finished === started) {
-                  observer.next();
-                  observer.complete();
-                }
-              });
+            this.#tweens.push(
+              new Tween<THREE.Vector3>(start, this.tweens)
+                .to(end, animationStep)
+                .onUpdate((position) => {
+                  point.object.position.copy(position);
+                  const newCoords =
+                    this.#threebox.utils.unprojectFromWorld(position);
+                  point.object.coordinates = newCoords;
+                  point.object.updateMatrixWorld();
+                })
+                .start()
+                .onComplete(() => {
+                  finished++;
+                  point.object.model.material.uniforms.color.value = newColor;
+                  point.object.visibility = !this.#coordinates.get(hash);
+                  this.#coordinates.set(hash, true);
+                  if (finished === started) {
+                    observer.next();
+                    observer.complete();
+                  }
+                })
+            );
           } else {
             point.object.model.material.uniforms.color.value = newColor;
           }
@@ -124,10 +127,20 @@ export class PointService {
       }
 
       if (started === 0) {
-        observer.next();
-        observer.complete();
+        setTimeout(() => {
+          observer.next();
+          observer.complete();
+        }, animationStep);
       }
     });
+  }
+
+  public reset(): void {
+    this.#tweens.forEach((tween) => tween.stop());
+    this.#tweens.length = 0;
+    this.#points.forEach((point) => this.#threebox.remove(point.object));
+    this.#points.clear();
+    this.#coordinates.clear();
   }
 
   private createMaterial(
