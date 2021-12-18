@@ -3,7 +3,8 @@ import { DiseasePhase, Location } from '@covis/shared';
 import { Group, Tween } from '@tweenjs/tween.js';
 import { Position } from 'geojson';
 import { Observable } from 'rxjs';
-import { THREE, Threebox } from 'threebox-plugin';
+import { THREE } from 'threebox-plugin';
+import { ThreeboxService } from '../threebox.service';
 
 type Object3D = THREE.Object3D & {
   setCoords: (coords: number[]) => void;
@@ -42,12 +43,8 @@ export class PointService {
 
   #points = new Map<number, Entry>();
   #coordinates = new Map<string, boolean>();
-  #tweens: Tween<THREE.Vector3>[] = [];
-  #threebox: typeof Threebox;
 
-  public set threebox(threebox: typeof Threebox) {
-    this.#threebox = threebox;
-  }
+  constructor(private readonly theeboxService: ThreeboxService) {}
 
   public add(locations: Location[]): Observable<number> {
     this.#coordinates.clear();
@@ -63,7 +60,7 @@ export class PointService {
           personId,
           diseasePhase,
           hour,
-          object: this.#threebox.Object3D({
+          object: this.theeboxService.threebox.Object3D({
             obj: new THREE.Points(
               sharedGeometry,
               this.createMaterial(this.getColor(diseasePhase))
@@ -76,7 +73,7 @@ export class PointService {
 
         if (!this.#points.has(personId)) {
           point.object.setCoords(coords);
-          this.#threebox.add(point.object);
+          this.theeboxService.threebox.add(point.object);
           this.#points.set(personId, point);
         } else {
           this.#points.set(personId, {
@@ -93,33 +90,34 @@ export class PointService {
             point.object.visibility = true;
             this.#coordinates.set(hash, false);
 
-            const [start, end] = this.#threebox.utils.lnglatsToWorld([
-              point.location.coordinates,
-              coords,
-            ]);
+            const [start, end] =
+              this.theeboxService.threebox.utils.lnglatsToWorld([
+                point.location.coordinates,
+                coords,
+              ]);
 
-            this.#tweens.push(
-              new Tween<THREE.Vector3>(start, this.tweens)
-                .to(end, animationStep)
-                .onUpdate((position) => {
-                  point.object.position.copy(position);
-                  const newCoords =
-                    this.#threebox.utils.unprojectFromWorld(position);
-                  point.object.coordinates = newCoords;
-                  point.object.updateMatrixWorld();
-                })
-                .start()
-                .onComplete(() => {
-                  finished++;
-                  point.object.model.material.uniforms.color.value = newColor;
-                  point.object.visibility = !this.#coordinates.get(hash);
-                  this.#coordinates.set(hash, true);
-                  if (finished === started) {
-                    observer.next();
-                    observer.complete();
-                  }
-                })
-            );
+            new Tween<THREE.Vector3>(start, this.tweens)
+              .to(end, animationStep)
+              .onUpdate((position) => {
+                point.object.position.copy(position);
+                const newCoords =
+                  this.theeboxService.threebox.utils.unprojectFromWorld(
+                    position
+                  );
+                point.object.coordinates = newCoords;
+                point.object.updateMatrixWorld();
+              })
+              .start()
+              .onComplete(() => {
+                finished++;
+                point.object.model.material.uniforms.color.value = newColor;
+                point.object.visibility = !this.#coordinates.get(hash);
+                this.#coordinates.set(hash, true);
+                if (finished === started) {
+                  observer.next();
+                  observer.complete();
+                }
+              });
           } else {
             point.object.model.material.uniforms.color.value = newColor;
           }
@@ -136,9 +134,10 @@ export class PointService {
   }
 
   public reset(): void {
-    this.#tweens.forEach((tween) => tween.stop());
-    this.#tweens.length = 0;
-    this.#points.forEach((point) => this.#threebox.remove(point.object));
+    this.tweens.removeAll();
+    this.#points.forEach((point) =>
+      this.theeboxService.threebox.remove(point.object)
+    );
     this.#points.clear();
     this.#coordinates.clear();
   }
