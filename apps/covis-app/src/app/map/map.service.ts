@@ -20,7 +20,7 @@ export class MapService {
 
   constructor(
     private readonly threeboxService: ThreeboxService,
-    private readonly pointService: PointService
+    private readonly pointsService: PointService
   ) {}
 
   /**
@@ -89,6 +89,6 @@ export class MapService {
   private animationLoop(): void {
     requestAnimationFrame(() => this.animationLoop());
     this.#stats.update();
-    this.pointService.tweens.update();
+    this.pointsService.update();
   }
 }
