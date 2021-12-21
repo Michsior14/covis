@@ -4,15 +4,15 @@ import { Group, Tween } from '@tweenjs/tween.js';
 import { Position } from 'geojson';
 import { Observable } from 'rxjs';
 import { THREE } from 'threebox-plugin';
+import { PausableTimer } from '../../shared/timer';
 import { ThreeboxService } from '../threebox.service';
+import { VisualizationRepository } from '../visualization/visualization.repository';
 import { MaterialHelper } from './material';
 import { Point } from './point';
 
 const sharedGeometry = new THREE.BufferGeometry().setFromPoints([
   new THREE.Vector3(),
 ]);
-
-const animationStep = 5000;
 
 @Injectable({
   providedIn: 'root',
@@ -21,12 +21,19 @@ export class PointService {
   #tweens = new Group();
   #points = new Map<number, Point>();
 
+  #paused: Tween<THREE.Vector3>[] = [];
+  #timer?: PausableTimer;
+
   // #coordinates = new Map<string, boolean>();
 
-  constructor(private readonly theeboxService: ThreeboxService) {}
+  constructor(
+    private readonly theeboxService: ThreeboxService,
+    private readonly visaulizationRepository: VisualizationRepository
+  ) {}
 
   public animate(locations: Location[]): Observable<void> {
     // this.#coordinates.clear();
+    this.#timer = undefined;
 
     return new Observable((observer) => {
       let started = 0;
@@ -78,7 +85,7 @@ export class PointService {
               ]);
 
             new Tween<THREE.Vector3>(start, this.#tweens)
-              .to(end, animationStep)
+              .to(end, this.visaulizationRepository.speed)
               .onUpdate((position) => {
                 point.object.position.copy(position);
                 const newCoords =
@@ -105,10 +112,10 @@ export class PointService {
       }
 
       if (started === 0) {
-        setTimeout(() => {
+        this.#timer = new PausableTimer(() => {
           observer.next();
           observer.complete();
-        }, animationStep);
+        }, this.visaulizationRepository.speed);
       }
     });
   }
@@ -119,7 +126,28 @@ export class PointService {
       this.theeboxService.threebox.remove(point.object)
     );
     this.#points.clear();
+    this.#paused.length = 0;
+    this.#timer = undefined;
     // this.#coordinates.clear();
+  }
+
+  public pause(): void {
+    if (this.#timer) {
+      return this.#timer.pause();
+    }
+
+    const toPause = this.#tweens.getAll().slice();
+    toPause.forEach((point) => point.pause());
+    this.#paused = toPause as Tween<THREE.Vector3>[];
+  }
+
+  public resume(): void {
+    if (this.#timer) {
+      return this.#timer.resume();
+    }
+
+    this.#paused.forEach((point) => point.resume());
+    this.#paused.length = 0;
   }
 
   public update(): void {

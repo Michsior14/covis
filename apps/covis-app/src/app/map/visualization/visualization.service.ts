@@ -5,6 +5,8 @@ import {
   map,
   mapTo,
   Observable,
+  pairwise,
+  startWith,
   Subject,
   switchMap,
   takeUntil,
@@ -34,12 +36,17 @@ export class VisualizationService implements OnDestroy {
   ) {}
 
   public initialize(): Observable<unknown> {
-    return this.visualizationRepository.state.pipe(
-      tap((state) => {
+    return this.visualizationRepository.stateChange.pipe(
+      startWith(VisualizationState.stopped),
+      pairwise(),
+      tap(([prev, state]) => {
         switch (state) {
           case VisualizationState.running:
-            return this.start();
+            return prev === VisualizationState.paused
+              ? this.resume()
+              : this.start();
           case VisualizationState.paused:
+            return this.pause();
           case VisualizationState.finished:
             return this.reset();
           case VisualizationState.stopped:
@@ -80,6 +87,14 @@ export class VisualizationService implements OnDestroy {
 
   private reset(): void {
     this.#reset.next();
+  }
+
+  private pause(): void {
+    this.pointService.pause();
+  }
+
+  private resume(): void {
+    this.pointService.resume();
   }
 
   private resetAndRemovePoints(): void {

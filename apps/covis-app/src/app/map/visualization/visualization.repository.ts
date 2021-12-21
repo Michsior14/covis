@@ -16,11 +16,15 @@ export enum VisualizationState {
 export interface VisualizationProps {
   state: VisualizationState;
   currentTime: number;
+  animationSpeed: number;
+  fps: boolean;
 }
 
 const initialProps = Object.freeze<VisualizationProps>({
   state: VisualizationState.stopped,
   currentTime: startHour,
+  animationSpeed: 5000,
+  fps: false,
 });
 
 const store = new Store({
@@ -38,12 +42,30 @@ persistState(store, {
 
 @Injectable({ providedIn: 'root' })
 export class VisualizationRepository {
-  public state = store.pipe(select((state) => state.state));
+  public stateChange = store.pipe(select((state) => state.state));
 
-  public currentTime = store.pipe(select((state) => state.currentTime));
+  public currentTimeChange = store.pipe(select((state) => state.currentTime));
+
+  public fpsChange = store.pipe(select((state) => state.fps));
 
   public get hour(): number {
     return store.query((state) => state.currentTime);
+  }
+
+  public get speed(): number {
+    return store.query((state) => state.animationSpeed);
+  }
+
+  public set speed(value: number) {
+    store.update(produce((state) => (state.animationSpeed = value)));
+  }
+
+  public get fps(): boolean {
+    return store.query((state) => state.fps);
+  }
+
+  public set fps(value: boolean) {
+    store.update(produce((state) => (state.fps = value)));
   }
 
   public toggle(): void {

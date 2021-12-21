@@ -28,6 +28,7 @@ export class MapService {
    * @param container The container element to render the map in
    */
   public initialize(container: HTMLElement): void {
+    this.#stats.dom.id = 'covis-stats';
     this.#map = new Map({
       container,
       style: {

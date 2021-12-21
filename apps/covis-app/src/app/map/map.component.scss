@@ -1,6 +1,10 @@
 .map-wrapper {
   width: 100vw;
   height: 100vh;
+
+  ::ng-deep &.hide-stats #covis-stats {
+    display: none;
+  }
 }
 
 .map-target {

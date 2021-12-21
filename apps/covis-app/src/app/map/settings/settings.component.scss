@@ -1,0 +1,17 @@
+.settings {
+  &-row {
+    margin: 20px 0;
+
+    &:first-of-type {
+      margin: 10px 0;
+    }
+  }
+
+  &-speed-label-wrapper {
+    margin: 0 5px 15px 5px;
+  }
+
+  &-speed-slider {
+    width: 300px;
+  }
+}

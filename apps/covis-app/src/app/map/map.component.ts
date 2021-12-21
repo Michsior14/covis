@@ -23,6 +23,8 @@ export class MapComponent implements OnInit, OnDestroy {
   @ViewChild('container', { static: true })
   public container!: ElementRef<HTMLDivElement>;
 
+  public readonly fps = this.visualizationRepository.fpsChange;
+
   #destroyer = new Subject<void>();
 
   constructor(

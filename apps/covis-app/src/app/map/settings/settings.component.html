@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>Settings</h2>
+<mat-dialog-content class="settings mat-typography">
+  <div class="settings-row">
+    <mat-slide-toggle [formControl]="controls.fps">Show FPS</mat-slide-toggle>
+  </div>
+  <div class="settings-row">
+    <div class="settings-speed-label-wrapper">
+      <label id="speed-label" class="speed-label">Animation Speed</label>
+    </div>
+    <mat-slider
+      class="settings-speed-slider"
+      [min]="5"
+      [max]="30"
+      [step]="1"
+      [displayWith]="formatLabel"
+      [thumbLabel]="true"
+      [formControl]="controls.speed"
+      aria-labelledby="speed-label"
+    ></mat-slider>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial (click)="save()">
+    Save
+  </button>
+</mat-dialog-actions>

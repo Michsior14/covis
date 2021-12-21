@@ -1,5 +1,5 @@
 <div class="map">
-  <div class="map-wrapper">
+  <div class="map-wrapper" [class.hide-stats]="(fps | async) === false">
     <div class="map-target" #container></div>
     <canvas class="map-three-layer" #threeLayer></canvas>
   </div>

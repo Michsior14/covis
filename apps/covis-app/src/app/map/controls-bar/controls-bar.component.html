@@ -16,6 +16,9 @@
       <div class="covis-controls-left"></div>
       <div class="covis-controls-center">
         <div class="covis-controls-buttons">
+          <button mat-mini-fab color="primary" (click)="openSettings()">
+            <mat-icon>settings</mat-icon>
+          </button>
           <button mat-fab color="primary" (click)="toggleVisualization()">
             <mat-icon>{{
               context.visualization === VisualizationState.running

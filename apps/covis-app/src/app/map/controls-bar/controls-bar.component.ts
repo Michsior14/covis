@@ -1,15 +1,17 @@
 import {
-  trigger,
+  animate,
   state,
   style,
   transition,
-  animate,
+  trigger,
 } from '@angular/animations';
 import {
   ChangeDetectionStrategy,
   Component,
   ViewEncapsulation,
 } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { SettingsComponent } from '../settings/settings.component';
 import {
   VisualizationRepository,
   VisualizationState,
@@ -32,14 +34,15 @@ import { ControlsBarRepository } from './controls-bar.repository';
 })
 export class ControlsBarComponent {
   public readonly isOpen = this.controlsBarRepository.isOpen;
-  public readonly visualization = this.visualizationRepository.state;
-  public readonly currentTime = this.visualizationRepository.currentTime;
+  public readonly visualization = this.visualizationRepository.stateChange;
+  public readonly currentTime = this.visualizationRepository.currentTimeChange;
 
   public readonly VisualizationState = VisualizationState;
 
   constructor(
     private readonly controlsBarRepository: ControlsBarRepository,
-    private readonly visualizationRepository: VisualizationRepository
+    private readonly visualizationRepository: VisualizationRepository,
+    private readonly dialog: MatDialog
   ) {}
 
   public toggleBar(): void {
@@ -52,5 +55,10 @@ export class ControlsBarComponent {
 
   public stop(): void {
     this.visualizationRepository.stop();
+  }
+
+  public openSettings(): void {
+    this.visualizationRepository.pause();
+    this.dialog.open(SettingsComponent);
   }
 }
