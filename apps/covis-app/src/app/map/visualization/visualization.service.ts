@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { Location } from '@covis/shared';
 import {
   concatMap,
@@ -11,45 +11,50 @@ import {
   tap,
   toArray,
 } from 'rxjs';
-import { LocationService } from './location/location.service';
-import { MapService } from './map.service';
-import { PointService } from './point/point.service';
+import { LocationService } from '../location/location.service';
+import { MapService } from '../map.service';
+import { PointService } from '../point/point.service';
+import {
+  VisualizationRepository,
+  VisualizationState,
+} from './visualization.repository';
 
 @Injectable({
   providedIn: 'root',
 })
-export class VisualizationService {
-  public get isRunning(): boolean {
-    return this.#isRunning;
-  }
-
-  public get currentHour(): number {
-    return this.#currentHour;
-  }
-
-  #currentHour = 0;
-  #isRunning = false;
+export class VisualizationService implements OnDestroy {
   #reset = new Subject<void>();
   #animationQueue = new Subject<Location[]>();
 
   constructor(
     private readonly pointService: PointService,
     private readonly locationService: LocationService,
-    private readonly mapService: MapService
+    private readonly mapService: MapService,
+    private readonly visualizationRepository: VisualizationRepository
   ) {}
 
-  public resetTo(hour: number): void {
-    this.#currentHour = hour;
-    this.stop();
+  public initialize(): Observable<unknown> {
+    return this.visualizationRepository.state.pipe(
+      tap((state) => {
+        switch (state) {
+          case VisualizationState.running:
+            return this.start();
+          case VisualizationState.paused:
+          case VisualizationState.finished:
+            return this.reset();
+          case VisualizationState.stopped:
+            return this.resetAndRemovePoints();
+        }
+      })
+    );
   }
 
-  public start(): void {
-    if (this.#isRunning) {
-      return;
-    }
+  public ngOnDestroy(): void {
+    this.#reset.next();
+    this.#reset.complete();
+  }
 
-    this.#isRunning = true;
-
+  private start(): void {
     // Preload the first two hours
     this.loadNext()
       .pipe(switchMap(() => this.loadNext()))
@@ -70,11 +75,15 @@ export class VisualizationService {
         }),
         takeUntil(this.#reset)
       )
-      .subscribe({ complete: () => (this.#isRunning = false) });
+      .subscribe();
   }
 
-  public stop(): void {
+  private reset(): void {
     this.#reset.next();
+  }
+
+  private resetAndRemovePoints(): void {
+    this.reset();
     this.pointService.reset();
   }
 
@@ -83,7 +92,7 @@ export class VisualizationService {
       tap((locations) => {
         this.#animationQueue.next(locations);
         if (locations.length === 0) {
-          this.#isRunning = false;
+          this.visualizationRepository.finish();
         }
       }),
       takeUntil(this.#reset)
@@ -93,8 +102,8 @@ export class VisualizationService {
   private loadHour(): Observable<Location[]> {
     const bounds = this.mapService.map.getBounds();
     const zoom = this.mapService.map.getZoom();
-    const hour = this.#currentHour;
-    this.#currentHour++;
+    const hour = this.visualizationRepository.hour;
+    this.visualizationRepository.nextHour();
 
     return this.locationService
       .getAllForArea({

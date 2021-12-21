@@ -1,0 +1,43 @@
+:host {
+  display: block;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.covis-controls {
+  &-bar {
+    width: 100vw;
+
+    &-toggle {
+      padding: 5px;
+    }
+
+    &-body {
+      background-color: rgba(0, 0, 0, 0.2);
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      grid-column-gap: 10px;
+      justify-items: center;
+      align-items: center;
+      padding: 5px 10px;
+    }
+  }
+
+  &-left {
+    justify-self: start;
+  }
+  &-center {
+    justify-self: center;
+  }
+  &-right {
+    justify-self: end;
+  }
+
+  &-buttons {
+    button {
+      margin: 10px 5px;
+    }
+  }
+}

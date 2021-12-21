@@ -1,0 +1,38 @@
+<div
+  class="covis-controls-bar"
+  *ngIf="{
+    isOpen: isOpen | async,
+    visualization: visualization | async,
+    time: currentTime | async
+  } as context"
+>
+  <div class="covis-controls-bar-toggle">
+    <button mat-icon-button (click)="toggleBar()">
+      <mat-icon>{{ context.isOpen ? 'expand_more' : 'expand_less' }}</mat-icon>
+    </button>
+  </div>
+  <div class="covis-controls-bar-body-wrapper" [@opened]="context.isOpen">
+    <div class="covis-controls-bar-body">
+      <div class="covis-controls-left"></div>
+      <div class="covis-controls-center">
+        <div class="covis-controls-buttons">
+          <button mat-fab color="primary" (click)="toggleVisualization()">
+            <mat-icon>{{
+              context.visualization === VisualizationState.running
+                ? 'pause'
+                : context.visualization === VisualizationState.finished
+                ? 'replay'
+                : 'play_arrow'
+            }}</mat-icon>
+          </button>
+          <button mat-mini-fab color="primary" (click)="stop()">
+            <mat-icon>stop</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="covis-controls-right">
+        <div class="covis-controls-time">Time: {{ context.time }}h</div>
+      </div>
+    </div>
+  </div>
+</div>

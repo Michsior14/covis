@@ -7,10 +7,10 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { MapService } from './map.service';
-import { VisualizationService } from './visualization.service';
-
-const startHour = 1878;
+import { VisualizationRepository } from './visualization/visualization.repository';
+import { VisualizationService } from './visualization/visualization.service';
 
 @Component({
   selector: 'covis-map',
@@ -23,36 +23,26 @@ export class MapComponent implements OnInit, OnDestroy {
   @ViewChild('container', { static: true })
   public container!: ElementRef<HTMLDivElement>;
 
+  #destroyer = new Subject<void>();
+
   constructor(
+    private readonly visualizationRepository: VisualizationRepository,
     private readonly visualizationService: VisualizationService,
     private readonly mapService: MapService
   ) {}
 
   public ngOnInit(): void {
     this.mapService.initialize(this.container.nativeElement);
-    this.mapService.map.on('zoomend', () => {
-      if (this.visualizationService.isRunning) {
-        this.visualizationService.stop();
-        this.visualizationService.start();
-      }
-    });
+    this.mapService.map.on('zoomend', () =>
+      this.visualizationRepository.zoomChanged()
+    );
+    this.visualizationService
+      .initialize()
+      .pipe(takeUntil(this.#destroyer))
+      .subscribe();
   }
 
   public ngOnDestroy(): void {
     this.mapService.dispose();
-    this.visualizationService.stop();
-  }
-
-  public resetTime(): void {
-    this.visualizationService.resetTo(startHour);
-  }
-
-  public startVisalization(): void {
-    this.visualizationService.start();
-  }
-
-  public loadPoints(): void {
-    this.resetTime();
-    this.startVisalization();
   }
 }

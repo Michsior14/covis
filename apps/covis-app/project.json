@@ -19,8 +19,9 @@
           "apps/covis-app/src/assets"
         ],
         "styles": [
-          "apps/covis-app/src/styles.scss",
-          "node_modules/maplibre-gl/dist/maplibre-gl.css"
+          "node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+          "node_modules/maplibre-gl/dist/maplibre-gl.css",
+          "apps/covis-app/src/styles.scss"
         ],
         "scripts": []
       },
