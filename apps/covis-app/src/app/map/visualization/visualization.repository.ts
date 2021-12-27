@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { DetailLevel } from '@covis/shared';
 import { createState, select, Store, withProps } from '@ngneat/elf';
 import { localStorageStrategy, persistState } from '@ngneat/elf-persist-state';
 import { map } from 'rxjs/operators';
@@ -20,6 +21,7 @@ export interface VisualizationProps {
   animationSpeed: number;
   loading: boolean;
   fps: boolean;
+  details: DetailLevel;
 }
 
 const initialProps = Object.freeze<VisualizationProps>({
@@ -29,6 +31,7 @@ const initialProps = Object.freeze<VisualizationProps>({
   animationSpeed: 5000,
   loading: false,
   fps: false,
+  details: DetailLevel.medium,
 });
 
 const store = new Store({
@@ -82,6 +85,14 @@ export class VisualizationRepository {
     store.update(produce((state) => (state.loading = value)));
   }
 
+  public get details(): DetailLevel {
+    return store.query((state) => state.details);
+  }
+
+  public set details(value: DetailLevel) {
+    store.update(produce((state) => (state.details = value)));
+  }
+
   public toggle(): void {
     store.update(
       produce((state) => {
@@ -126,6 +137,15 @@ export class VisualizationRepository {
     );
   }
 
+  public stopSameHour(): void {
+    store.update(
+      produce((state) => {
+        state.state = VisualizationState.stopped;
+        state.loading = false;
+      })
+    );
+  }
+
   public nextHour(): void {
     store.update(produce((state) => state.currentTime++));
   }
@@ -136,7 +156,7 @@ export class VisualizationRepository {
 
   public zoomChanged(): void {
     if (store.getValue().state === VisualizationState.running) {
-      this.stop();
+      this.stopSameHour();
       this.start();
     }
   }

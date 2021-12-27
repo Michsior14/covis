@@ -42,9 +42,15 @@ export class VisualizationService implements OnDestroy {
       tap(([prev, state]) => {
         switch (state) {
           case VisualizationState.running:
-            return prev === VisualizationState.paused
-              ? this.resume()
-              : this.start();
+            switch (prev) {
+              case VisualizationState.paused:
+                return this.resume();
+              case VisualizationState.finished:
+                this.resetAndRemovePoints();
+                return this.start();
+              default:
+                return this.start();
+            }
           case VisualizationState.paused:
             return this.pause();
           case VisualizationState.finished:
@@ -121,6 +127,7 @@ export class VisualizationService implements OnDestroy {
     const bounds = this.mapService.map.getBounds();
     const zoom = this.mapService.map.getZoom();
     const hour = this.visualizationRepository.preloadHour;
+    const details = this.visualizationRepository.details;
     this.visualizationRepository.preloadNextHour();
 
     return this.locationService
@@ -129,6 +136,7 @@ export class VisualizationService implements OnDestroy {
         zoom,
         sw: bounds.getSouthWest(),
         ne: bounds.getNorthEast(),
+        details,
       })
       .pipe(
         toArray(),

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Location } from '@covis/shared';
+import { DetailLevel, Location } from '@covis/shared';
 import { LngLat } from 'maplibre-gl';
 import { EMPTY, expand } from 'rxjs';
 
@@ -9,6 +9,7 @@ interface Area {
   zoom: number;
   sw: LngLat;
   ne: LngLat;
+  details?: DetailLevel;
 }
 
 const batchSize = 10_000;
@@ -19,7 +20,7 @@ const batchSize = 10_000;
 export class LocationService {
   constructor(private readonly httpClient: HttpClient) {}
 
-  public getAllForArea({ sw, ne, hour, zoom }: Area) {
+  public getAllForArea({ sw, ne, hour, zoom, details }: Area) {
     const getRequest = (page = 0) =>
       this.httpClient.get<Location[]>(
         `/api/location/${sw.lng}/${sw.lat}/${ne.lng}/${ne.lat}/${zoom}/${hour}`,
@@ -27,6 +28,7 @@ export class LocationService {
           params: {
             from: page * batchSize,
             take: batchSize,
+            details: details as number,
           },
         }
       );

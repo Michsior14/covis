@@ -12,10 +12,11 @@
 
     &-toggle {
       padding: 5px;
+      position: absolute;
+      bottom: 5px;
     }
 
     &-body {
-      background-color: rgba(0, 0, 0, 0.2);
       display: grid;
       grid-template-columns: repeat(3, auto);
       grid-column-gap: 10px;

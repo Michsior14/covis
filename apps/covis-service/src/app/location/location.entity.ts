@@ -1,4 +1,4 @@
-import type { Location } from '@covis/shared';
+import type { Location, DetailLevel } from '@covis/shared';
 import { DiseasePhase } from '@covis/shared';
 import type { Point } from 'geojson';
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
@@ -33,6 +33,10 @@ export class Page {
    * The number of items to return
    */
   take?: number = 100;
+  /**
+   * The details level
+   */
+  details?: DetailLevel;
 }
 
 export class AreaRequest {
