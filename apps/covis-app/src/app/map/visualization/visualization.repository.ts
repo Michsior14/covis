@@ -16,14 +16,18 @@ export enum VisualizationState {
 export interface VisualizationProps {
   state: VisualizationState;
   currentTime: number;
+  preloadTime: number;
   animationSpeed: number;
+  loading: boolean;
   fps: boolean;
 }
 
 const initialProps = Object.freeze<VisualizationProps>({
   state: VisualizationState.stopped,
   currentTime: startHour,
+  preloadTime: startHour,
   animationSpeed: 5000,
+  loading: false,
   fps: false,
 });
 
@@ -48,8 +52,14 @@ export class VisualizationRepository {
 
   public fpsChange = store.pipe(select((state) => state.fps));
 
+  public loadingChange = store.pipe(select((state) => state.loading));
+
   public get hour(): number {
     return store.query((state) => state.currentTime);
+  }
+
+  public get preloadHour(): number {
+    return store.query((state) => state.preloadTime);
   }
 
   public get speed(): number {
@@ -68,12 +78,17 @@ export class VisualizationRepository {
     store.update(produce((state) => (state.fps = value)));
   }
 
+  public set loading(value: boolean) {
+    store.update(produce((state) => (state.loading = value)));
+  }
+
   public toggle(): void {
     store.update(
       produce((state) => {
         if (state.state === VisualizationState.finished) {
           state.state = VisualizationState.running;
           state.currentTime = startHour;
+          state.preloadTime = startHour;
         } else {
           state.state =
             state.state === VisualizationState.running
@@ -105,12 +120,18 @@ export class VisualizationRepository {
       produce((state) => {
         state.state = VisualizationState.stopped;
         state.currentTime = startHour;
+        state.preloadTime = startHour;
+        state.loading = false;
       })
     );
   }
 
   public nextHour(): void {
     store.update(produce((state) => state.currentTime++));
+  }
+
+  public preloadNextHour(): void {
+    store.update(produce((state) => state.preloadTime++));
   }
 
   public zoomChanged(): void {

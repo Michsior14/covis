@@ -7,7 +7,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { connectable, Subject, takeUntil } from 'rxjs';
 import { MapService } from './map.service';
 import { VisualizationRepository } from './visualization/visualization.repository';
 import { VisualizationService } from './visualization/visualization.service';
@@ -24,6 +24,9 @@ export class MapComponent implements OnInit, OnDestroy {
   public container!: ElementRef<HTMLDivElement>;
 
   public readonly fps = this.visualizationRepository.fpsChange;
+  public readonly loading = connectable(
+    this.visualizationRepository.loadingChange
+  );
 
   #destroyer = new Subject<void>();
 
@@ -34,10 +37,12 @@ export class MapComponent implements OnInit, OnDestroy {
   ) {}
 
   public ngOnInit(): void {
+    this.loading.connect();
     this.mapService.initialize(this.container.nativeElement);
     this.mapService.map.on('zoomend', () =>
       this.visualizationRepository.zoomChanged()
     );
+
     this.visualizationService
       .initialize()
       .pipe(takeUntil(this.#destroyer))

@@ -63,19 +63,22 @@ export class VisualizationService implements OnDestroy {
 
   private start(): void {
     // Preload the first two hours
+    this.visualizationRepository.loading = true;
     this.loadNext()
       .pipe(switchMap(() => this.loadNext()))
       .subscribe();
 
     this.#animationQueue
       .pipe(
-        concatMap((locations) =>
-          this.pointService.animate(locations).pipe(mapTo(locations))
-        ),
+        concatMap((locations) => {
+          this.visualizationRepository.loading = false;
+          return this.pointService.animate(locations).pipe(mapTo(locations));
+        }),
         tap((locations) => {
           if (!locations.length) {
             this.#reset.next();
           } else {
+            this.visualizationRepository.nextHour();
             // Load the next hour after each animation batch
             this.loadNext().subscribe();
           }
@@ -117,8 +120,8 @@ export class VisualizationService implements OnDestroy {
   private loadHour(): Observable<Location[]> {
     const bounds = this.mapService.map.getBounds();
     const zoom = this.mapService.map.getZoom();
-    const hour = this.visualizationRepository.hour;
-    this.visualizationRepository.nextHour();
+    const hour = this.visualizationRepository.preloadHour;
+    this.visualizationRepository.preloadNextHour();
 
     return this.locationService
       .getAllForArea({
