@@ -1,4 +1,4 @@
-import type { Location, DetailLevel } from '@covis/shared';
+import type { DetailLevel, Location, MinMaxRange } from '@covis/shared';
 import { DiseasePhase } from '@covis/shared';
 import type { Point } from 'geojson';
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
@@ -46,4 +46,9 @@ export class AreaRequest {
   latn!: number;
   hour!: number;
   zoom!: number;
+}
+
+export class HourRangeResponse implements MinMaxRange {
+  min!: number;
+  max!: number;
 }

@@ -23,9 +23,9 @@ const bootstrap = async () => {
    */
   app.enableShutdownHooks([ShutdownSignal.SIGINT]);
 
-  await app.listen(port, async () => {
-    Logger.log(`Listening at http://localhost:${port}/${globalPrefix}`);
-  });
+  await app.listen(port, () =>
+    Logger.log(`Listening at http://localhost:${port}/${globalPrefix}`)
+  );
 };
 
 void bootstrap();

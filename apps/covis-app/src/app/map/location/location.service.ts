@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { DetailLevel, Location } from '@covis/shared';
+import { DetailLevel, Location, MinMaxRange } from '@covis/shared';
 import { LngLat } from 'maplibre-gl';
 import { EMPTY, expand } from 'rxjs';
 
@@ -37,5 +37,9 @@ export class LocationService {
     return getRequest().pipe(
       expand((response) => (response.length > 0 ? getRequest(page++) : EMPTY))
     );
+  }
+
+  public getHourRange() {
+    return this.httpClient.get<MinMaxRange>(`/api/location/hour-range`);
   }
 }

@@ -1,4 +1,4 @@
-import { DetailLevel } from '@covis/shared';
+import { DetailLevel, MinMaxRange } from '@covis/shared';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, Raw, Repository } from 'typeorm';
@@ -77,5 +77,13 @@ export class LocationService {
       take: take ?? 1000,
       cache: true,
     });
+  }
+
+  public getHourRange(): Promise<MinMaxRange> {
+    return this.repository
+      .createQueryBuilder('location')
+      .select('MIN(location.hour)', 'min')
+      .addSelect('MAX(location.hour)', 'max')
+      .getRawOne() as Promise<MinMaxRange>;
   }
 }

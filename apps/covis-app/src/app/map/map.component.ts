@@ -21,9 +21,10 @@ import { VisualizationService } from './visualization/visualization.service';
 })
 export class MapComponent implements OnInit, OnDestroy {
   @ViewChild('container', { static: true })
-  public container!: ElementRef<HTMLDivElement>;
+  public readonly container!: ElementRef<HTMLDivElement>;
 
   public readonly fps = this.visualizationRepository.fpsChange;
+
   public readonly loading = connectable(
     this.visualizationRepository.loadingChange
   );

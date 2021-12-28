@@ -5,8 +5,6 @@ import { localStorageStrategy, persistState } from '@ngneat/elf-persist-state';
 import { map } from 'rxjs/operators';
 import { produce } from '../../shared/produce';
 
-const startHour = 1878;
-
 export enum VisualizationState {
   running = 'running',
   paused = 'paused',
@@ -18,6 +16,8 @@ export interface VisualizationProps {
   state: VisualizationState;
   currentTime: number;
   preloadTime: number;
+  minTime: number;
+  maxTime: number;
   animationSpeed: number;
   loading: boolean;
   fps: boolean;
@@ -26,8 +26,10 @@ export interface VisualizationProps {
 
 const initialProps = Object.freeze<VisualizationProps>({
   state: VisualizationState.stopped,
-  currentTime: startHour,
-  preloadTime: startHour,
+  currentTime: 0,
+  preloadTime: 0,
+  minTime: 0,
+  maxTime: 0,
   animationSpeed: 5000,
   loading: false,
   fps: false,
@@ -65,6 +67,10 @@ export class VisualizationRepository {
     return store.query((state) => state.preloadTime);
   }
 
+  public get maxTime(): number {
+    return store.query((state) => state.maxTime);
+  }
+
   public get speed(): number {
     return store.query((state) => state.animationSpeed);
   }
@@ -98,8 +104,8 @@ export class VisualizationRepository {
       produce((state) => {
         if (state.state === VisualizationState.finished) {
           state.state = VisualizationState.running;
-          state.currentTime = startHour;
-          state.preloadTime = startHour;
+          state.currentTime = state.minTime;
+          state.preloadTime = state.minTime;
         } else {
           state.state =
             state.state === VisualizationState.running
@@ -130,8 +136,8 @@ export class VisualizationRepository {
     store.update(
       produce((state) => {
         state.state = VisualizationState.stopped;
-        state.currentTime = startHour;
-        state.preloadTime = startHour;
+        state.currentTime = state.minTime;
+        state.preloadTime = state.minTime;
         state.loading = false;
       })
     );
@@ -159,5 +165,19 @@ export class VisualizationRepository {
       this.stopSameHour();
       this.start();
     }
+  }
+
+  public setMinMaxTime(minTime: number, maxTime: number): void {
+    store.update(
+      produce((state) => {
+        state.minTime = minTime;
+        state.maxTime = maxTime;
+
+        if (state.currentTime < minTime || state.currentTime > maxTime) {
+          state.currentTime = minTime;
+          state.preloadTime = minTime;
+        }
+      })
+    );
   }
 }

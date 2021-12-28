@@ -21,12 +21,17 @@ import {
   VisualizationState,
 } from './visualization.repository';
 
+interface QueueItem {
+  hour: number;
+  locations: Location[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class VisualizationService implements OnDestroy {
   #reset = new Subject<void>();
-  #animationQueue = new Subject<Location[]>();
+  #animationQueue = new Subject<QueueItem>();
 
   constructor(
     private readonly pointService: PointService,
@@ -76,12 +81,12 @@ export class VisualizationService implements OnDestroy {
 
     this.#animationQueue
       .pipe(
-        concatMap((locations) => {
+        concatMap((item) => {
           this.visualizationRepository.loading = false;
-          return this.pointService.animate(locations).pipe(mapTo(locations));
+          return this.pointService.animate(item.locations).pipe(mapTo(item));
         }),
-        tap((locations) => {
-          if (!locations.length) {
+        tap((item) => {
+          if (item.hour > this.visualizationRepository.maxTime) {
             this.#reset.next();
           } else {
             this.visualizationRepository.nextHour();
@@ -113,9 +118,9 @@ export class VisualizationService implements OnDestroy {
 
   private loadNext(): Observable<unknown> {
     return this.loadHour().pipe(
-      tap((locations) => {
-        this.#animationQueue.next(locations);
-        if (locations.length === 0) {
+      tap((item) => {
+        this.#animationQueue.next(item);
+        if (item.hour > this.visualizationRepository.maxTime) {
           this.visualizationRepository.finish();
         }
       }),
@@ -123,7 +128,7 @@ export class VisualizationService implements OnDestroy {
     );
   }
 
-  private loadHour(): Observable<Location[]> {
+  private loadHour(): Observable<QueueItem> {
     const bounds = this.mapService.map.getBounds();
     const zoom = this.mapService.map.getZoom();
     const hour = this.visualizationRepository.preloadHour;
@@ -140,7 +145,7 @@ export class VisualizationService implements OnDestroy {
       })
       .pipe(
         toArray(),
-        map((locations) => locations.flat())
+        map((locations) => ({ hour, locations: locations.flat() }))
       );
   }
 }
