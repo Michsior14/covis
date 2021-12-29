@@ -1,0 +1,24 @@
+<div
+  class="covis-legend"
+  [class.covis-legend--open]="context.isOpen"
+  *ngIf="{
+    isOpen: isOpen | async
+  } as context"
+>
+  <div class="covis-legend-toggle" (click)="toggle()">
+    <span class="covis-legend-toggle-label">Legend</span>
+    <button mat-icon-button class="covis-legend-toggle-icon">
+      <mat-icon>{{ context.isOpen ? 'expand_less' : 'expand_more' }}</mat-icon>
+    </button>
+  </div>
+  <div class="covis-legend-row-wrapper" [@opened]="context.isOpen">
+    <div class="covis-legend-row" *ngFor="let row of legend">
+      <mat-icon
+        class="covis-legend-row-icon"
+        [style.color]="'#' + row.color.toString(16)"
+        >circle</mat-icon
+      >
+      <span class="covis-legend-row-title">{{ row.name }}</span>
+    </div>
+  </div>
+</div>

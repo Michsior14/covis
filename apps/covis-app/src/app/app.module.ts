@@ -16,6 +16,7 @@ import { ControlsBarComponent } from './map/controls-bar/controls-bar.component'
 import { LoadingComponent } from './map/loading/loading.component';
 import { MapComponent } from './map/map.component';
 import { SettingsComponent } from './map/settings/settings.component';
+import { LegendComponent } from './map/legend/legend.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,6 +24,7 @@ import { SettingsComponent } from './map/settings/settings.component';
     ControlsBarComponent,
     SettingsComponent,
     LoadingComponent,
+    LegendComponent,
   ],
   imports: [
     BrowserModule,
