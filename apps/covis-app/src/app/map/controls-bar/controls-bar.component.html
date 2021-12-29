@@ -12,6 +12,13 @@
     </button>
   </div>
   <div class="covis-controls-bar-body-wrapper" [@opened]="context.isOpen">
+    <mat-slider
+      class="covis-controls-bar-slider"
+      [min]="minTime"
+      [max]="maxTime"
+      [step]="1"
+      [formControl]="sliderControl"
+    ></mat-slider>
     <div class="covis-controls-bar-body">
       <div class="covis-controls-left"></div>
       <div class="covis-controls-center">

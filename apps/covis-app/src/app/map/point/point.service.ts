@@ -141,13 +141,19 @@ export class PointService {
     this.#paused = toPause as Tween<THREE.Vector3>[];
   }
 
-  public resume(): void {
+  public resume(): boolean {
     if (this.#timer) {
-      return this.#timer.resume();
+      this.#timer.resume();
+      return true;
+    }
+
+    if (this.#paused.length === 0) {
+      return false;
     }
 
     this.#paused.forEach((point) => point.resume());
     this.#paused.length = 0;
+    return true;
   }
 
   public update(): void {

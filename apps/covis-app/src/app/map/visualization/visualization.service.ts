@@ -76,7 +76,10 @@ export class VisualizationService implements OnDestroy {
     // Preload the first two hours
     this.visualizationRepository.loading = true;
     this.loadNext()
-      .pipe(switchMap(() => this.loadNext()))
+      .pipe(
+        switchMap(() => this.loadNext()),
+        takeUntil(this.#reset)
+      )
       .subscribe();
 
     this.#animationQueue
@@ -108,7 +111,12 @@ export class VisualizationService implements OnDestroy {
   }
 
   private resume(): void {
-    this.pointService.resume();
+    if (this.pointService.resume()) {
+      return;
+    }
+
+    this.reset();
+    this.start();
   }
 
   private resetAndRemovePoints(): void {

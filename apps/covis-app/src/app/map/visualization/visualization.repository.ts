@@ -67,6 +67,10 @@ export class VisualizationRepository {
     return store.query((state) => state.preloadTime);
   }
 
+  public get minTime(): number {
+    return store.query((state) => state.minTime);
+  }
+
   public get maxTime(): number {
     return store.query((state) => state.maxTime);
   }
@@ -165,6 +169,16 @@ export class VisualizationRepository {
       this.stopSameHour();
       this.start();
     }
+  }
+
+  public setTime(value: number) {
+    this.stopSameHour();
+    store.update(
+      produce((state) => {
+        state.currentTime = value;
+        state.preloadTime = value;
+      })
+    );
   }
 
   public setMinMaxTime(minTime: number, maxTime: number): void {
