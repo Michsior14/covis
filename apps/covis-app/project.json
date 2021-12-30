@@ -92,7 +92,7 @@
       "outputs": ["coverage/apps/covis-app"],
       "options": {
         "jestConfig": "apps/covis-app/jest.config.js",
-        "passWithNoTests": true
+        "codeCoverage": true
       }
     }
   },
