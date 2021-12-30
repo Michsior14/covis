@@ -165,8 +165,9 @@ export class VisualizationRepository {
   }
 
   public zoomChanged(): void {
-    if (store.getValue().state === VisualizationState.running) {
-      this.stopSameHour();
+    const { state, currentTime } = store.getValue();
+    if (state === VisualizationState.running) {
+      this.setTime(currentTime);
       this.start();
     }
   }
