@@ -15,6 +15,7 @@ describe('LocationService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
+      providers: [LocationService],
     });
     service = TestBed.inject(LocationService);
     httpTestingController = TestBed.inject(HttpTestingController);
