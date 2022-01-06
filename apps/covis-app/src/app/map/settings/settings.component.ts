@@ -27,6 +27,9 @@ export class SettingsComponent {
     private readonly visualizationRepository: VisualizationRepository
   ) {}
 
+  /**
+   * Save the current values of the controls to the visualization repository.
+   */
   public save(): void {
     this.visualizationRepository.speed =
       this.controls.speed.value * msPerSecond;
@@ -34,10 +37,21 @@ export class SettingsComponent {
     this.visualizationRepository.details = this.controls.details.value;
   }
 
+  /**
+   * Format a number of seconds into a string
+   *
+   * @param value The value to format.
+   * @returns The speed in seconds.
+   */
   public speedFormatLabel(value: number): string {
     return `${value}s`;
   }
 
+  /**
+   * Get the string value of detail level.
+   *
+   * @param value The detail level.
+   */
   public detailsFormatLabel(value: DetailLevel): string {
     switch (value) {
       case DetailLevel.low:

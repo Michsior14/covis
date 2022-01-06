@@ -40,6 +40,11 @@ export class VisualizationService implements OnDestroy {
     private readonly visualizationRepository: VisualizationRepository
   ) {}
 
+  /**
+   * When the visualization state changes, it will start, pause, or reset the visualization.
+   *
+   * @returns An observable that emits the previous state and the current state.
+   */
   public initialize(): Observable<unknown> {
     return this.visualizationRepository.stateChange.pipe(
       startWith(VisualizationState.stopped),
@@ -72,6 +77,11 @@ export class VisualizationService implements OnDestroy {
     this.#reset.complete();
   }
 
+  /**
+   * Start the animation.
+   *
+   * @returns The animation queue.
+   */
   private start(): void {
     // Preload the first two hours
     this.visualizationRepository.loading = true;
@@ -102,14 +112,23 @@ export class VisualizationService implements OnDestroy {
       .subscribe();
   }
 
+  /**
+   * It resets the animation state.
+   */
   private reset(): void {
     this.#reset.next();
   }
 
+  /**
+   * Pause the point animation.
+   */
   private pause(): void {
     this.pointService.pause();
   }
 
+  /**
+   * Resume the animation.
+   */
   private resume(): void {
     if (this.pointService.resume()) {
       return;
@@ -119,11 +138,17 @@ export class VisualizationService implements OnDestroy {
     this.start();
   }
 
+  /**
+   * Reset the animation and remove all points.
+   */
   private resetAndRemovePoints(): void {
     this.reset();
     this.pointService.reset();
   }
 
+  /**
+   * Load the next batch of points.
+   */
   private loadNext(): Observable<unknown> {
     return this.loadHour().pipe(
       tap((item) => {
@@ -136,6 +161,11 @@ export class VisualizationService implements OnDestroy {
     );
   }
 
+  /**
+   * Load the points for the next hour.
+   *
+   * @returns Stream of the points.
+   */
   private loadHour(): Observable<QueueItem> {
     const bounds = this.mapService.map.getBounds();
     const zoom = this.mapService.map.getZoom();

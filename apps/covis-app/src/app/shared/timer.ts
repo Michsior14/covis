@@ -6,13 +6,19 @@ export class PausableTimer {
     this.resume();
   }
 
-  public pause() {
+  /**
+   * Pause the timer
+   */
+  public pause(): void {
     window.clearTimeout(this.#id);
     this.#id = undefined;
     this.delay -= Date.now() - this.#start;
   }
 
-  public resume() {
+  /**
+   * Resume the timer
+   */
+  public resume(): void {
     if (this.#id) {
       return;
     }

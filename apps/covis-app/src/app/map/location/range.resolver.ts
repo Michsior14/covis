@@ -14,6 +14,9 @@ export class RangeResolver implements Resolve<MinMaxRange> {
     private readonly visualizationRepository: VisualizationRepository
   ) {}
 
+  /**
+   * Resolves the min and max hour range for the visualization on first page load
+   */
   public resolve(): Observable<MinMaxRange> {
     return this.locationService
       .getHourRange()

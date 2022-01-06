@@ -10,7 +10,6 @@ import {
   Component,
   ViewEncapsulation,
 } from '@angular/core';
-import { ControlsBarRepository } from '../controls-bar/controls-bar.repository';
 import { dieaseColor } from '../point/material';
 import { LegendRepository } from './legend.repository';
 
@@ -87,6 +86,9 @@ export class LegendComponent {
 
   constructor(private readonly legendRepository: LegendRepository) {}
 
+  /**
+   * Toggle the legend.
+   */
   public toggle(): void {
     this.legendRepository.toggle();
   }

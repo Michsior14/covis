@@ -25,6 +25,7 @@ export class MapService {
 
   /**
    * Initialize the map
+   *
    * @param container The container element to render the map in
    */
   public initialize(container: HTMLElement): void {

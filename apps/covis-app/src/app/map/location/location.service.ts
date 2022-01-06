@@ -20,6 +20,10 @@ const batchSize = 10_000;
 export class LocationService {
   constructor(private readonly httpClient: HttpClient) {}
 
+  /**
+   * Get the all points in the given area and hour
+   * @param area
+   */
   public getAllForArea({ sw, ne, hour, zoom, details }: Area) {
     const getRequest = (page = 0) =>
       this.httpClient.get<Location[]>(
@@ -39,6 +43,9 @@ export class LocationService {
     );
   }
 
+  /**
+   * Get the min and max hour range
+   */
   public getHourRange() {
     return this.httpClient.get<MinMaxRange>(`/api/location/hour-range`);
   }

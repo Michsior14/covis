@@ -84,18 +84,30 @@ export class ControlsBarComponent implements OnInit, OnDestroy {
     this.#destoryer.complete();
   }
 
+  /**
+   * Toggle the visibility of the controls bar.
+   */
   public toggleBar(): void {
     this.controlsBarRepository.toggle();
   }
 
+  /**
+   * Toggle the visualization.
+   */
   public toggleVisualization(): void {
     this.visualizationRepository.toggle();
   }
 
+  /**
+   * Stop the visualization.
+   */
   public stop(): void {
     this.visualizationRepository.stop();
   }
 
+  /**
+   * Open the settings dialog.
+   */
   public openSettings(): void {
     this.visualizationRepository.pause();
     this.dialog.open(SettingsComponent);

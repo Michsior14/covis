@@ -24,15 +24,19 @@ export class PointService {
   #paused: Tween<THREE.Vector3>[] = [];
   #timer?: PausableTimer;
 
-  // #coordinates = new Map<string, boolean>();
-
   constructor(
     private readonly theeboxService: ThreeboxService,
     private readonly visaulizationRepository: VisualizationRepository
   ) {}
 
+  /**
+   * For each location, create a point object if it doesn't exist, otherwise update the point object
+   * with the new location.
+   *
+   * @param locations
+   * @returns An Observable that emits when all the tweens have finished.
+   */
   public animate(locations: Location[]): Observable<void> {
-    // this.#coordinates.clear();
     this.#timer = undefined;
 
     return new Observable((observer) => {
@@ -40,11 +44,7 @@ export class PointService {
       let finished = 0;
       for (const { location, personId, diseasePhase, hour } of locations) {
         const coords = location.coordinates.reverse();
-        // const hash = coords.join(',');
         let point = this.#points.get(personId) as Point;
-
-        // point.object.visibility = !this.#coordinates.get(hash);
-        // this.#coordinates.set(hash, true);
 
         if (!point) {
           point = {
@@ -75,8 +75,6 @@ export class PointService {
 
           if (!this.equals(point.location.coordinates, coords)) {
             started++;
-            // point.object.visibility = true;
-            // this.#coordinates.set(hash, false);
 
             const [start, end] =
               this.theeboxService.threebox.utils.lnglatsToWorld([
@@ -98,8 +96,6 @@ export class PointService {
               .onComplete(() => {
                 finished++;
                 color.value = newColor;
-                // point.object.visibility = !this.#coordinates.get(hash);
-                // this.#coordinates.set(hash, true);
                 if (finished === started) {
                   observer.next();
                   observer.complete();
@@ -120,6 +116,9 @@ export class PointService {
     });
   }
 
+  /**
+   * It removes all the points from the scene and clears the list of points.
+   */
   public reset(): void {
     this.#tweens.removeAll();
     this.#points.forEach((point) =>
@@ -128,9 +127,11 @@ export class PointService {
     this.#points.clear();
     this.#paused.length = 0;
     this.#timer = undefined;
-    // this.#coordinates.clear();
   }
 
+  /**
+   * Pause all tweens.
+   */
   public pause(): void {
     if (this.#timer) {
       return this.#timer.pause();
@@ -141,6 +142,11 @@ export class PointService {
     this.#paused = toPause as Tween<THREE.Vector3>[];
   }
 
+  /**
+   * If the timer is running, resume it. If the timer is not running, resume all paused points.
+   *
+   * @returns The boolean value of whether or not the timer was resumed.
+   */
   public resume(): boolean {
     if (this.#timer) {
       this.#timer.resume();
@@ -156,10 +162,19 @@ export class PointService {
     return true;
   }
 
+  /**
+   * Update the tweens.
+   */
   public update(): void {
     this.#tweens.update();
   }
 
+  /**
+   * Check the equality of two coordinates
+   *
+   * @param a - The first position.
+   * @param b - The second position.
+   */
   private equals(a: Position, b: Position): boolean {
     return a[0] === b[0] && a[1] === b[1];
   }

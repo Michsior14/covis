@@ -21,6 +21,9 @@ persistState(store, { storage: localStorageStrategy });
 export class ControlsBarRepository {
   public isOpen = store.pipe(select((state) => state.open));
 
+  /**
+   * Update the state of the store to toggle the open property.
+   */
   public toggle(): void {
     store.update(produce((state) => (state.open = !state.open)));
   }
