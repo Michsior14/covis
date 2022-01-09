@@ -1,6 +1,9 @@
 import { DiseasePhase } from '@covis/shared';
 import { THREE } from 'threebox-plugin';
 
+/**
+ * The mapping from the `DiseasePhase` enum to a color.
+ */
 export const dieaseColor: Record<DiseasePhase, number> = {
   [DiseasePhase.asymptomaticContagiousEarlyStage]: 0xffe599,
   [DiseasePhase.asymptomaticContagiousMiddleStage]: 0xffd966,

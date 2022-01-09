@@ -10,6 +10,9 @@ import { VisualizationRepository } from '../visualization/visualization.reposito
 import { MaterialHelper } from './material';
 import { Point } from './point';
 
+/**
+ * The shared geometry for all points.
+ */
 const sharedGeometry = new THREE.BufferGeometry().setFromPoints([
   new THREE.Vector3(),
 ]);
