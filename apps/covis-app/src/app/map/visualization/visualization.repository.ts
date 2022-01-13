@@ -59,6 +59,10 @@ export class VisualizationRepository {
 
   public loadingChange = store.pipe(select((state) => state.loading));
 
+  public minTimeChange = store.pipe(select((state) => state.minTime));
+
+  public maxTimeChange = store.pipe(select((state) => state.maxTime));
+
   public get hour(): number {
     return store.query((state) => state.currentTime);
   }

@@ -3,7 +3,9 @@
   *ngIf="{
     isOpen: isOpen | async,
     visualization: visualization | async,
-    time: currentTime | async
+    time: currentTime | async,
+    minTime: minTime | async,
+    maxTime: maxTime | async
   } as context"
 >
   <div class="covis-controls-bar-toggle">
@@ -14,8 +16,8 @@
   <div class="covis-controls-bar-body-wrapper" [@opened]="context.isOpen">
     <mat-slider
       class="covis-controls-bar-slider"
-      [min]="minTime"
-      [max]="maxTime"
+      [min]="context.minTime"
+      [max]="context.maxTime"
       [step]="1"
       [formControl]="sliderControl"
     ></mat-slider>

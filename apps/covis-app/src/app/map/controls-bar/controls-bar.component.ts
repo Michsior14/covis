@@ -14,7 +14,7 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { merge, startWith, Subject, takeUntil, tap } from 'rxjs';
+import { merge, Subject, takeUntil, tap } from 'rxjs';
 import { SettingsComponent } from '../settings/settings.component';
 import {
   VisualizationRepository,
@@ -40,8 +40,8 @@ export class ControlsBarComponent implements OnInit, OnDestroy {
   public readonly isOpen = this.controlsBarRepository.isOpen;
   public readonly visualization = this.visualizationRepository.stateChange;
   public readonly currentTime = this.visualizationRepository.currentTimeChange;
-  public readonly minTime = this.visualizationRepository.minTime;
-  public readonly maxTime = this.visualizationRepository.maxTime;
+  public readonly minTime = this.visualizationRepository.minTimeChange;
+  public readonly maxTime = this.visualizationRepository.maxTimeChange;
 
   public readonly sliderControl = new FormControl(
     this.visualizationRepository.hour
@@ -71,7 +71,6 @@ export class ControlsBarComponent implements OnInit, OnDestroy {
         tap((value) => this.sliderControl.setValue(value, { emitEvent: false }))
       ),
       this.sliderControl.valueChanges.pipe(
-        startWith(this.sliderControl.value),
         tap((value) => this.visualizationRepository.setTime(value))
       )
     )
