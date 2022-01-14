@@ -48,7 +48,7 @@ export class MaterialHelper {
                 float strokeSize = 0.6;
                 float distance = dot(center, center);
                 float delta = fwidth(distance);
-                float alpha = 1.0 - smoothstep(1.0 - delta, 1.0 + delta, distance);
+                float alpha = 0.6 - smoothstep(1.0 - delta, 1.0 + delta, distance);
                 float stroke = 1.0 - smoothstep(strokeSize - delta, strokeSize + delta, distance);
                 gl_FragColor = vec4(mix(vec3(0.0, 0.0, 0.0), color, stroke), alpha);
               }
