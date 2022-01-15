@@ -14,7 +14,7 @@ The visualization platform of covid simulation in The Hauge.
 1. Install dependencies
 
    ```sh
-   yarn install & docker-compose pull
+   yarn install && docker-compose pull
    ```
 
 2. Copy `.env.example` to `.env` and change the variables to value of choose.
