@@ -35,7 +35,17 @@ docker-compose up # add '-d' if you want to run it in the background
 
 Install postgis depending on your operating system and configure it as you wish.
 
-## Seed the database
+### Synchronize database schema
+
+Make sure the database is running!
+
+Execute the following command to create all needed db structures:
+
+```sh
+yarn schema:sync
+```
+
+### Seed the database
 
 Make sure the database is running!
 
