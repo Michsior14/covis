@@ -172,7 +172,6 @@ export class VisualizationRepository {
     const { state, currentTime } = store.getValue();
     if (state === VisualizationState.running) {
       this.setTime(currentTime);
-      this.start();
     }
   }
 
@@ -184,6 +183,7 @@ export class VisualizationRepository {
         state.preloadTime = value;
       })
     );
+    this.start();
   }
 
   public setMinMaxTime(minTime: number, maxTime: number): void {

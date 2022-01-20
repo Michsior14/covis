@@ -58,15 +58,6 @@ export class ControlsBarComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     merge(
-      this.visualization.pipe(
-        tap((value) => {
-          if (value === VisualizationState.running) {
-            this.sliderControl.disable({ emitEvent: false });
-          } else {
-            this.sliderControl.enable({ emitEvent: false });
-          }
-        })
-      ),
       this.currentTime.pipe(
         tap((value) => this.sliderControl.setValue(value, { emitEvent: false }))
       ),
