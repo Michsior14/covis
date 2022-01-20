@@ -1,3 +1,34 @@
+/// Creates stroke value for filter/text-shadow section
+///
+/// @param {Number} $stroke The stroke width.
+/// @param {String} $color The stroke color.
+/// @param {Number} $blur The blur size.
+/// @param {Boolean} $filter Uses filter compatible format if true.
+@function stroke($stroke, $color, $blur, $filter) {
+  $shadow: ();
+  $from: $stroke * -1;
+  @for $i from $from through $stroke {
+    @for $j from $from through $stroke {
+      $value: $i * $blur $j * $blur 0 $color;
+      @if ($filter) {
+        $shadow: append($shadow, drop-shadow($value));
+      } @else {
+        $shadow: append($shadow, $value, comma);
+      }
+    }
+  }
+  @return $shadow;
+}
+
+/// Adds stroke to the text.
+///
+/// @param {Number} $stroke The stroke width.
+/// @param {String} $color The stroke color.
+/// @param {Number} $blur The blur size.
+@mixin stroke($stroke, $color, $blur: 1px) {
+  text-shadow: stroke($stroke, $color, $blur, false);
+}
+
 :host {
   display: block;
   position: fixed;
@@ -7,6 +38,12 @@
 }
 
 .covis-controls {
+  &-time {
+    font-size: 16px;
+    margin-left: 5px;
+    @include stroke(2, rgba(236, 236, 236, 0.3));
+  }
+
   &-bar {
     width: 100vw;
 
@@ -60,9 +97,11 @@
   &-left {
     justify-self: start;
   }
+
   &-center {
     justify-self: center;
   }
+
   &-right {
     justify-self: end;
   }

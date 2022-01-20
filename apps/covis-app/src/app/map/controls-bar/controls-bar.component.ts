@@ -16,7 +16,7 @@ import {
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSlider } from '@angular/material/slider';
-import { merge, Subject, takeUntil, tap } from 'rxjs';
+import { map, merge, Subject, takeUntil, tap } from 'rxjs';
 import { SettingsComponent } from '../settings/settings.component';
 import {
   VisualizationRepository,
@@ -44,9 +44,12 @@ export class ControlsBarComponent implements OnInit, OnDestroy {
 
   public readonly isOpen = this.controlsBarRepository.isOpen;
   public readonly visualization = this.visualizationRepository.stateChange;
-  public readonly currentTime = this.visualizationRepository.currentTimeChange;
   public readonly minTime = this.visualizationRepository.minTimeChange;
   public readonly maxTime = this.visualizationRepository.maxTimeChange;
+  public readonly currentTime = this.visualizationRepository.currentTimeChange;
+  public readonly formattedTime = this.currentTime.pipe(
+    map((value) => this.formatTime(value))
+  );
 
   public readonly sliderControl = new FormControl(
     this.visualizationRepository.hour
@@ -109,5 +112,11 @@ export class ControlsBarComponent implements OnInit, OnDestroy {
   public openSettings(): void {
     this.visualizationRepository.pause();
     this.dialog.open(SettingsComponent);
+  }
+
+  private formatTime(time: number): string {
+    const days = Math.floor(time / 24);
+    const hours = time % 24;
+    return `${days}d ${hours}h`;
   }
 }
