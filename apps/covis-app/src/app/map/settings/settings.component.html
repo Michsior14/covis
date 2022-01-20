@@ -4,8 +4,22 @@
     <mat-slide-toggle [formControl]="controls.fps">Show FPS</mat-slide-toggle>
   </div>
   <div class="settings-row">
-    <div class="settings-speed-label-wrapper">
-      <label id="speed-label" class="speed-label">Animation Speed</label>
+    <div class="settings-label-wrapper">
+      <label id="preload-label">Hours to Preload</label>
+    </div>
+    <mat-slider
+      class="settings-slider"
+      [min]="1"
+      [max]="10"
+      [step]="1"
+      [thumbLabel]="true"
+      [formControl]="controls.preload"
+      aria-labelledby="preload-label"
+    ></mat-slider>
+  </div>
+  <div class="settings-row">
+    <div class="settings-label-wrapper">
+      <label id="speed-label">Animation Speed (s/h)</label>
     </div>
     <mat-slider
       class="settings-slider"
@@ -19,7 +33,7 @@
     ></mat-slider>
   </div>
   <div class="settings-row">
-    <div class="settings-speed-label-wrapper">
+    <div class="settings-label-wrapper">
       <label id="details-label">Details Level</label>
     </div>
     <mat-slider

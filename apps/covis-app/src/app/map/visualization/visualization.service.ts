@@ -2,13 +2,14 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { Location } from '@covis/shared';
 import {
   concatMap,
+  EMPTY,
+  expand,
   map,
   mapTo,
   Observable,
   pairwise,
   startWith,
   Subject,
-  switchMap,
   takeUntil,
   tap,
   toArray,
@@ -46,6 +47,12 @@ export class VisualizationService implements OnDestroy {
    * @returns An observable that emits the previous state and the current state.
    */
   public initialize(): Observable<unknown> {
+    if (
+      this.visualizationRepository.hour >= this.visualizationRepository.maxTime
+    ) {
+      this.visualizationRepository.finish();
+    }
+
     return this.visualizationRepository.stateChange.pipe(
       startWith(VisualizationState.stopped),
       pairwise(),
@@ -57,9 +64,9 @@ export class VisualizationService implements OnDestroy {
                 return this.resume();
               case VisualizationState.finished:
                 this.resetAndRemovePoints();
-                return this.start();
+                return this.start(true);
               default:
-                return this.start();
+                return this.start(true);
             }
           case VisualizationState.paused:
             return this.pause();
@@ -80,14 +87,24 @@ export class VisualizationService implements OnDestroy {
   /**
    * Start the animation.
    *
+   * @param sync Indicates if the preload time should be synced with the current time.
+   *
    * @returns The animation queue.
    */
-  private start(): void {
-    // Preload the first two hours
+  private start(sync = false): void {
+    this.visualizationRepository.needsMoreData = true;
     this.visualizationRepository.loading = true;
+
+    if (sync) {
+      this.visualizationRepository.syncPreloadTime();
+    }
+
+    // Preload n hours
     this.loadNext()
       .pipe(
-        switchMap(() => this.loadNext()),
+        expand((_, index) =>
+          index < this.visualizationRepository.preload ? this.loadNext() : EMPTY
+        ),
         takeUntil(this.#reset)
       )
       .subscribe();
@@ -99,13 +116,24 @@ export class VisualizationService implements OnDestroy {
           return this.pointService.animate(item.locations).pipe(mapTo(item));
         }),
         tap((item) => {
-          if (item.hour > this.visualizationRepository.maxTime) {
-            this.#reset.next();
-          } else {
-            this.visualizationRepository.nextHour();
-            // Load the next hour after each animation batch
-            this.loadNext().subscribe();
+          if (item.hour >= this.visualizationRepository.maxTime) {
+            this.visualizationRepository.finish();
+            return;
           }
+
+          if (this.visualizationRepository.needsMoreData) {
+            // Load the next hour after each animation batch
+            this.loadNext()
+              .pipe(
+                expand((_, index) =>
+                  index < this.visualizationRepository.preload - 1
+                    ? this.loadNext()
+                    : EMPTY
+                )
+              )
+              .subscribe();
+          }
+          this.visualizationRepository.nextHour();
         }),
         takeUntil(this.#reset)
       )
@@ -154,7 +182,7 @@ export class VisualizationService implements OnDestroy {
       tap((item) => {
         this.#animationQueue.next(item);
         if (item.hour > this.visualizationRepository.maxTime) {
-          this.visualizationRepository.finish();
+          this.visualizationRepository.needsMoreData = false;
         }
       }),
       takeUntil(this.#reset)

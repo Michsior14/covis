@@ -10,10 +10,12 @@ import {
   Component,
   OnDestroy,
   OnInit,
+  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSlider } from '@angular/material/slider';
 import { merge, Subject, takeUntil, tap } from 'rxjs';
 import { SettingsComponent } from '../settings/settings.component';
 import {
@@ -37,6 +39,9 @@ import { ControlsBarRepository } from './controls-bar.repository';
   ],
 })
 export class ControlsBarComponent implements OnInit, OnDestroy {
+  @ViewChild(MatSlider, { static: false })
+  public readonly slider!: MatSlider;
+
   public readonly isOpen = this.controlsBarRepository.isOpen;
   public readonly visualization = this.visualizationRepository.stateChange;
   public readonly currentTime = this.visualizationRepository.currentTimeChange;
@@ -62,7 +67,10 @@ export class ControlsBarComponent implements OnInit, OnDestroy {
         tap((value) => this.sliderControl.setValue(value, { emitEvent: false }))
       ),
       this.sliderControl.valueChanges.pipe(
-        tap((value) => this.visualizationRepository.setTime(value))
+        tap((value) => {
+          this.visualizationRepository.setTime(value);
+          this.slider.blur();
+        })
       )
     )
       .pipe(takeUntil(this.#destoryer))

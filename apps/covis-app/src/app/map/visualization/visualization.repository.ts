@@ -20,8 +20,10 @@ export interface VisualizationProps {
   maxTime: number;
   animationSpeed: number;
   loading: boolean;
+  needsMoreData: boolean;
   fps: boolean;
   details: DetailLevel;
+  preload: number;
 }
 
 const initialProps = Object.freeze<VisualizationProps>({
@@ -32,8 +34,10 @@ const initialProps = Object.freeze<VisualizationProps>({
   maxTime: 0,
   animationSpeed: 5000,
   loading: false,
+  needsMoreData: false,
   fps: false,
   details: DetailLevel.medium,
+  preload: 1,
 });
 
 const store = new Store({
@@ -107,6 +111,22 @@ export class VisualizationRepository {
     store.update(produce((state) => (state.details = value)));
   }
 
+  public get preload(): number {
+    return store.query((state) => state.preload);
+  }
+
+  public set preload(value: number) {
+    store.update(produce((state) => (state.preload = value)));
+  }
+
+  public get needsMoreData(): boolean {
+    return store.query((state) => state.needsMoreData);
+  }
+
+  public set needsMoreData(value: boolean) {
+    store.update(produce((state) => (state.needsMoreData = value)));
+  }
+
   public toggle(): void {
     store.update(
       produce((state) => {
@@ -166,6 +186,10 @@ export class VisualizationRepository {
 
   public preloadNextHour(): void {
     store.update(produce((state) => state.preloadTime++));
+  }
+
+  public syncPreloadTime(): void {
+    store.update(produce((state) => (state.preloadTime = state.currentTime)));
   }
 
   public zoomChanged(): void {
