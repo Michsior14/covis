@@ -1,8 +1,8 @@
 import type { Point } from 'geojson';
 
 export enum Gender {
-  famale = 'F',
-  male = 'M',
+  famale = 'f',
+  male = 'm',
 }
 
 export interface Person {
