@@ -45,6 +45,13 @@ export class PointService {
     this.#timer = undefined;
 
     return new Observable((observer) => {
+      this.#points.forEach((point) => {
+        if (!locations.some((l) => l.personId === point.personId)) {
+          this.#points.delete(point.personId);
+          this.theeboxService.threebox.remove(point.object);
+        }
+      });
+
       let started = 0;
       let finished = 0;
       for (const { location, personId, diseasePhase, hour } of locations) {

@@ -56,8 +56,8 @@ export class MapService {
       minZoom: 11,
       maxZoom: 18,
       maxBounds: [
-        [4.142325, 52.012505],
-        [4.450131, 52.125786],
+        [4.116037, 51.9953],
+        [4.495351, 52.133693],
       ],
       antialias: true,
       dragRotate: false,

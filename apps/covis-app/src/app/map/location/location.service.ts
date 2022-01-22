@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { DetailLevel, Location, MinMaxRange, Stats } from '@covis/shared';
+import { DetailLevel, Location, MinMaxRange } from '@covis/shared';
 import { LngLat } from 'maplibre-gl';
 import { EMPTY, expand, Observable } from 'rxjs';
 
@@ -46,23 +46,6 @@ export class LocationService {
     let page = 1;
     return getRequest().pipe(
       expand((response) => (response.length > 0 ? getRequest(page++) : EMPTY))
-    );
-  }
-
-  public getStatsForArea({
-    sw,
-    ne,
-    hour,
-    zoom,
-    details,
-  }: Area): Observable<Stats> {
-    return this.httpClient.get<Stats>(
-      `/api/location/${sw.lng}/${sw.lat}/${ne.lng}/${ne.lat}/${zoom}/${hour}/stats`,
-      {
-        params: {
-          details: details as number,
-        },
-      }
     );
   }
 

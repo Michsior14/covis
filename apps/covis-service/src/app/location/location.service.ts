@@ -12,21 +12,21 @@ export class LocationService {
         { zoom: 16, value: 5 },
         { zoom: 15, value: 200 },
         { zoom: 13, value: 400 },
-        { zoom: 11, value: 600 },
+        { zoom: 12, value: 600 },
         { zoom: 0, value: 1500 },
       ],
       [DetailLevel.medium]: [
         { zoom: 16, value: 2 },
         { zoom: 15, value: 100 },
         { zoom: 13, value: 300 },
-        { zoom: 11, value: 500 },
+        { zoom: 12, value: 500 },
         { zoom: 0, value: 1000 },
       ],
       [DetailLevel.high]: [
         { zoom: 16, value: 1 },
         { zoom: 15, value: 50 },
         { zoom: 13, value: 150 },
-        { zoom: 11, value: 250 },
+        { zoom: 12, value: 250 },
         { zoom: 0, value: 500 },
       ],
     };
@@ -75,7 +75,6 @@ export class LocationService {
       },
       skip: from,
       take: take ?? 1000,
-      cache: true,
     });
   }
 
