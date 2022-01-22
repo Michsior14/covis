@@ -1,10 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnDestroy,
+  OnInit,
   ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DetailLevel } from '@covis/shared';
+import { filter, merge, Subject, takeUntil, tap } from 'rxjs';
 import { VisualizationRepository } from '../visualization/visualization.repository';
 
 const msPerSecond = 1000;
@@ -16,7 +19,7 @@ const msPerSecond = 1000;
   encapsulation: ViewEncapsulation.Emulated,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit, OnDestroy {
   private speedSteps = [20, 10, 5, 2, 1, 0.5, 0.25];
 
   private readonly initialValues = {
@@ -33,9 +36,36 @@ export class SettingsComponent {
     {} as Record<keyof typeof this.initialValues, FormControl>
   );
 
+  #destroy = new Subject<void>();
+
   constructor(
     private readonly visualizationRepository: VisualizationRepository
   ) {}
+
+  public ngOnInit(): void {
+    merge(
+      this.controls.preload.valueChanges.pipe(
+        filter(
+          (value) => value < 5 && this.speedSteps[this.controls.speed.value] < 1
+        ),
+        tap(() => this.controls.speed.setValue(4, { emitEvent: false }))
+      ),
+      this.controls.speed.valueChanges.pipe(
+        filter(
+          (value) =>
+            this.speedSteps[value] < 1 && this.controls.preload.value < 5
+        ),
+        tap(() => this.controls.preload.setValue(5, { emitEvent: false }))
+      )
+    )
+      .pipe(takeUntil(this.#destroy))
+      .subscribe();
+  }
+
+  public ngOnDestroy(): void {
+    this.#destroy.next();
+    this.#destroy.complete();
+  }
 
   /**
    * Save the current values of the controls to the visualization repository.
