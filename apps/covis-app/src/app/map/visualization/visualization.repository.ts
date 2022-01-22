@@ -14,30 +14,32 @@ export enum VisualizationState {
 
 export interface VisualizationProps {
   state: VisualizationState;
+  previousTime: number;
   currentTime: number;
   preloadTime: number;
   minTime: number;
   maxTime: number;
   animationSpeed: number;
   loading: boolean;
-  needsMoreData: boolean;
   fps: boolean;
   details: DetailLevel;
   preload: number;
+  needsRestart: boolean;
 }
 
 const initialProps = Object.freeze<VisualizationProps>({
   state: VisualizationState.stopped,
+  previousTime: -1,
   currentTime: 0,
   preloadTime: 0,
   minTime: 0,
   maxTime: 0,
   animationSpeed: 5000,
   loading: false,
-  needsMoreData: false,
   fps: false,
   details: DetailLevel.medium,
   preload: 1,
+  needsRestart: false,
 });
 
 const store = new Store({
@@ -119,15 +121,16 @@ export class VisualizationRepository {
     store.update(produce((state) => (state.preload = value)));
   }
 
-  public get needsMoreData(): boolean {
-    return store.query((state) => state.needsMoreData);
-  }
-
-  public set needsMoreData(value: boolean) {
-    store.update(produce((state) => (state.needsMoreData = value)));
+  public get previousTime(): number {
+    return store.query((state) => state.previousTime);
   }
 
   public toggle(): void {
+    const { state, needsRestart } = store.getValue();
+    if (needsRestart && state === VisualizationState.paused) {
+      return this.resetToCurrentTime();
+    }
+
     store.update(
       produce((state) => {
         if (state.state === VisualizationState.finished) {
@@ -144,14 +147,14 @@ export class VisualizationRepository {
     );
   }
 
-  public start(): void {
-    store.update(
-      produce((state) => (state.state = VisualizationState.running))
-    );
-  }
-
   public pause(): void {
-    store.update(produce((state) => (state.state = VisualizationState.paused)));
+    store.update(
+      produce((state) => {
+        if (state.state === VisualizationState.running) {
+          state.state = VisualizationState.paused;
+        }
+      })
+    );
   }
 
   public finish(): void {
@@ -181,11 +184,22 @@ export class VisualizationRepository {
   }
 
   public nextHour(): void {
-    store.update(produce((state) => state.currentTime++));
+    store.update(
+      produce((state) => {
+        state.previousTime = state.currentTime;
+        state.currentTime++;
+      })
+    );
   }
 
   public preloadNextHour(): void {
     store.update(produce((state) => state.preloadTime++));
+  }
+
+  public syncPreviousTime(): void {
+    store.update(
+      produce((state) => (state.previousTime = state.currentTime - 1))
+    );
   }
 
   public syncPreloadTime(): void {
@@ -193,9 +207,11 @@ export class VisualizationRepository {
   }
 
   public zoomChanged(): void {
-    const { state, currentTime } = store.getValue();
+    const { state } = store.getValue();
     if (state === VisualizationState.running) {
-      this.setTime(currentTime);
+      this.resetToCurrentTime();
+    } else {
+      this.needsRestart();
     }
   }
 
@@ -203,11 +219,11 @@ export class VisualizationRepository {
     this.stopSameHour();
     store.update(
       produce((state) => {
+        state.state = VisualizationState.running;
         state.currentTime = value;
         state.preloadTime = value;
       })
     );
-    this.start();
   }
 
   public setMinMaxTime(minTime: number, maxTime: number): void {
@@ -222,5 +238,14 @@ export class VisualizationRepository {
         }
       })
     );
+  }
+
+  public needsRestart(): void {
+    store.update(produce((state) => (state.needsRestart = true)));
+  }
+
+  private resetToCurrentTime(): void {
+    this.setTime(store.getValue().currentTime);
+    store.update(produce((state) => (state.needsRestart = false)));
   }
 }

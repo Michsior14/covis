@@ -8,9 +8,17 @@ import {
 import {
   ChangeDetectionStrategy,
   Component,
+  OnDestroy,
+  OnInit,
   ViewEncapsulation,
 } from '@angular/core';
+import { DiseasePhase } from '@covis/shared';
+import { filter, Subject, takeUntil } from 'rxjs';
 import { dieaseColor } from '../point/material';
+import {
+  VisualizationRepository,
+  VisualizationState,
+} from '../visualization/visualization.repository';
 import { LegendRepository } from './legend.repository';
 
 @Component({
@@ -30,61 +38,83 @@ import { LegendRepository } from './legend.repository';
     ]),
   ],
 })
-export class LegendComponent {
+export class LegendComponent implements OnInit, OnDestroy {
   public readonly isOpen = this.legendRepository.isOpen;
+  public readonly stats = this.legendRepository.statsChange;
 
   public readonly legend = [
     {
-      color: dieaseColor.susceptible,
+      type: DiseasePhase.susceptible,
       name: 'Susceptible',
     },
     {
-      color: dieaseColor.immunity,
+      type: DiseasePhase.immunity,
       name: 'Immune',
     },
     {
-      color: dieaseColor.hospitalized,
+      type: DiseasePhase.hospitalized,
       name: 'Hospitalized',
     },
     {
+      type: DiseasePhase.intensiveCareUnit,
       color: dieaseColor.icu,
       name: 'ICU',
     },
     {
+      type: DiseasePhase.dead,
       color: dieaseColor.dead,
       name: 'Dead',
     },
     {
-      color: dieaseColor.healthy,
+      type: DiseasePhase.healthy,
       name: 'Healthy',
     },
     {
-      color: dieaseColor.asymptomatic_contagious_early_stage,
+      type: DiseasePhase.asymptomaticContagiousEarlyStage,
       name: 'Asymptomatic Contagious (Early Stage)',
     },
     {
-      color: dieaseColor.asymptomatic_contagious_middle_stage,
+      type: DiseasePhase.asymptomaticContagiousMiddleStage,
       name: 'Asymptomatic Contagious (Middle Stage)',
     },
     {
-      color: dieaseColor.asymptomatic_contagious_late_stage,
+      type: DiseasePhase.asymptomaticContagiousLateStage,
       name: 'Asymptomatic Contagious (Late Stage)',
     },
     {
-      color: dieaseColor.symptomatic_early_stage,
+      type: DiseasePhase.symptomaticEarlyStage,
       name: 'Symptomatic (Early Stage)',
     },
     {
-      color: dieaseColor.symptomatic_middle_stage,
+      type: DiseasePhase.symptomaticMiddleStage,
       name: 'Symptomatic (Middle Stage)',
     },
     {
-      color: dieaseColor.symptomatic_late_stage,
+      type: DiseasePhase.symptomaticMiddleStage,
       name: 'Symptomatic (Late Stage)',
     },
-  ];
+  ].map((legend) => ({ ...legend, color: dieaseColor[legend.type] }));
 
-  constructor(private readonly legendRepository: LegendRepository) {}
+  #destroyer = new Subject<void>();
+
+  constructor(
+    private readonly legendRepository: LegendRepository,
+    private readonly visualizationRepository: VisualizationRepository
+  ) {}
+
+  public ngOnInit(): void {
+    this.visualizationRepository.stateChange
+      .pipe(
+        filter((state) => state === VisualizationState.stopped),
+        takeUntil(this.#destroyer)
+      )
+      .subscribe(() => this.legendRepository.resetStats());
+  }
+
+  public ngOnDestroy(): void {
+    this.#destroyer.next();
+    this.#destroyer.complete();
+  }
 
   /**
    * Toggle the legend.

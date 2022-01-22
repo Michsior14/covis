@@ -40,9 +40,14 @@ export class MapComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.loading.connect();
     this.mapService.initialize(this.container.nativeElement);
-    this.mapService.map.on('zoomend', () =>
-      this.visualizationRepository.zoomChanged()
-    );
+
+    let lastZoom = this.mapService.map.getZoom();
+    this.mapService.map.on('zoomend', () => {
+      if (lastZoom !== this.mapService.map.getZoom()) {
+        this.visualizationRepository.zoomChanged();
+      }
+      lastZoom = this.mapService.map.getZoom();
+    });
 
     this.visualizationService
       .initialize()

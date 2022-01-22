@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Location } from '@covis/shared';
 import {
+  asapScheduler,
   concatMap,
   EMPTY,
   expand,
@@ -92,26 +93,22 @@ export class VisualizationService implements OnDestroy {
    * @returns The animation queue.
    */
   private start(sync = false): void {
-    this.visualizationRepository.needsMoreData = true;
     this.visualizationRepository.loading = true;
+    this.visualizationRepository.syncPreviousTime();
 
     if (sync) {
       this.visualizationRepository.syncPreloadTime();
     }
 
-    // Preload n hours
-    this.loadNext()
-      .pipe(
-        expand((_, index) =>
-          index < this.visualizationRepository.preload ? this.loadNext() : EMPTY
-        ),
-        takeUntil(this.#reset)
-      )
-      .subscribe();
+    this.preload(this.visualizationRepository.preload);
 
     this.#animationQueue
       .pipe(
         concatMap((item) => {
+          if (this.visualizationRepository.previousTime !== item.hour - 1) {
+            this.#animationQueue.next(item);
+            return EMPTY;
+          }
           this.visualizationRepository.loading = false;
           return this.pointService.animate(item.locations).pipe(mapTo(item));
         }),
@@ -121,18 +118,9 @@ export class VisualizationService implements OnDestroy {
             return;
           }
 
-          if (this.visualizationRepository.needsMoreData) {
-            // Load the next hour after each animation batch
-            this.loadNext()
-              .pipe(
-                expand((_, index) =>
-                  index < this.visualizationRepository.preload - 1
-                    ? this.loadNext()
-                    : EMPTY
-                )
-              )
-              .subscribe();
-          }
+          // Load the next hours after each animation batch
+          this.preload(this.visualizationRepository.preload - 1);
+
           this.visualizationRepository.nextHour();
         }),
         takeUntil(this.#reset)
@@ -175,16 +163,27 @@ export class VisualizationService implements OnDestroy {
   }
 
   /**
+   * Preload the next batch of hours.
+   * @param hours The number of hours to preload.
+   */
+  private preload(hours: number): void {
+    this.loadNext()
+      .pipe(
+        expand(
+          (_, index) => (index < hours ? this.loadNext() : EMPTY),
+          Infinity,
+          asapScheduler
+        )
+      )
+      .subscribe();
+  }
+
+  /**
    * Load the next batch of points.
    */
   private loadNext(): Observable<unknown> {
     return this.loadHour().pipe(
-      tap((item) => {
-        this.#animationQueue.next(item);
-        if (item.hour > this.visualizationRepository.maxTime) {
-          this.visualizationRepository.needsMoreData = false;
-        }
-      }),
+      tap((item) => this.#animationQueue.next(item)),
       takeUntil(this.#reset)
     );
   }
@@ -200,6 +199,10 @@ export class VisualizationService implements OnDestroy {
     const hour = this.visualizationRepository.preloadHour;
     const details = this.visualizationRepository.details;
     this.visualizationRepository.preloadNextHour();
+
+    if (hour > this.visualizationRepository.maxTime) {
+      return EMPTY;
+    }
 
     return this.locationService
       .getAllForArea({

@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Location } from '@covis/shared';
+import { DiseasePhase, Location, Stats } from '@covis/shared';
 import { Group, Tween } from '@tweenjs/tween.js';
 import { Position } from 'geojson';
 import { Observable } from 'rxjs';
 import { THREE } from 'threebox-plugin';
 import { PausableTimer } from '../../shared/timer';
+import { LegendRepository } from '../legend/legend.repository';
 import { ThreeboxService } from '../threebox.service';
 import { VisualizationRepository } from '../visualization/visualization.repository';
 import { MaterialHelper } from './material';
@@ -29,7 +30,8 @@ export class PointService {
 
   constructor(
     private readonly theeboxService: ThreeboxService,
-    private readonly visaulizationRepository: VisualizationRepository
+    private readonly visaulizationRepository: VisualizationRepository,
+    private readonly legendRepository: LegendRepository
   ) {}
 
   /**
@@ -116,6 +118,8 @@ export class PointService {
           observer.complete();
         }, this.visaulizationRepository.speed);
       }
+
+      setTimeout(() => this.updateStats());
     });
   }
 
@@ -180,5 +184,21 @@ export class PointService {
    */
   private equals(a: Position, b: Position): boolean {
     return a[0] === b[0] && a[1] === b[1];
+  }
+
+  /**
+   * Update the disease phase stats.
+   */
+  private updateStats(): void {
+    const stats = Object.values(DiseasePhase).reduce(
+      (acc, phase) => ({ ...acc, [phase]: 0 }),
+      {} as Required<Stats>
+    );
+
+    for (const entry of this.#points) {
+      stats[entry[1].diseasePhase]++;
+    }
+
+    this.legendRepository.stats = stats;
   }
 }

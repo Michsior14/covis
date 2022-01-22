@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { DetailLevel, Location, MinMaxRange } from '@covis/shared';
+import { DetailLevel, Location, MinMaxRange, Stats } from '@covis/shared';
 import { LngLat } from 'maplibre-gl';
-import { EMPTY, expand } from 'rxjs';
+import { EMPTY, expand, Observable } from 'rxjs';
 
-interface Area {
+export interface Area {
   hour: number;
   zoom: number;
   sw: LngLat;
@@ -24,7 +24,13 @@ export class LocationService {
    * Get the all points in the given area and hour
    * @param area
    */
-  public getAllForArea({ sw, ne, hour, zoom, details }: Area) {
+  public getAllForArea({
+    sw,
+    ne,
+    hour,
+    zoom,
+    details,
+  }: Area): Observable<Location[]> {
     const getRequest = (page = 0) =>
       this.httpClient.get<Location[]>(
         `/api/location/${sw.lng}/${sw.lat}/${ne.lng}/${ne.lat}/${zoom}/${hour}`,
@@ -43,10 +49,27 @@ export class LocationService {
     );
   }
 
+  public getStatsForArea({
+    sw,
+    ne,
+    hour,
+    zoom,
+    details,
+  }: Area): Observable<Stats> {
+    return this.httpClient.get<Stats>(
+      `/api/location/${sw.lng}/${sw.lat}/${ne.lng}/${ne.lat}/${zoom}/${hour}/stats`,
+      {
+        params: {
+          details: details as number,
+        },
+      }
+    );
+  }
+
   /**
    * Get the min and max hour range
    */
-  public getHourRange() {
+  public getHourRange(): Observable<MinMaxRange> {
     return this.httpClient.get<MinMaxRange>(`/api/location/hour-range`);
   }
 }

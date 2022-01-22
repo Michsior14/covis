@@ -2,7 +2,8 @@
   class="covis-legend"
   [class.covis-legend--open]="context.isOpen"
   *ngIf="{
-    isOpen: isOpen | async
+    isOpen: isOpen | async,
+    stats: stats | async
   } as context"
 >
   <div class="covis-legend-toggle" (click)="toggle()">
@@ -18,7 +19,9 @@
         [style.color]="'#' + row.color.toString(16)"
         >circle</mat-icon
       >
-      <span class="covis-legend-row-title">{{ row.name }}</span>
+      <span class="covis-legend-row-title"
+        >{{ row.name }} - {{ context.stats?.[row.type] ?? 0 }}</span
+      >
     </div>
   </div>
 </div>

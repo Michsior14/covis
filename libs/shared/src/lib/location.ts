@@ -21,3 +21,5 @@ export interface Location {
   diseasePhase: DiseasePhase;
   location: Point;
 }
+
+export type Stats = { [key in DiseasePhase]?: number };
