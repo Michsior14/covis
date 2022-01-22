@@ -11,8 +11,10 @@ import {
   pairwise,
   startWith,
   Subject,
+  switchMapTo,
   takeUntil,
   tap,
+  timer,
   toArray,
 } from 'rxjs';
 import { LocationService } from '../location/location.service';
@@ -107,10 +109,15 @@ export class VisualizationService implements OnDestroy {
         concatMap((item) => {
           if (this.visualizationRepository.previousTime !== item.hour - 1) {
             this.#animationQueue.next(item);
-            return EMPTY;
+            // Defer the execution to avoid infinite loop.
+            return timer(0).pipe(switchMapTo(EMPTY));
           }
           this.visualizationRepository.loading = false;
-          return this.pointService.animate(item.locations).pipe(mapTo(item));
+          // Defer the animation to increase performance.
+          return timer(0).pipe(
+            switchMapTo(this.pointService.animate(item.locations)),
+            mapTo(item)
+          );
         }),
         tap((item) => {
           if (item.hour >= this.visualizationRepository.maxTime) {

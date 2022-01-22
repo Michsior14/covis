@@ -17,8 +17,12 @@ const msPerSecond = 1000;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsComponent {
+  private speedSteps = [20, 10, 5, 2, 1, 0.5, 0.25];
+
   private readonly initialValues = {
-    speed: this.visualizationRepository.speed / msPerSecond,
+    speed: this.speedSteps.indexOf(
+      this.visualizationRepository.speed / msPerSecond
+    ),
     fps: this.visualizationRepository.fps,
     details: this.visualizationRepository.details,
     preload: this.visualizationRepository.preload,
@@ -42,7 +46,7 @@ export class SettingsComponent {
     }
 
     this.visualizationRepository.speed =
-      this.controls.speed.value * msPerSecond;
+      this.speedSteps[this.controls.speed.value] * msPerSecond;
     this.visualizationRepository.fps = this.controls.fps.value;
     this.visualizationRepository.details = this.controls.details.value;
     this.visualizationRepository.preload = this.controls.preload.value;
@@ -51,12 +55,11 @@ export class SettingsComponent {
 
   /**
    * Format a number of seconds into a string
-   *
-   * @param value The value to format.
-   * @returns The speed in seconds.
    */
-  public speedFormatLabel(value: number): string {
-    return `${value}s`;
+  public get speedFormatLabel(): (value: number) => string {
+    return (value: number): string => {
+      return `${this.speedSteps[value]}s`;
+    };
   }
 
   /**
