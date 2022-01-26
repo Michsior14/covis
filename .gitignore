@@ -41,6 +41,7 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+/data/*
 
 # System Files
 .DS_Store
@@ -48,4 +49,7 @@ Thumbs.db
 .env
 
 apps/covis-service/src/assets/*
-apps/covis-converter/src/assets/*
+apps/converter/input/*
+apps/converter/output/*
+
+!**/.gitkeep

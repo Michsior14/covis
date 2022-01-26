@@ -15,6 +15,7 @@ const reportOn = 1_000_000;
 
 export class SeedData1635021870426 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const start = performance.now();
     let count = 0;
     const tasks = [
       {
@@ -78,6 +79,12 @@ export class SeedData1635021870426 implements MigrationInterface {
     );
 
     dataStream.destroy();
+
+    console.log(
+      `Conversion + import took ${
+        (performance.now() - start) / 1000 / 60
+      } minutes.`
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

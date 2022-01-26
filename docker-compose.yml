@@ -9,13 +9,12 @@ services:
       - POSTGRES_DB
       - POSTGRES_USER
       - POSTGRES_PASSWORD
+      - PGDATA=/var/lib/postgresql/data/db
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./data:/var/lib/postgresql/data
+    command: postgres -c max_wal_senders=0 -c max_wal_size=10240 -c wal_level=minimal
 
   adminer:
     image: adminer
     ports:
       - 8080:8080
-
-volumes:
-  pgdata:

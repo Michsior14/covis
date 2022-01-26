@@ -5981,6 +5981,7 @@ __metadata:
     class-validator: ^0.13.2
     csv: ^6.0.5
     cypress: ^9.3.1
+    dotenv: ^14.2.0
     eslint: ^8.7.0
     eslint-config-prettier: 8.3.0
     eslint-plugin-cypress: ^2.12.1
@@ -6725,6 +6726,13 @@ __metadata:
     domelementtype: ^2.2.0
     domhandler: ^4.2.0
   checksum: d58e2ae01922f0dd55894e61d18119924d88091837887bf1438f2327f32c65eb76426bd9384f81e7d6dcfb048e0f83c19b222ad7101176ad68cdc9c695b563db
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^14.2.0":
+  version: 14.2.0
+  resolution: "dotenv@npm:14.2.0"
+  checksum: 17ef06618c3ae59152b94cf5b3633e82ae0989d4ce2ccf2b640cbde92c67e63a93ae191840904816f098fef78d81770548a19c221b8464059f35eaadf7f737fd
   languageName: node
   linkType: hard
 

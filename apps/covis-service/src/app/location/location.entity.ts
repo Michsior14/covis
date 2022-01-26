@@ -3,10 +3,9 @@ import { DiseasePhase } from '@covis/shared';
 import type { Point } from 'geojson';
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 
-@Index(['hour', 'personId'], { unique: true })
 @Entity({ name: 'location' })
 export class LocationEntity implements Location {
-  @PrimaryColumn('decimal')
+  @PrimaryColumn('real')
   hour!: number;
 
   @PrimaryColumn('int')
@@ -15,7 +14,7 @@ export class LocationEntity implements Location {
   @Column({ type: 'enum', enum: DiseasePhase })
   diseasePhase!: DiseasePhase;
 
-  @Index({ spatial: true })
+  @Index('location_location_idx', { spatial: true })
   @Column({
     type: 'geometry',
     spatialFeatureType: 'Point',

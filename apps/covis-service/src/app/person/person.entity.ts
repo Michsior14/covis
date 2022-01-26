@@ -29,9 +29,9 @@ export class PersonEntity implements Person {
   @Column('int')
   schoolId!: number;
 
-  @Index({ spatial: true })
+  @Index('person_location_idx', { spatial: true })
   @Column({
-    type: 'geography',
+    type: 'geometry',
     spatialFeatureType: 'Point',
     srid: 4326,
   })
