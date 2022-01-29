@@ -41,7 +41,7 @@ export class PointService {
    * @param locations
    * @returns An Observable that emits when all the tweens have finished.
    */
-  public animate(locations: Location[]): Observable<void> {
+  public animate(locations: Location[], stats: Stats): Observable<void> {
     this.#timer = undefined;
 
     return new Observable((observer) => {
@@ -126,7 +126,7 @@ export class PointService {
         }, this.visaulizationRepository.speed);
       }
 
-      setTimeout(() => this.updateStats());
+      setTimeout(() => (this.legendRepository.stats = stats));
     });
   }
 
@@ -191,21 +191,5 @@ export class PointService {
    */
   private equals(a: Position, b: Position): boolean {
     return a[0] === b[0] && a[1] === b[1];
-  }
-
-  /**
-   * Update the disease phase stats.
-   */
-  private updateStats(): void {
-    const stats = Object.values(DiseasePhase).reduce(
-      (acc, phase) => ({ ...acc, [phase]: 0 }),
-      {} as Required<Stats>
-    );
-
-    for (const entry of this.#points) {
-      stats[entry[1].diseasePhase]++;
-    }
-
-    this.legendRepository.stats = stats;
   }
 }

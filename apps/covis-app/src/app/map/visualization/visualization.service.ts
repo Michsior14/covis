@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Location } from '@covis/shared';
+import { Location, Stats } from '@covis/shared';
 import {
   asapScheduler,
   concatMap,
@@ -16,6 +16,7 @@ import {
   tap,
   timer,
   toArray,
+  zip,
 } from 'rxjs';
 import { LocationService } from '../location/location.service';
 import { MapService } from '../map.service';
@@ -28,6 +29,7 @@ import {
 interface QueueItem {
   hour: number;
   locations: Location[];
+  stats: Stats;
 }
 
 @Injectable({
@@ -115,7 +117,7 @@ export class VisualizationService implements OnDestroy {
           this.visualizationRepository.loading = false;
           // Defer the animation to increase performance.
           return timer(0).pipe(
-            switchMapTo(this.pointService.animate(item.locations)),
+            switchMapTo(this.pointService.animate(item.locations, item.stats)),
             mapTo(item)
           );
         }),
@@ -211,17 +213,23 @@ export class VisualizationService implements OnDestroy {
       return EMPTY;
     }
 
-    return this.locationService
-      .getAllForArea({
+    return zip(
+      this.locationService
+        .getAllForArea({
+          hour,
+          zoom,
+          sw: bounds.getSouthWest(),
+          ne: bounds.getNorthEast(),
+          details,
+        })
+        .pipe(toArray()),
+      this.locationService.getHourStats(hour)
+    ).pipe(
+      map(([locations, stats]) => ({
         hour,
-        zoom,
-        sw: bounds.getSouthWest(),
-        ne: bounds.getNorthEast(),
-        details,
-      })
-      .pipe(
-        toArray(),
-        map((locations) => ({ hour, locations: locations.flat() }))
-      );
+        locations: locations.flat(),
+        stats,
+      }))
+    );
   }
 }

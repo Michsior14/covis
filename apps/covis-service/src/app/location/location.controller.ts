@@ -1,10 +1,11 @@
 import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import {
   AreaRequest,
   HourRangeResponse,
   LocationEntity,
   Page,
+  StatsResponse,
 } from './location.entity';
 import { LocationService } from './location.service';
 
@@ -13,12 +14,16 @@ export class LocationController {
   constructor(private readonly locationService: LocationService) {}
 
   @Get()
+  @ApiOperation({ operationId: 'Get all locations' })
   @ApiResponse({ type: LocationEntity, isArray: true, status: HttpStatus.OK })
   public getAll(@Query() page: Page): Promise<LocationEntity[]> {
     return this.locationService.findAll(page);
   }
 
   @Get(':lats/:lngw/:latn/:lnge/:zoom/:hour')
+  @ApiOperation({
+    operationId: 'Get all locations for given map area, zoom and hour',
+  })
   @ApiResponse({ type: LocationEntity, isArray: true, status: HttpStatus.OK })
   public getAllHour(
     @Param() area: AreaRequest,
@@ -28,8 +33,16 @@ export class LocationController {
   }
 
   @Get('hour-range')
+  @ApiOperation({ operationId: 'Get hour range of the simulation' })
   @ApiResponse({ type: HourRangeResponse, status: HttpStatus.OK })
   public getHourRange(): Promise<HourRangeResponse> {
     return this.locationService.getHourRange();
+  }
+
+  @Get('stats/:hour')
+  @ApiOperation({ operationId: 'Get the stats for hour' })
+  @ApiResponse({ type: StatsResponse, status: HttpStatus.OK })
+  public getHourStats(@Param('hour') hour: number): Promise<StatsResponse> {
+    return this.locationService.getHourStats(hour);
   }
 }

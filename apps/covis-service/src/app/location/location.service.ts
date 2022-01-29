@@ -1,8 +1,13 @@
-import { DetailLevel, MinMaxRange } from '@covis/shared';
+import { DetailLevel, DiseasePhase, MinMaxRange } from '@covis/shared';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, Raw, Repository } from 'typeorm';
-import { AreaRequest, LocationEntity, Page } from './location.entity';
+import {
+  AreaRequest,
+  LocationEntity,
+  Page,
+  StatsResponse,
+} from './location.entity';
 
 @Injectable()
 export class LocationService {
@@ -84,5 +89,20 @@ export class LocationService {
       .select('MIN(location.hour)', 'min')
       .addSelect('MAX(location.hour)', 'max')
       .getRawOne() as Promise<MinMaxRange>;
+  }
+
+  public async getHourStats(hour: number): Promise<StatsResponse> {
+    const stats = await this.repository
+      .createQueryBuilder('location')
+      .select('location.diseasePhase', 'diseasePhase')
+      .addSelect('count(*)', 'value')
+      .groupBy('location.diseasePhase')
+      .where({ hour })
+      .getRawMany<{ diseasePhase: DiseasePhase; value: number }>();
+
+    return stats.reduce(
+      (prev, curr) => ({ ...prev, [curr.diseasePhase]: curr.value }),
+      {}
+    );
   }
 }

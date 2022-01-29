@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { DetailLevel, Location, MinMaxRange } from '@covis/shared';
+import { DetailLevel, Location, MinMaxRange, Stats } from '@covis/shared';
 import { LngLat } from 'maplibre-gl';
 import { EMPTY, expand, Observable } from 'rxjs';
 
@@ -54,5 +54,12 @@ export class LocationService {
    */
   public getHourRange(): Observable<MinMaxRange> {
     return this.httpClient.get<MinMaxRange>(`/api/location/hour-range`);
+  }
+
+  /**
+   * Get hour stats
+   */
+  public getHourStats(hour: number): Observable<Stats> {
+    return this.httpClient.get<Stats>(`/api/location/stats/${hour}`);
   }
 }
