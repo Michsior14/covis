@@ -1,4 +1,10 @@
-import type { DetailLevel, Location, MinMaxRange, Stats } from '@covis/shared';
+import type {
+  DetailLevel,
+  Location,
+  MinMaxRange,
+  Stats,
+  StatsHour,
+} from '@covis/shared';
 import { DiseasePhase } from '@covis/shared';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import type { Point } from 'geojson';
@@ -58,8 +64,7 @@ export class HourRangeResponse implements MinMaxRange {
   @ApiProperty()
   max!: number;
 }
-
-export class StatsResponse implements Stats {
+export class StatsHourResponse implements StatsHour {
   @ApiPropertyOptional()
   [DiseasePhase.asymptomaticContagiousEarlyStage]?: number;
   @ApiPropertyOptional()
@@ -84,4 +89,9 @@ export class StatsResponse implements Stats {
   [DiseasePhase.symptomaticMiddleStage]?: number;
   @ApiPropertyOptional()
   [DiseasePhase.symptomaticLateStage]?: number;
+}
+
+export class StatsResponse implements Stats {
+  @ApiProperty()
+  hours!: StatsHourResponse[];
 }

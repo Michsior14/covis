@@ -22,4 +22,5 @@ export interface Location {
   location: Point;
 }
 
-export type Stats = { [key in DiseasePhase]?: number };
+export type StatsHour = { [key in DiseasePhase]?: number };
+export type Stats = { hours: StatsHour[] };

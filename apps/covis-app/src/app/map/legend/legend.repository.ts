@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Stats } from '@covis/shared';
+import { StatsHour } from '@covis/shared';
 import { createState, select, Store, withProps } from '@ngneat/elf';
 import { localStorageStrategy, persistState } from '@ngneat/elf-persist-state';
 import { map } from 'rxjs';
@@ -7,12 +7,12 @@ import { produce } from '../../shared/produce';
 
 export interface LegendProps {
   open: boolean;
-  stats: Stats;
+  stats: StatsHour[];
 }
 
 const initialProps = Object.freeze<LegendProps>({
   open: false,
-  stats: {},
+  stats: [],
 });
 
 const store = new Store({
@@ -33,8 +33,12 @@ export class LegendRepository {
   public isOpen = store.pipe(select((state) => state.open));
   public statsChange = store.pipe(select((state) => state.stats));
 
-  public set stats(value: Stats) {
+  public set stats(value: StatsHour[]) {
     store.update(produce((state) => (state.stats = value)));
+  }
+
+  public get areStatsEmpty(): boolean {
+    return store.query((state) => state.stats.length === 0);
   }
 
   /**
@@ -42,9 +46,5 @@ export class LegendRepository {
    */
   public toggle(): void {
     store.update(produce((state) => (state.open = !state.open)));
-  }
-
-  public resetStats(): void {
-    store.update(produce((state) => (state.stats = initialProps.stats)));
   }
 }

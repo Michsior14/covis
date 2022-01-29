@@ -8,17 +8,12 @@ import {
 import {
   ChangeDetectionStrategy,
   Component,
-  OnDestroy,
-  OnInit,
   ViewEncapsulation,
 } from '@angular/core';
 import { DiseasePhase } from '@covis/shared';
-import { filter, Subject, takeUntil } from 'rxjs';
+import { combineLatest, map } from 'rxjs';
 import { dieaseColor } from '../point/material';
-import {
-  VisualizationRepository,
-  VisualizationState,
-} from '../visualization/visualization.repository';
+import { VisualizationRepository } from '../visualization/visualization.repository';
 import { LegendRepository } from './legend.repository';
 
 @Component({
@@ -38,9 +33,12 @@ import { LegendRepository } from './legend.repository';
     ]),
   ],
 })
-export class LegendComponent implements OnInit, OnDestroy {
+export class LegendComponent {
   public readonly isOpen = this.legendRepository.isOpen;
-  public readonly stats = this.legendRepository.statsChange;
+  public readonly stats = combineLatest([
+    this.visualizationRepository.currentTimeChange,
+    this.legendRepository.statsChange,
+  ]).pipe(map(([time, stats]) => stats?.[time] ?? {}));
 
   public readonly legend = [
     {
@@ -95,26 +93,10 @@ export class LegendComponent implements OnInit, OnDestroy {
     },
   ].map((legend) => ({ ...legend, color: dieaseColor[legend.type] }));
 
-  #destroyer = new Subject<void>();
-
   constructor(
     private readonly legendRepository: LegendRepository,
     private readonly visualizationRepository: VisualizationRepository
   ) {}
-
-  public ngOnInit(): void {
-    this.visualizationRepository.stateChange
-      .pipe(
-        filter((state) => state === VisualizationState.stopped),
-        takeUntil(this.#destroyer)
-      )
-      .subscribe(() => this.legendRepository.resetStats());
-  }
-
-  public ngOnDestroy(): void {
-    this.#destroyer.next();
-    this.#destroyer.complete();
-  }
 
   /**
    * Toggle the legend.

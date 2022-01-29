@@ -39,10 +39,10 @@ export class LocationController {
     return this.locationService.getHourRange();
   }
 
-  @Get('stats/:hour')
-  @ApiOperation({ operationId: 'Get the stats for hour' })
+  @Get('stats')
+  @ApiOperation({ operationId: 'Get the stats' })
   @ApiResponse({ type: StatsResponse, status: HttpStatus.OK })
-  public getHourStats(@Param('hour') hour: number): Promise<StatsResponse> {
-    return this.locationService.getHourStats(hour);
+  public getHourStats(): Promise<StatsResponse> {
+    return this.locationService.getStats();
   }
 }

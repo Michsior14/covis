@@ -6,6 +6,7 @@ import {
   AreaRequest,
   LocationEntity,
   Page,
+  StatsHourResponse,
   StatsResponse,
 } from './location.entity';
 
@@ -91,18 +92,35 @@ export class LocationService {
       .getRawOne() as Promise<MinMaxRange>;
   }
 
-  public async getHourStats(hour: number): Promise<StatsResponse> {
+  public async getStats(): Promise<StatsResponse> {
     const stats = await this.repository
       .createQueryBuilder('location')
-      .select('location.diseasePhase', 'diseasePhase')
+      .select('location.hour', 'hour')
+      .addSelect('location.diseasePhase', 'diseasePhase')
       .addSelect('count(*)', 'value')
       .groupBy('location.diseasePhase')
-      .where({ hour })
-      .getRawMany<{ diseasePhase: DiseasePhase; value: number }>();
+      .addGroupBy('location.hour')
+      .getRawMany<{
+        hour: number;
+        diseasePhase: DiseasePhase;
+        value: number;
+      }>();
 
-    return stats.reduce(
-      (prev, curr) => ({ ...prev, [curr.diseasePhase]: curr.value }),
+    const hourObject = stats.reduce<Record<string, StatsHourResponse>>(
+      (acc, curr) => ({
+        ...acc,
+        [curr.hour]: {
+          ...(acc[curr.hour] ?? {}),
+          [curr.diseasePhase]: curr.value,
+        },
+      }),
       {}
     );
+
+    const keys = Object.keys(hourObject)
+      .map((key) => parseInt(key))
+      .sort((a, b) => a - b);
+
+    return { hours: keys.map<StatsHourResponse>((key) => hourObject[key]) };
   }
 }

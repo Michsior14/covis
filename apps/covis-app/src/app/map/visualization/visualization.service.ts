@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Location, Stats } from '@covis/shared';
+import { Location } from '@covis/shared';
 import {
   asapScheduler,
   concatMap,
@@ -7,7 +7,9 @@ import {
   expand,
   map,
   mapTo,
+  merge,
   Observable,
+  of,
   pairwise,
   startWith,
   Subject,
@@ -16,8 +18,8 @@ import {
   tap,
   timer,
   toArray,
-  zip,
 } from 'rxjs';
+import { LegendRepository } from '../legend/legend.repository';
 import { LocationService } from '../location/location.service';
 import { MapService } from '../map.service';
 import { PointService } from '../point/point.service';
@@ -29,7 +31,6 @@ import {
 interface QueueItem {
   hour: number;
   locations: Location[];
-  stats: Stats;
 }
 
 @Injectable({
@@ -43,7 +44,8 @@ export class VisualizationService implements OnDestroy {
     private readonly pointService: PointService,
     private readonly locationService: LocationService,
     private readonly mapService: MapService,
-    private readonly visualizationRepository: VisualizationRepository
+    private readonly visualizationRepository: VisualizationRepository,
+    private readonly legendRepository: LegendRepository
   ) {}
 
   /**
@@ -104,10 +106,11 @@ export class VisualizationService implements OnDestroy {
       this.visualizationRepository.syncPreloadTime();
     }
 
-    this.preload(this.visualizationRepository.preload);
-
-    this.#animationQueue
-      .pipe(
+    merge(
+      this.initStats().pipe(
+        tap(() => this.preload(this.visualizationRepository.preload))
+      ),
+      this.#animationQueue.pipe(
         concatMap((item) => {
           if (this.visualizationRepository.previousTime !== item.hour - 1) {
             this.#animationQueue.next(item);
@@ -117,7 +120,7 @@ export class VisualizationService implements OnDestroy {
           this.visualizationRepository.loading = false;
           // Defer the animation to increase performance.
           return timer(0).pipe(
-            switchMapTo(this.pointService.animate(item.locations, item.stats)),
+            switchMapTo(this.pointService.animate(item.locations)),
             mapTo(item)
           );
         }),
@@ -131,9 +134,10 @@ export class VisualizationService implements OnDestroy {
           this.preload(this.visualizationRepository.preload - 1);
 
           this.visualizationRepository.nextHour();
-        }),
-        takeUntil(this.#reset)
+        })
       )
+    )
+      .pipe(takeUntil(this.#reset))
       .subscribe();
   }
 
@@ -213,23 +217,28 @@ export class VisualizationService implements OnDestroy {
       return EMPTY;
     }
 
-    return zip(
-      this.locationService
-        .getAllForArea({
-          hour,
-          zoom,
-          sw: bounds.getSouthWest(),
-          ne: bounds.getNorthEast(),
-          details,
-        })
-        .pipe(toArray()),
-      this.locationService.getHourStats(hour)
-    ).pipe(
-      map(([locations, stats]) => ({
+    return this.locationService
+      .getAllForArea({
         hour,
-        locations: locations.flat(),
-        stats,
-      }))
-    );
+        zoom,
+        sw: bounds.getSouthWest(),
+        ne: bounds.getNorthEast(),
+        details,
+      })
+      .pipe(
+        toArray(),
+        map((locations) => ({ hour, locations: locations.flat() }))
+      );
+  }
+
+  /**
+   * Initialize stats if needed.
+   */
+  private initStats(): Observable<unknown> {
+    return this.legendRepository.areStatsEmpty
+      ? this.locationService
+          .getStats()
+          .pipe(tap(({ hours }) => (this.legendRepository.stats = hours)))
+      : of(undefined);
   }
 }

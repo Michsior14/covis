@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DiseasePhase, Location, Stats } from '@covis/shared';
+import { Location, Stats } from '@covis/shared';
 import { Group, Tween } from '@tweenjs/tween.js';
 import { Position } from 'geojson';
 import { Observable } from 'rxjs';
@@ -30,8 +30,7 @@ export class PointService {
 
   constructor(
     private readonly theeboxService: ThreeboxService,
-    private readonly visaulizationRepository: VisualizationRepository,
-    private readonly legendRepository: LegendRepository
+    private readonly visaulizationRepository: VisualizationRepository
   ) {}
 
   /**
@@ -41,7 +40,7 @@ export class PointService {
    * @param locations
    * @returns An Observable that emits when all the tweens have finished.
    */
-  public animate(locations: Location[], stats: Stats): Observable<void> {
+  public animate(locations: Location[]): Observable<void> {
     this.#timer = undefined;
 
     return new Observable((observer) => {
@@ -125,8 +124,6 @@ export class PointService {
           observer.complete();
         }, this.visaulizationRepository.speed);
       }
-
-      setTimeout(() => (this.legendRepository.stats = stats));
     });
   }
 

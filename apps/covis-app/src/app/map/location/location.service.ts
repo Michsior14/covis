@@ -57,9 +57,9 @@ export class LocationService {
   }
 
   /**
-   * Get hour stats
+   * Get stats
    */
-  public getHourStats(hour: number): Observable<Stats> {
-    return this.httpClient.get<Stats>(`/api/location/stats/${hour}`);
+  public getStats(): Observable<Stats> {
+    return this.httpClient.get<Stats>(`/api/location/stats`);
   }
 }
