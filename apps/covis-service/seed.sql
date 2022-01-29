@@ -42,7 +42,7 @@ from tempdata
 where hour = 0;
 
 
-create index CONCURRENTLY "person_location_idx" on "person" using GiST ("location");
+create index "person_location_idx" on "person" using GiST ("location");
 
 
 DROP INDEX "public"."location_location_idx";
@@ -59,7 +59,7 @@ select hour,
 from tempdata;
 
 
-create index CONCURRENTLY "location_location_idx" on "location" using GiST ("location");
+create index "location_location_idx" on "location" using GiST ("location");
 
 
 drop table tempdata;
