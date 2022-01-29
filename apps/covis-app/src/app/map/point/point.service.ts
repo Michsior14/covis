@@ -55,7 +55,7 @@ export class PointService {
       let started = 0;
       let finished = 0;
       for (const { location, personId, diseasePhase, hour } of locations) {
-        const coords = location.coordinates.reverse();
+        const coords = location.coordinates;
         let point = this.#points.get(personId) as Point;
 
         if (!point) {

@@ -20,7 +20,7 @@ export class LocationController {
     return this.locationService.findAll(page);
   }
 
-  @Get(':lats/:lngw/:latn/:lnge/:zoom/:hour')
+  @Get(':lngw/:lats/:lnge/:latn/:zoom/:hour')
   @ApiOperation({
     operationId: 'Get all locations for given map area, zoom and hour',
   })

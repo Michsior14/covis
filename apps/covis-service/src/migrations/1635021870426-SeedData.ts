@@ -47,7 +47,7 @@ export class SeedData1635021870426 implements MigrationInterface {
                 line[6], // homeSubId
                 line[13], // workId
                 line[14], // schoolId
-                this.createPointValue(line[10], line[11]), // homeLat, homeLon
+                this.createPointValue(line[11], line[10]), // homeLon, homeLat
               ]
             : null,
       },
@@ -92,9 +92,9 @@ export class SeedData1635021870426 implements MigrationInterface {
     await queryRunner.clearTable('location');
   }
 
-  private createPointValue(lat: string, lon: string): string {
-    return `SRID=4326;POINT(${this.removeQuotes(lat)} ${this.removeQuotes(
-      lon
+  private createPointValue(lon: string, lat: string): string {
+    return `SRID=4326;POINT(${this.removeQuotes(lon)} ${this.removeQuotes(
+      lat
     )})`;
   }
 
