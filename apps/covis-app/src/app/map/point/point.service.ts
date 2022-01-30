@@ -60,6 +60,7 @@ export class PointService {
     this.#timer = undefined;
 
     return new Observable((observer) => {
+      this.#strategy.reset();
       this.#points.forEach((point) => {
         if (!locations.some((l) => l.personId === point.personId)) {
           this.#points.delete(point.personId);
@@ -70,7 +71,7 @@ export class PointService {
       let started = 0;
       let finished = 0;
       for (const { location, personId, diseasePhase, hour } of locations) {
-        location.coordinates = this.#strategy(location);
+        location.coordinates = this.#strategy.coord(location);
 
         const coords = location.coordinates;
         let point = this.#points.get(personId) as Point;
