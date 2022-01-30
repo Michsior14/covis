@@ -44,6 +44,8 @@ where hour = 0;
 
 create index "person_location_idx" on "person" using GiST ("location");
 
+vacuum analyze "person" [("location")];
+
 
 DROP INDEX "public"."location_location_idx";
 
@@ -60,6 +62,8 @@ from tempdata;
 
 
 create index "location_location_idx" on "location" using GiST ("location");
+
+vacuum analyze "location" [("location")];
 
 
 drop table tempdata;
