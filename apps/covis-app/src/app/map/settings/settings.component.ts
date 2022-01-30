@@ -8,6 +8,7 @@ import {
 import { FormControl } from '@angular/forms';
 import { DetailLevel } from '@covis/shared';
 import { filter, merge, Subject, takeUntil, tap } from 'rxjs';
+import { Strategy } from '../point/point.strategy';
 import { VisualizationRepository } from '../visualization/visualization.repository';
 
 const msPerSecond = 1000;
@@ -29,12 +30,15 @@ export class SettingsComponent implements OnInit, OnDestroy {
     fps: this.visualizationRepository.fps,
     details: this.visualizationRepository.details,
     preload: this.visualizationRepository.preload,
+    strategy: this.visualizationRepository.strategy,
   } as const;
 
   public readonly controls = Object.entries(this.initialValues).reduce(
     (acc, [key, value]) => ({ ...acc, [key]: new FormControl(value) }),
     {} as Record<keyof typeof this.initialValues, FormControl>
   );
+
+  public strategies = Object.values(Strategy);
 
   #destroy = new Subject<void>();
 
@@ -80,6 +84,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.visualizationRepository.fps = this.controls.fps.value;
     this.visualizationRepository.details = this.controls.details.value;
     this.visualizationRepository.preload = this.controls.preload.value;
+    this.visualizationRepository.strategy = this.controls.strategy.value;
     this.visualizationRepository.needsRestart();
   }
 

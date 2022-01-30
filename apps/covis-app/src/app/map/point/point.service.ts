@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Location, Stats } from '@covis/shared';
+import { Location } from '@covis/shared';
 import { Group, Tween } from '@tweenjs/tween.js';
 import { Position } from 'geojson';
 import { Observable } from 'rxjs';
 import { THREE } from 'threebox-plugin';
 import { PausableTimer } from '../../shared/timer';
-import { LegendRepository } from '../legend/legend.repository';
 import { ThreeboxService } from '../threebox.service';
 import { VisualizationRepository } from '../visualization/visualization.repository';
 import { MaterialHelper } from './material';
 import { Point } from './point';
+import { normalStrategy, randomStrategy, Strategy } from './point.strategy';
 
 /**
  * The shared geometry for all points.
@@ -27,11 +27,27 @@ export class PointService {
 
   #paused: Tween<THREE.Vector3>[] = [];
   #timer?: PausableTimer;
+  #strategy = normalStrategy();
 
   constructor(
     private readonly theeboxService: ThreeboxService,
     private readonly visaulizationRepository: VisualizationRepository
   ) {}
+
+  /**
+   * Sets the coordinates strategy for the points.
+   * @param strategy
+   */
+  public setStrategy(strategy: Strategy): void {
+    switch (strategy) {
+      case Strategy.random:
+        this.#strategy = randomStrategy();
+        break;
+      case Strategy.normal:
+        this.#strategy = normalStrategy();
+        break;
+    }
+  }
 
   /**
    * For each location, create a point object if it doesn't exist, otherwise update the point object
@@ -54,6 +70,8 @@ export class PointService {
       let started = 0;
       let finished = 0;
       for (const { location, personId, diseasePhase, hour } of locations) {
+        location.coordinates = this.#strategy(location);
+
         const coords = location.coordinates;
         let point = this.#points.get(personId) as Point;
 

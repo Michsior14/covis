@@ -106,6 +106,8 @@ export class VisualizationService implements OnDestroy {
       this.visualizationRepository.syncPreloadTime();
     }
 
+    this.pointService.setStrategy(this.visualizationRepository.strategy);
+
     merge(
       this.initStats().pipe(
         tap(() => this.preload(this.visualizationRepository.preload))

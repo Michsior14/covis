@@ -6,6 +6,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSliderModule } from '@angular/material/slider';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -37,6 +39,8 @@ import { LegendComponent } from './map/legend/legend.component';
     MatSlideToggleModule,
     MatDialogModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
+    MatFormFieldModule,
     RouterModule.forRoot(routes),
   ],
   providers: [],
