@@ -1753,12 +1753,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.16.7, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.14.8, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
+"@babel/runtime@npm:7.16.7":
   version: 7.16.7
   resolution: "@babel/runtime@npm:7.16.7"
   dependencies:
     regenerator-runtime: ^0.13.4
   checksum: db68a6cd665930288d8fc96e751932413246eb72e71aa2f16376553eb6ed64db469bf462eb9fa137bda3109f181cab74ae136505fa4cca464674a1a1ab9c2fea
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.14.8, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
+  version: 7.16.3
+  resolution: "@babel/runtime@npm:7.16.3"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: 37a7f334e8ad1383a78d39224ba9f95b94556189a0f1e93bc1b5729dc18d9eb5eb0ba3742073629cd4024fc101315fe8945931f80ba32518f651a4f0438ec4dc
   languageName: node
   linkType: hard
 
@@ -5258,9 +5267,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001251, caniuse-lite@npm:^1.0.30001286, caniuse-lite@npm:^1.0.30001297, caniuse-lite@npm:^1.0.30001299":
-  version: 1.0.30001300
-  resolution: "caniuse-lite@npm:1.0.30001300"
-  checksum: c168270b3b383f2b7ea18284ad40df47c7badc30ff47ea4c8d0fc35d30989935b35d27fbff4ab6c226dcc5bedaeed38057455824aebff5260d53f784f0f4b591
+  version: 1.0.30001304
+  resolution: "caniuse-lite@npm:1.0.30001304"
+  checksum: 05c64006edf33df5c73d3ce895bf6987a04ef66c61fcded341d806cf8a7afec8e97c2866cefd43d9def51e954773f68149e9b2ad56d8c9b527f0df6cd0aa2a97
   languageName: node
   linkType: hard
 
@@ -5824,17 +5833,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js-pure@npm:^3.20.2":
+"core-js-pure@npm:^3.20.2, core-js-pure@npm:^3.8.1":
   version: 3.20.3
   resolution: "core-js-pure@npm:3.20.3"
   checksum: 10536f8b02253804ebb5300b142b49ef3a90e44ed6d137a8659a460c86daccb6ee4dc2979c2dac55f7ca171fcf8891fd677a34431394d629dd5a4b0dfe67d0b8
-  languageName: node
-  linkType: hard
-
-"core-js-pure@npm:^3.8.1":
-  version: 3.18.3
-  resolution: "core-js-pure@npm:3.18.3"
-  checksum: 937a8aa0788f57dd25dc5c1cf2ff2b901f95d0ce4119c9875cd62600f3ae59b275ada480a6d97f28c1bb7ce330b9c867be68efe7f87226597007125ad78687f5
   languageName: node
   linkType: hard
 
