@@ -49,12 +49,20 @@ yarn schema:sync
 
 Make sure the database is running!
 
+### Using typescript (a bit slower)
+
 1. Move gziped csv file to `apps/covis-service/src/assets` and name it `data.csv.gz`.
 2. Run migration script and be patient, it will take some time.
 
     ```sh
     yarn migration:run
     ```
+
+### Using SQL (faster)
+
+1. Move gziped csv file to folder accessible on SQL server (for docker-compose: `./data`) and name it `data.csv.gz`.
+2. Move `apps/covis-service/seed.sql` to folder accessible on SQL server (for docker-compose: `./data`).
+3. Connect to the SQL server and execute the above script and be patient, it will take some time.
 
 ## Run the apps in development mode
 
