@@ -24,19 +24,16 @@ describe('RangeResolver', () => {
     expect(resolver).toBeTruthy();
   });
 
-  it(
-    'should resolve hour range and set min max time',
-    waitForAsync(() => {
-      jest
-        .spyOn(service, 'getHourRange')
-        .mockReturnValue(of({ min: 0.5, max: 23.8 }));
-      const setMinMaxTime = jest
-        .spyOn(repository, 'setMinMaxTime')
-        .mockImplementation(() => void 0);
+  it('should resolve hour range and set min max time', waitForAsync(() => {
+    jest
+      .spyOn(service, 'getHourRange')
+      .mockReturnValue(of({ min: 0.5, max: 23.8 }));
+    const setMinMaxTime = jest
+      .spyOn(repository, 'setMinMaxTime')
+      .mockImplementation(() => void 0);
 
-      resolver
-        .resolve()
-        .subscribe(() => expect(setMinMaxTime).toBeCalledWith(0, 23));
-    })
-  );
+    resolver
+      .resolve()
+      .subscribe(() => expect(setMinMaxTime).toBeCalledWith(0, 23));
+  }));
 });

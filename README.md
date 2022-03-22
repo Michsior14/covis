@@ -1,4 +1,3 @@
-
 # Covis
 
 The visualization platform of covid simulation in The Hauge.
@@ -54,9 +53,9 @@ Make sure the database is running!
 1. Move gziped csv file to `apps/covis-service/src/assets` and name it `data.csv.gz`.
 2. Run migration script and be patient, it will take some time.
 
-    ```sh
-    yarn migration:run
-    ```
+   ```sh
+   yarn migration:run
+   ```
 
 ### Using SQL (faster)
 

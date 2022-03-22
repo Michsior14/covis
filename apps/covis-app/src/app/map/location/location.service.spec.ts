@@ -42,57 +42,54 @@ describe('LocationService', () => {
     expect(req.request.method).toEqual('GET');
   });
 
-  it(
-    'should get points for area',
-    waitForAsync(() => {
-      const expected = [
-        {
-          hour: 1,
-          personId: 1,
-          diseasePhase: DiseasePhase.healthy,
-          location: { type: 'point', coordinates: [1, 2, 3] },
-        },
-        {
-          hour: 1,
-          personId: 2,
-          diseasePhase: DiseasePhase.healthy,
-          location: { type: 'point', coordinates: [1, 2, 3] },
-        },
-        {
-          hour: 1,
-          personId: 3,
-          diseasePhase: DiseasePhase.healthy,
-          location: { type: 'point', coordinates: [1, 2, 3] },
-        },
-      ];
+  it('should get points for area', waitForAsync(() => {
+    const expected = [
+      {
+        hour: 1,
+        personId: 1,
+        diseasePhase: DiseasePhase.healthy,
+        location: { type: 'point', coordinates: [1, 2, 3] },
+      },
+      {
+        hour: 1,
+        personId: 2,
+        diseasePhase: DiseasePhase.healthy,
+        location: { type: 'point', coordinates: [1, 2, 3] },
+      },
+      {
+        hour: 1,
+        personId: 3,
+        diseasePhase: DiseasePhase.healthy,
+        location: { type: 'point', coordinates: [1, 2, 3] },
+      },
+    ];
 
-      const flush = <T>(expected: T) => {
-        const request = httpTestingController.expectOne((request) =>
-          request.url.startsWith('/api/location')
-        );
-        request.flush(expected);
-      };
+    const flush = <T>(expected: T) => {
+      const request = httpTestingController.expectOne((request) =>
+        request.url.startsWith('/api/location')
+      );
+      request.flush(expected);
+    };
 
-      service
-        .getAllForArea({
-          hour: 0,
-          ne: new LngLat(1, 1),
-          sw: new LngLat(1, 1),
-          zoom: 1,
+    service
+      .getAllForArea({
+        hour: 0,
+        ne: new LngLat(1, 1),
+        sw: new LngLat(1, 1),
+        zoom: 1,
+      })
+      .pipe(
+        map((range, index) => {
+          if (index === 0) {
+            expect(range).toEqual(expected);
+            setTimeout(() => flush([]));
+          } else if (index === 1) {
+            expect(range).toEqual([]);
+          }
         })
-        .pipe(
-          map((range, index) => {
-            if (index === 0) {
-              expect(range).toEqual(expected);
-              setTimeout(() => flush([]));
-            } else if (index === 1) {
-              expect(range).toEqual([]);
-            }
-          })
-        )
-        .subscribe();
+      )
+      .subscribe();
 
-      flush(expected);
-    })
-  );
+    flush(expected);
+  }));
 });
