@@ -15,7 +15,7 @@ export class PersonController {
 
   @Get(':id')
   @ApiResponse({ type: PersonEntity, status: HttpStatus.OK })
-  public get(@Param('id') id: string): Promise<PersonEntity | undefined> {
+  public get(@Param('id') id: number): Promise<PersonEntity | null> {
     return this.personService.findOne(id);
   }
 }

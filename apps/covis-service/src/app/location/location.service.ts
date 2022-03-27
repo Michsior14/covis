@@ -42,8 +42,11 @@ export class LocationService {
     private repository: Repository<LocationEntity>
   ) {}
 
-  public findOne(id: string): Promise<LocationEntity | undefined> {
-    return this.repository.findOne(id);
+  public findOne(
+    hour: number,
+    personId: number
+  ): Promise<LocationEntity | null> {
+    return this.repository.findOneBy({ hour, personId });
   }
 
   public findAllInArea(

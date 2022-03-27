@@ -36,7 +36,7 @@ describe('PersonController', () => {
   });
 
   it('get', () => {
-    const id = 'id';
+    const id = 0;
     const person: PersonEntity = {
       id: 0,
       type: '',

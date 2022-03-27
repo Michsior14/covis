@@ -6,7 +6,7 @@ import { PersonEntity } from './person.entity';
 import { PersonService } from './person.service';
 
 class PersonEntityRepository {
-  findOne = jest.fn();
+  findOneBy = jest.fn();
   find = jest.fn();
 }
 
@@ -49,11 +49,11 @@ describe('PersonService', () => {
   });
 
   it('findOne', () => {
-    jest.spyOn(repository, 'findOne').mockResolvedValue(resultPerson);
+    jest.spyOn(repository, 'findOneBy').mockResolvedValue(resultPerson);
 
-    const id = 'id';
+    const id = 0;
     expect(service.findOne(id)).resolves.toBe(resultPerson);
-    expect(repository.findOne).toHaveBeenCalledWith(id);
+    expect(repository.findOneBy).toHaveBeenCalledWith({ id });
   });
 
   it('findAll', () => {

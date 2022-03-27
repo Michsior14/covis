@@ -29,7 +29,7 @@ export class SeedData1635021870426 implements MigrationInterface {
             line[0], // hour
             line[1], // personId
             line[12].toLowerCase(), // diseasePhase
-            this.createPointValue(line[8], line[9]), // currentLat, currentLon
+            this.createPointValue(line[9], line[8]), // currentLon, currentLat
           ];
         },
       },

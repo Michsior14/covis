@@ -6,7 +6,7 @@ import { AreaRequest, LocationEntity, Page } from './location.entity';
 import { LocationService } from './location.service';
 
 class LocationEntityRepository {
-  findOne = jest.fn();
+  findOneBy = jest.fn();
   find = jest.fn();
 }
 
@@ -44,11 +44,12 @@ describe('LocationService', () => {
   });
 
   it('findOne', () => {
-    jest.spyOn(repository, 'findOne').mockResolvedValue(resultLocation);
+    jest.spyOn(repository, 'findOneBy').mockResolvedValue(resultLocation);
 
-    const id = 'id';
-    expect(service.findOne(id)).resolves.toBe(resultLocation);
-    expect(repository.findOne).toHaveBeenCalledWith(id);
+    const hour = 0,
+      personId = 0;
+    expect(service.findOne(hour, personId)).resolves.toBe(resultLocation);
+    expect(repository.findOneBy).toHaveBeenCalledWith({ hour, personId });
   });
 
   describe('findAllInArea', () => {

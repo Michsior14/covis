@@ -10,8 +10,8 @@ export class PersonService {
     private repository: Repository<PersonEntity>
   ) {}
 
-  public findOne(id: string): Promise<PersonEntity | undefined> {
-    return this.repository.findOne(id);
+  public findOne(id: number): Promise<PersonEntity | null> {
+    return this.repository.findOneBy({ id });
   }
 
   public findAll(): Promise<PersonEntity[]> {
