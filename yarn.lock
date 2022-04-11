@@ -3847,6 +3847,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/webidl-conversions@npm:*":
+  version: 6.1.1
+  resolution: "@types/webidl-conversions@npm:6.1.1"
+  checksum: 6b0716042c7713f147dda3e85ab75f818f61bdbc2315d15d0068d84d18c3f613d5dee42ae8fadee676598b98a08a83533bd5bb34078a1eb118ab37501f888bbe
+  languageName: node
+  linkType: hard
+
+"@types/whatwg-url@npm:^8.2.1":
+  version: 8.2.1
+  resolution: "@types/whatwg-url@npm:8.2.1"
+  dependencies:
+    "@types/node": "*"
+    "@types/webidl-conversions": "*"
+  checksum: ba6e3701794857cd0557808e3bb9584c6494e2a957677557803068c04042d3df1c136c4fb08c2512b9e9f3c1bbd73509076a7baae0479f56a7355c2a7820afa3
+  languageName: node
+  linkType: hard
+
 "@types/ws@npm:^8.2.2":
   version: 8.2.2
   resolution: "@types/ws@npm:8.2.2"
@@ -5148,6 +5165,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bson@npm:^4.6.2":
+  version: 4.6.2
+  resolution: "bson@npm:4.6.2"
+  dependencies:
+    buffer: ^5.6.0
+  checksum: cf8568896742ecbed8fd5842e30627d69a8a818ea3d07f1a81696e97d87384385a7322542de55eaee98836223f773ebeab3b4b22596e4226e70b8c147fe8f96f
+  languageName: node
+  linkType: hard
+
 "buffer-crc32@npm:~0.2.3":
   version: 0.2.13
   resolution: "buffer-crc32@npm:0.2.13"
@@ -5993,6 +6019,7 @@ __metadata:
     jest-preset-angular: ^11.1.1
     json-stream-stringify: ^2.0.4
     maplibre-gl: ^2.1.9
+    mongodb: ^4.5.0
     nestjs-redoc: ^2.2.2
     nx: ^13.10.1
     pg: ^8.7.3
@@ -6580,6 +6607,13 @@ __metadata:
   version: 1.0.0
   resolution: "delegates@npm:1.0.0"
   checksum: ba05874b91148e1db4bf254750c042bf2215febd23a6d3cda2e64896aef79745fbd4b9996488bd3cafb39ce19dbce0fd6e3b6665275638befffe1c9b312b91b5
+  languageName: node
+  linkType: hard
+
+"denque@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "denque@npm:2.0.1"
+  checksum: d4f8a62dcd5d47cafded4c9bb2f4cd39e9571b4e54efadf1f60f1b90ebcfddea41f267fd9d8366e9b8cc8233ab71d8e89e381e1db5a37b7c1ba802233581e7d9
   languageName: node
   linkType: hard
 
@@ -10693,6 +10727,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"memory-pager@npm:^1.0.2":
+  version: 1.5.0
+  resolution: "memory-pager@npm:1.5.0"
+  checksum: 2596e80c99fee24f05bd8a20cde2ee899012c996f4ec361ac76ed6f009f34149d733ac6f76880106ccd6a66d062ad439357578d383d429df66ba1278f68806e9
+  languageName: node
+  linkType: hard
+
 "merge-descriptors@npm:1.0.1":
   version: 1.0.1
   resolution: "merge-descriptors@npm:1.0.1"
@@ -10923,6 +10964,32 @@ __metadata:
   bin:
     mkdirp: bin/cmd.js
   checksum: 46ea0f3ffa8bc6a5bc0c7081ffc3907777f0ed6516888d40a518c5111f8366d97d2678911ad1a6882bf592fa9de6c784fea32e1687bb94e1f4944170af48a5cf
+  languageName: node
+  linkType: hard
+
+"mongodb-connection-string-url@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "mongodb-connection-string-url@npm:2.5.2"
+  dependencies:
+    "@types/whatwg-url": ^8.2.1
+    whatwg-url: ^11.0.0
+  checksum: 623e4767427f0789c7ef20f9736b3bb1500900d6e7bac849c298a48910965ba53eb07f67845e865738dd747778d9e6910bc023b7f0fea1f53b5bbe8832d4d9b6
+  languageName: node
+  linkType: hard
+
+"mongodb@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "mongodb@npm:4.5.0"
+  dependencies:
+    bson: ^4.6.2
+    denque: ^2.0.1
+    mongodb-connection-string-url: ^2.5.2
+    saslprep: ^1.0.3
+    socks: ^2.6.2
+  dependenciesMeta:
+    saslprep:
+      optional: true
+  checksum: 200dcca20d41ca31f464f0fba6c13a531d0d021264bd21262e3e9739b25c064b0554600cd99ffdbb2c17d0412b41ef077e220d9e83e5abf0f0899e9b61c1f5b9
   languageName: node
   linkType: hard
 
@@ -13591,6 +13658,15 @@ resolve@1.20.0:
   languageName: node
   linkType: hard
 
+"saslprep@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "saslprep@npm:1.0.3"
+  dependencies:
+    sparse-bitfield: ^3.0.3
+  checksum: 7dea5b2c0cb507132d4a6e1a65082b1118b435f9bb5b13665e71e581875dc574d4fb26dd0246d72daa1d7a453b131043aa0f8c1a8813ca2d4b577335156f99ac
+  languageName: node
+  linkType: hard
+
 "sass-loader@npm:12.4.0, sass-loader@npm:^12.2.0":
   version: 12.4.0
   resolution: "sass-loader@npm:12.4.0"
@@ -13935,7 +14011,7 @@ resolve@1.20.0:
   languageName: node
   linkType: hard
 
-"smart-buffer@npm:^4.1.0":
+"smart-buffer@npm:^4.1.0, smart-buffer@npm:^4.2.0":
   version: 4.2.0
   resolution: "smart-buffer@npm:4.2.0"
   checksum: a16775323e1404dd43fabafe7460be13a471e021637bc7889468eb45ce6a6b207261f454e4e530a19500cc962c4cc5348583520843b363f4193cee5c00e1e539
@@ -13982,6 +14058,16 @@ resolve@1.20.0:
     ip: ^1.1.5
     smart-buffer: ^4.1.0
   checksum: e992192c7837bfa9093251abf3e78849741f332881900f481dcb3267d18b16595e93519f63dce29f39e4135789a7ed379d210dd68e98465564a40e81ccf9082a
+  languageName: node
+  linkType: hard
+
+"socks@npm:^2.6.2":
+  version: 2.6.2
+  resolution: "socks@npm:2.6.2"
+  dependencies:
+    ip: ^1.1.5
+    smart-buffer: ^4.2.0
+  checksum: 3a97a3fa751d43294c1861bc3519bf3e3ebccc9136e690df96ee7b496b280a42fae3ae39480928ba7d940c1644737eab126502d433af026b209c57f1ca6cb7b3
   languageName: node
   linkType: hard
 
@@ -14060,6 +14146,15 @@ resolve@1.20.0:
   version: 1.4.8
   resolution: "sourcemap-codec@npm:1.4.8"
   checksum: f099279fdaae070ff156df7414bbe39aad69cdd615454947ed3e19136bfdfcb4544952685ee73f56e17038f4578091e12b17b283ed8ac013882916594d95b9e6
+  languageName: node
+  linkType: hard
+
+"sparse-bitfield@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "sparse-bitfield@npm:3.0.3"
+  dependencies:
+    memory-pager: ^1.0.2
+  checksum: 248c6ff7b5e354735e1daac4059222a29c9d291dfcf265daf675d13515eeaac454cfcccd687c8d134f86698b39abd7ad4d7434f7272dd6f8e41a00f21aae4194
   languageName: node
   linkType: hard
 
@@ -14720,6 +14815,15 @@ resolve@1.20.0:
   dependencies:
     punycode: ^2.1.1
   checksum: 397f5c39d97c5fe29fa9bab73b03853be18ad2738b2c66ee5ce84ecb36b091bdaec493f9b3cee711d45f7678f342452600843264cc8242b591c8dc983146a6c4
+  languageName: node
+  linkType: hard
+
+"tr46@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "tr46@npm:3.0.0"
+  dependencies:
+    punycode: ^2.1.1
+  checksum: cdc47cad3a9d0b6cb293e39ccb1066695ae6fdd39b9e4f351b010835a1f8b4f3a6dc3a55e896b421371187f22b48d7dac1b693de4f6551bdef7b6ab6735dfe3b
   languageName: node
   linkType: hard
 
@@ -15425,6 +15529,13 @@ resolve@1.20.0:
   languageName: node
   linkType: hard
 
+"webidl-conversions@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "webidl-conversions@npm:7.0.0"
+  checksum: 228d8cb6d270c23b0720cb2d95c579202db3aaf8f633b4e9dd94ec2000a04e7e6e43b76a94509cdb30479bd00ae253ab2371a2da9f81446cc313f89a4213a2c4
+  languageName: node
+  linkType: hard
+
 "webpack-dev-middleware@npm:5.3.0, webpack-dev-middleware@npm:^5.3.0":
   version: 5.3.0
   resolution: "webpack-dev-middleware@npm:5.3.0"
@@ -15610,6 +15721,16 @@ resolve@1.20.0:
   version: 2.3.0
   resolution: "whatwg-mimetype@npm:2.3.0"
   checksum: 81c5eaf660b1d1c27575406bcfdf58557b599e302211e13e3c8209020bbac903e73c17f9990f887232b39ce570cc8638331b0c3ff0842ba224a5c2925e830b06
+  languageName: node
+  linkType: hard
+
+"whatwg-url@npm:^11.0.0":
+  version: 11.0.0
+  resolution: "whatwg-url@npm:11.0.0"
+  dependencies:
+    tr46: ^3.0.0
+    webidl-conversions: ^7.0.0
+  checksum: f7ec264976d7c725e0696fcaf9ebe056e14422eacbf92fdbb4462034609cba7d0c85ffa1aab05e9309d42969bcf04632ba5ed3f3882c516d7b093053315bf4c1
   languageName: node
   linkType: hard
 

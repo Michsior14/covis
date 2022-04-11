@@ -1,39 +1,46 @@
 import type { Person } from '@covis/shared';
 import { Gender } from '@covis/shared';
 import type { Point } from 'geojson';
-import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ObjectID,
+  ObjectIdColumn,
+  PrimaryColumn,
+} from 'typeorm';
 
 @Entity({ name: 'person' })
 export class PersonEntity implements Person {
-  @PrimaryColumn('int')
+  @ObjectIdColumn()
+  _id!: ObjectID;
+
+  @PrimaryColumn()
   id!: number;
+
+  @Column()
+  agentId!: number;
 
   @Column()
   type!: string;
 
-  @Column('int')
+  @Column()
   age!: number;
 
   @Column({ type: 'enum', enum: Gender })
   gender!: Gender;
 
-  @Column('int')
+  @Column()
   homeId!: number;
 
-  @Column('int')
+  @Column()
   homeSubId!: number;
 
-  @Column('int')
+  @Column()
   workId!: number;
 
-  @Column('int')
+  @Column()
   schoolId!: number;
 
-  @Index('person_location_idx', { spatial: true })
-  @Column({
-    type: 'geometry',
-    spatialFeatureType: 'Point',
-    srid: 4326,
-  })
+  @Column()
   location!: Point;
 }

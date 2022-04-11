@@ -47,6 +47,7 @@
     "immer": "^9.0.12",
     "json-stream-stringify": "^2.0.4",
     "maplibre-gl": "^2.1.9",
+    "mongodb": "^4.5.0",
     "nestjs-redoc": "^2.2.2",
     "pg": "^8.7.3",
     "pg-copy-streams": "^6.0.2",

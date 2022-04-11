@@ -1,84 +1,109 @@
-import { parse, stringify, transform } from 'csv';
+import { DiseasePhase, Gender, Location, Person } from '@covis/shared';
+import { parse, transform } from 'csv';
 import { createReadStream } from 'fs';
+import { Point } from 'geojson';
 import { join } from 'path';
-import { Pool } from 'pg';
-import { from } from 'pg-copy-streams';
 import { cwd } from 'process';
-import { PassThrough, pipeline as nonPromisePipeline } from 'stream';
-import { MigrationInterface, QueryRunner } from 'typeorm';
-import { PostgresDriver } from 'typeorm/driver/postgres/PostgresDriver';
+import { pipeline as nonPromisePipeline } from 'stream';
+import { MigrationInterface } from 'typeorm';
+import { MongoQueryRunner } from 'typeorm/driver/mongodb/MongoQueryRunner';
 import { promisify } from 'util';
 import { createGunzip } from 'zlib';
 
 const pipeline = promisify(nonPromisePipeline);
 const reportOn = 1_000_000;
+const maxBulkWriteSize = 100_000;
 
 export class SeedData1635021870426 implements MigrationInterface {
-  public async up(queryRunner: QueryRunner): Promise<void> {
+  public async up(queryRunner: MongoQueryRunner): Promise<void> {
+    const db = queryRunner.databaseConnection.db();
+
+    await Promise.all([
+      db.createCollection('location'),
+      db.createCollection('person'),
+    ]);
+
+    const createLocOp = () => queryRunner.initializeUnorderedBulkOp('location');
+    const createPerOp = () => queryRunner.initializeUnorderedBulkOp('person');
+
     const start = performance.now();
+
     let count = 0;
-    const tasks = [
-      {
-        table: 'location',
-        stream: new PassThrough({ objectMode: true }),
-        changeLine: (line: string[]) => {
-          if (++count % reportOn === 0) {
-            console.log(`${count / reportOn} milions of rows processed.`);
-          }
-          return [
-            line[0], // hour
-            line[1], // personId
-            line[12].toLowerCase(), // diseasePhase
-            this.createPointValue(line[9], line[8]), // currentLon, currentLat
-          ];
-        },
-      },
-      {
-        table: 'person',
-        stream: new PassThrough({ objectMode: true }),
-        changeLine: (line: string[]) =>
-          line[0] === '0.0'
-            ? [
-                line[1], // personId
-                line[2].toLowerCase(), // personType
-                line[3], // age
-                line[4].toLowerCase(), // gender
-                line[5], // homeId
-                line[6], // homeSubId
-                line[13], // workId
-                line[14], // schoolId
-                this.createPointValue(line[11], line[10]), // homeLon, homeLat
-              ]
-            : null,
-      },
-    ];
+    let locOp = createLocOp();
+    let perOp = createPerOp();
 
-    const pool = (queryRunner.connection.driver as PostgresDriver)
-      .master as Pool;
+    await pipeline(
+      createReadStream(
+        join(cwd(), 'apps/covis-service/src/assets/data.csv.gz')
+      ),
+      createGunzip(),
+      parse({ from: 2 }),
+      transform({ parallel: 1 }, (line: string[], cb) => {
+        const hour = parseFloat(line[0]);
+        const ok = () => cb(null, null);
 
-    const dataStream = createReadStream(
-      join(cwd(), 'apps/covis-service/src/assets/data.csv.gz')
-    )
-      .pipe(createGunzip())
-      .pipe(parse({ from: 2 }));
+        const location: Location = {
+          hour: parseFloat(line[0]),
+          personId: parseInt(line[1], 10),
+          diseasePhase: line[12].toLowerCase() as DiseasePhase,
+          location: this.createPointValue(line[9], line[8]), // currentLon, currentLat
+        };
+        locOp.insert(location);
 
-    await Promise.all(
-      tasks.map(async ({ table, changeLine, stream }) => {
-        const client = await pool.connect();
-        dataStream.pipe(stream);
+        if (hour === 0) {
+          const person: Person = {
+            id: parseInt(line[1], 10),
+            type: line[2].toLowerCase(),
+            age: parseInt(line[3], 10),
+            gender: line[4].toLowerCase() as Gender,
+            homeId: parseInt(line[5], 10),
+            homeSubId: parseInt(line[6], 10),
+            workId: parseInt(line[13], 10),
+            schoolId: parseInt(line[14], 10),
+            location: this.createPointValue(line[11], line[10]), // homeLon, homeLat
+          };
+          perOp.insert(person);
+        }
 
-        await pipeline(
-          stream,
-          transform(changeLine.bind(this)),
-          stringify(),
-          client.query(from(`COPY ${table} FROM STDIN WITH (FORMAT csv)`))
-        );
+        if (++count % reportOn === 0) {
+          console.log(`${count / reportOn} milions of rows processed.`);
+        }
 
-        client.release();
+        if (locOp.length % maxBulkWriteSize === 0) {
+          return locOp.execute(() => {
+            locOp = createLocOp();
+
+            if (perOp.length !== 0) {
+              return perOp.execute(() => {
+                perOp = createPerOp();
+                ok();
+              });
+            }
+            ok();
+          });
+        }
+        ok();
       })
     );
 
-    dataStream.destroy();
+    if (locOp.length !== 0) {
+      await locOp.execute();
+    }
+
+    console.log(`Creating indexes for ${count} rows...`);
+    await queryRunner.createCollectionIndexes('location', [
+      {
+        key: { location: '2dsphere', hour: -1, personId: -1 },
+        name: 'location-hour-personId',
+      },
+      {
+        key: { hour: -1, diseasePhase: -1 },
+        name: 'hour-diseasePhase',
+      },
+    ]);
+    await queryRunner.createCollectionIndex('person', {
+      id: -1,
+    });
 
     console.log(
       `Conversion + import took ${
@@ -87,15 +112,27 @@ export class SeedData1635021870426 implements MigrationInterface {
     );
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.clearTable('person');
-    await queryRunner.clearTable('location');
+  public async down(queryRunner: MongoQueryRunner): Promise<void> {
+    const db = queryRunner.databaseConnection.db();
+
+    try {
+      await Promise.all([
+        db.dropCollection('location'),
+        db.dropCollection('person'),
+      ]);
+    } catch (e) {
+      //do nothing if collections don't exist
+    }
   }
 
-  private createPointValue(lon: string, lat: string): string {
-    return `SRID=4326;POINT(${this.removeQuotes(lon)} ${this.removeQuotes(
-      lat
-    )})`;
+  private createPointValue(lon: string, lat: string): Point {
+    return {
+      type: 'Point',
+      coordinates: [
+        parseFloat(this.removeQuotes(lon)),
+        parseFloat(this.removeQuotes(lat)),
+      ],
+    };
   }
 
   private removeQuotes(value: string): string {

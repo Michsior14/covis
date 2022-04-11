@@ -1,7 +1,8 @@
 import { DetailLevel, DiseasePhase, MinMaxRange } from '@covis/shared';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, Raw, Repository } from 'typeorm';
+import { MongoRepository, ObjectLiteral } from 'typeorm';
+import type { MongoFindManyOptions } from 'typeorm/find-options/mongodb/MongoFindManyOptions';
 import {
   AreaRequest,
   LocationEntity,
@@ -39,7 +40,7 @@ export class LocationService {
 
   constructor(
     @InjectRepository(LocationEntity)
-    private repository: Repository<LocationEntity>
+    private repository: MongoRepository<LocationEntity>
   ) {}
 
   public findOne(
@@ -56,65 +57,94 @@ export class LocationService {
     const level = page.details ?? DetailLevel.medium;
     const detail =
       this.zoomDetails[level].find((z) => zoom >= z.zoom)?.value ?? 1;
+
     return this.findAll(page, {
       where: {
         hour,
-        location: Raw(
-          (alias) =>
-            `st_intersects(
-              ${alias},
-              ST_MakeEnvelope(:lngw, :lats, :lnge, :latn, 4326)
-            )`,
-          area
-        ),
-        personId: Raw((alias) => `${alias} % :detail = 0`, { detail }),
-      },
+        location: {
+          $geoWithin: {
+            $geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [area.lngw, area.lats],
+                  [area.lnge, area.lats],
+                  [area.lnge, area.latn],
+                  [area.lngw, area.latn],
+                  [area.lngw, area.lats],
+                ],
+              ],
+            },
+          },
+        },
+        personId: { $mod: [detail, 0] },
+      } as ObjectLiteral,
     });
   }
 
   public findAll(
     { from, take }: Page,
-    options?: FindManyOptions<LocationEntity>
+    options?: MongoFindManyOptions<LocationEntity>
   ): Promise<LocationEntity[]> {
     return this.repository.find({
       ...options,
       order: {
-        hour: 'ASC',
-        personId: 'ASC',
+        hour: 'DESC',
+        personId: 'DESC',
       },
       skip: from,
       take: take ?? 1000,
+      cache: false,
     });
   }
 
-  public getHourRange(): Promise<MinMaxRange> {
-    return this.repository
-      .createQueryBuilder('location')
-      .select('MIN(location.hour)', 'min')
-      .addSelect('MAX(location.hour)', 'max')
-      .getRawOne() as Promise<MinMaxRange>;
+  public async getHourRange(): Promise<MinMaxRange> {
+    const results = await this.repository
+      .aggregate<MinMaxRange>([
+        {
+          $facet: {
+            min: [{ $sort: { hour: 1 } }, { $limit: 1 }],
+            max: [{ $sort: { hour: -1 } }, { $limit: 1 }],
+          },
+        },
+        {
+          $project: {
+            min: { $first: '$min.hour' },
+            max: { $first: '$max.hour' },
+          },
+        },
+      ])
+      .toArray();
+    return results[0];
   }
 
   public async getStats(): Promise<StatsResponse> {
     const stats = await this.repository
-      .createQueryBuilder('location')
-      .select('location.hour', 'hour')
-      .addSelect('location.diseasePhase', 'diseasePhase')
-      .addSelect('count(*)', 'value')
-      .groupBy('location.diseasePhase')
-      .addGroupBy('location.hour')
-      .getRawMany<{
-        hour: number;
-        diseasePhase: DiseasePhase;
+      .aggregate<{
+        _id: { hour: number; diseasePhase: DiseasePhase };
         value: number;
-      }>();
+      }>(
+        [
+          {
+            $sort: { hour: -1, diseasePhase: -1 },
+          },
+          {
+            $group: {
+              _id: { hour: '$hour', diseasePhase: '$diseasePhase' },
+              value: { $count: {} },
+            },
+          },
+        ],
+        { allowDiskUse: true }
+      )
+      .toArray();
 
     const hourObject = stats.reduce<Record<string, StatsHourResponse>>(
       (acc, curr) => ({
         ...acc,
-        [curr.hour]: {
-          ...(acc[curr.hour] ?? {}),
-          [curr.diseasePhase]: curr.value,
+        [curr._id.hour]: {
+          ...(acc[curr._id.hour] ?? {}),
+          [curr._id.diseasePhase]: curr.value,
         },
       }),
       {}

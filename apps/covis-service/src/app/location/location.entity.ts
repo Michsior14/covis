@@ -1,23 +1,23 @@
-import type {
-  DetailLevel,
-  Location,
-  MinMaxRange,
-  Stats,
-  StatsHour,
-} from '@covis/shared';
-import { DiseasePhase } from '@covis/shared';
+import type { Location, MinMaxRange, Stats, StatsHour } from '@covis/shared';
+import { DetailLevel, DiseasePhase } from '@covis/shared';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
+import { IsEnum, IsInt, IsNumber, IsOptional } from 'class-validator';
 import type { Point } from 'geojson';
-import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
 
 @Entity({ name: 'location' })
 export class LocationEntity implements Location {
+  @ApiProperty({ type: () => String })
+  @ObjectIdColumn()
+  id!: ObjectID;
+
   @ApiProperty()
-  @PrimaryColumn('real')
+  @Column()
   hour!: number;
 
   @ApiProperty()
-  @PrimaryColumn('int')
+  @Column()
   personId!: number;
 
   @ApiProperty()
@@ -25,12 +25,7 @@ export class LocationEntity implements Location {
   diseasePhase!: DiseasePhase;
 
   @ApiProperty()
-  @Index('location_location_idx', { spatial: true })
-  @Column({
-    type: 'geometry',
-    spatialFeatureType: 'Point',
-    srid: 4326,
-  })
+  @Column()
   location!: Point;
 }
 
@@ -38,29 +33,56 @@ export class Page {
   /**
    * The start index of items to return.
    */
+  @IsInt()
+  @Type(() => Number)
+  @IsOptional()
   from?: number = 0;
   /**
    * The number of items to return
    */
+  @IsInt()
+  @Type(() => Number)
+  @IsOptional()
   take?: number = 100;
   /**
    * The details level
    */
+  @IsEnum(DetailLevel)
+  @Transform(({ value }) => DetailLevel[value])
+  @IsOptional()
   details?: DetailLevel;
 }
 
 export class AreaRequest {
+  @IsNumber()
+  @Type(() => Number)
   lngw!: number;
+
+  @IsNumber()
+  @Type(() => Number)
   lats!: number;
+
+  @IsNumber()
+  @Type(() => Number)
   lnge!: number;
+
+  @IsNumber()
+  @Type(() => Number)
   latn!: number;
+
+  @IsNumber()
+  @Type(() => Number)
   hour!: number;
+
+  @IsNumber()
+  @Type(() => Number)
   zoom!: number;
 }
 
 export class HourRangeResponse implements MinMaxRange {
   @ApiProperty()
   min!: number;
+
   @ApiProperty()
   max!: number;
 }

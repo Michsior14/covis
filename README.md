@@ -63,6 +63,8 @@ Make sure the database is running!
 2. Move `apps/covis-service/seed.sql` to folder accessible on SQL server (for docker-compose: `./data`).
 3. Connect to the SQL server and execute the above script and be patient, it will take some time.
 
+`gunzip -c ./apps/covis-service/src/assets/data.csv.gz | docker exec -i mongo sh -c 'mongoimport -u user -p password --authenticationDatabase admin -c location -d db --type csv --headerline'`
+
 ## Run the apps in development mode
 
 Make sure the database is running!

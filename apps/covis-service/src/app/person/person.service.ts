@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 import { PersonEntity } from './person.entity';
 
 @Injectable()
 export class PersonService {
   constructor(
     @InjectRepository(PersonEntity)
-    private repository: Repository<PersonEntity>
+    private repository: MongoRepository<PersonEntity>
   ) {}
 
   public findOne(id: number): Promise<PersonEntity | null> {

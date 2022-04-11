@@ -1,15 +1,16 @@
+import { join } from 'path';
 import { env } from 'process';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { join } from 'path';
 
 const fromSrc = (path: string) => join(__dirname, path);
 
 export const dataSourceOptions: DataSourceOptions = {
-  type: 'postgres',
-  host: env.POSTGRES_HOST,
-  username: env.POSTGRES_USER,
-  password: env.POSTGRES_PASSWORD,
-  database: env.POSTGRES_DB,
+  type: 'mongodb',
+  host: env.MONGODB_HOST,
+  username: env.MONGODB_USER,
+  password: env.MONGODB_PASSWORD,
+  database: env.MONGODB_DB,
+  authSource: env.MONGODB_AUTH_SOURCE,
   entities: [fromSrc('**/*.entity.ts')],
   migrations: [fromSrc('migrations/**/*.ts')],
 };
