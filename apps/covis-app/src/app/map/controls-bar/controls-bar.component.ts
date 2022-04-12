@@ -56,7 +56,7 @@ export class ControlsBarComponent implements OnInit, OnDestroy {
   );
   public readonly VisualizationState = VisualizationState;
 
-  #destoryer = new Subject<void>();
+  #destroyer = new Subject<void>();
 
   constructor(
     private readonly controlsBarRepository: ControlsBarRepository,
@@ -76,13 +76,13 @@ export class ControlsBarComponent implements OnInit, OnDestroy {
         })
       )
     )
-      .pipe(takeUntil(this.#destoryer))
+      .pipe(takeUntil(this.#destroyer))
       .subscribe();
   }
 
   public ngOnDestroy(): void {
-    this.#destoryer.next();
-    this.#destoryer.complete();
+    this.#destroyer.next();
+    this.#destroyer.complete();
   }
 
   /**

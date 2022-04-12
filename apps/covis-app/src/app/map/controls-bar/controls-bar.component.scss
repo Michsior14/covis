@@ -55,7 +55,7 @@
 
     &-body {
       display: grid;
-      grid-template-columns: repeat(3, auto);
+      grid-template-columns: minmax(0, 1fr) 166px minmax(0, 1fr);
       grid-column-gap: 10px;
       justify-items: center;
       align-items: center;
