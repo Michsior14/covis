@@ -2,18 +2,19 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { Location } from '@covis/shared';
 import {
   asapScheduler,
+  BehaviorSubject,
   concatMap,
   EMPTY,
   expand,
+  first,
   map,
-  mapTo,
   merge,
   Observable,
   of,
   pairwise,
   startWith,
   Subject,
-  switchMapTo,
+  switchMap,
   takeUntil,
   tap,
   timer,
@@ -39,6 +40,7 @@ interface QueueItem {
 export class VisualizationService implements OnDestroy {
   #reset = new Subject<void>();
   #animationQueue = new Subject<QueueItem>();
+  #animationPause = new BehaviorSubject<boolean>(false);
 
   constructor(
     private readonly pointService: PointService,
@@ -55,7 +57,9 @@ export class VisualizationService implements OnDestroy {
    */
   public initialize(): Observable<unknown> {
     if (
-      this.visualizationRepository.hour >= this.visualizationRepository.maxTime
+      this.visualizationRepository.hour >=
+        this.visualizationRepository.maxTime &&
+      !this.visualizationRepository.isDefaultMaxTime
     ) {
       this.visualizationRepository.finish();
     }
@@ -117,13 +121,19 @@ export class VisualizationService implements OnDestroy {
           if (this.visualizationRepository.previousTime !== item.hour - 1) {
             this.#animationQueue.next(item);
             // Defer the execution to avoid infinite loop.
-            return timer(0).pipe(switchMapTo(EMPTY));
+            return timer(0).pipe(switchMap(() => EMPTY));
           }
           this.visualizationRepository.loading = false;
           // Defer the animation to increase performance.
           return timer(0).pipe(
-            switchMapTo(this.pointService.animate(item.locations)),
-            mapTo(item)
+            switchMap(() =>
+              // Do not start animation if the visualization is paused.
+              this.#animationPause.pipe(
+                first((paused) => !paused),
+                switchMap(() => this.pointService.animate(item.locations))
+              )
+            ),
+            map(() => item)
           );
         }),
         tap((item) => {
@@ -147,6 +157,7 @@ export class VisualizationService implements OnDestroy {
    * It resets the animation state.
    */
   private reset(): void {
+    this.#animationPause.next(false);
     this.#reset.next();
   }
 
@@ -155,6 +166,7 @@ export class VisualizationService implements OnDestroy {
    */
   private pause(): void {
     this.pointService.pause();
+    this.#animationPause.next(true);
   }
 
   /**
@@ -162,6 +174,7 @@ export class VisualizationService implements OnDestroy {
    */
   private resume(): void {
     if (this.pointService.resume()) {
+      this.#animationPause.next(false);
       return;
     }
 

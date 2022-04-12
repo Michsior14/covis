@@ -30,8 +30,8 @@ export class PointService {
   #strategy = normalStrategy();
 
   constructor(
-    private readonly theeboxService: ThreeboxService,
-    private readonly visaulizationRepository: VisualizationRepository
+    private readonly threeboxService: ThreeboxService,
+    private readonly visualizationRepository: VisualizationRepository
   ) {}
 
   /**
@@ -64,7 +64,7 @@ export class PointService {
       this.#points.forEach((point) => {
         if (!locations.some((l) => l.personId === point.personId)) {
           this.#points.delete(point.personId);
-          this.theeboxService.threebox.remove(point.object);
+          this.threeboxService.threebox.remove(point.object);
         }
       });
 
@@ -82,7 +82,7 @@ export class PointService {
             personId,
             diseasePhase,
             hour,
-            object: this.theeboxService.threebox.Object3D({
+            object: this.threeboxService.threebox.Object3D({
               obj: new THREE.Points(
                 sharedGeometry,
                 MaterialHelper.createMaterial(diseasePhase)
@@ -90,7 +90,7 @@ export class PointService {
             }),
           };
           point.object.setCoords(coords);
-          this.theeboxService.threebox.add(point.object);
+          this.threeboxService.threebox.add(point.object);
           this.#points.set(personId, point);
         } else {
           this.#points.set(personId, {
@@ -107,17 +107,17 @@ export class PointService {
             started++;
 
             const [start, end] =
-              this.theeboxService.threebox.utils.lnglatsToWorld([
+              this.threeboxService.threebox.utils.lnglatsToWorld([
                 point.location.coordinates,
                 coords,
               ]);
 
             new Tween<THREE.Vector3>(start, this.#tweens)
-              .to(end, this.visaulizationRepository.speed)
+              .to(end, this.visualizationRepository.speed)
               .onUpdate((position) => {
                 point.object.position.copy(position);
                 const newCoords =
-                  this.theeboxService.threebox.utils.unprojectFromWorld(
+                  this.threeboxService.threebox.utils.unprojectFromWorld(
                     position
                   );
                 point.object.coordinates = newCoords;
@@ -141,7 +141,7 @@ export class PointService {
         this.#timer = new PausableTimer(() => {
           observer.next();
           observer.complete();
-        }, this.visaulizationRepository.speed);
+        }, this.visualizationRepository.speed);
       }
     });
   }
@@ -152,7 +152,7 @@ export class PointService {
   public reset(): void {
     this.#tweens.removeAll();
     this.#points.forEach((point) =>
-      this.theeboxService.threebox.remove(point.object)
+      this.threeboxService.threebox.remove(point.object)
     );
     this.#points.clear();
     this.#paused.length = 0;

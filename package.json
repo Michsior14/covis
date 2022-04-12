@@ -56,7 +56,7 @@
     "three": "^0.139.2",
     "threebox-plugin": "^2.2.6",
     "tslib": "^2.3.1",
-    "typeorm": "^0.3.5",
+    "typeorm": "^0.3.6",
     "zone.js": "^0.11.5"
   },
   "devDependencies": {
@@ -85,9 +85,9 @@
     "@types/pg": "^8.6.5",
     "@types/pg-copy-streams": "^1.2.1",
     "@types/three": "^0.139.0",
-    "@typescript-eslint/eslint-plugin": "^5.18.0",
-    "@typescript-eslint/parser": "^5.18.0",
-    "cypress": "^9.5.3",
+    "@typescript-eslint/eslint-plugin": "^5.19.0",
+    "@typescript-eslint/parser": "^5.19.0",
+    "cypress": "^9.5.4",
     "eslint": "^8.13.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-cypress": "^2.12.1",

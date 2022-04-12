@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Map, NavigationControl } from 'maplibre-gl';
+import { LngLatBoundsLike, Map, NavigationControl } from 'maplibre-gl';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import { PointService } from './point/point.service';
 import { ThreeboxService } from './threebox.service';
+
+const mapBounds: LngLatBoundsLike = [
+  [4.116037, 51.9953],
+  [4.495351, 52.133693],
+];
 
 @Injectable({
   providedIn: 'root',
@@ -55,15 +60,13 @@ export class MapService {
       },
       minZoom: 11,
       maxZoom: 18,
-      maxBounds: [
-        [4.116037, 51.9953],
-        [4.495351, 52.133693],
-      ],
+      maxBounds: mapBounds,
       antialias: true,
       dragRotate: false,
     })
       .addControl(new NavigationControl({}))
       .on('style.load', () => {
+        this.#map.fitBounds(mapBounds, { animate: false });
         this.#map.addLayer({
           id: 'custom_layer',
           type: 'custom',
@@ -75,6 +78,7 @@ export class MapService {
         });
         container.appendChild(this.#stats.dom);
       });
+
     this.threeboxService.initialize(this.#map);
   }
 

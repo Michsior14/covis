@@ -38,7 +38,7 @@ export class LocationService {
           params: {
             from: page * batchSize,
             take: batchSize,
-            details: details as number,
+            details: DetailLevel[details ?? DetailLevel.medium],
           },
         }
       );

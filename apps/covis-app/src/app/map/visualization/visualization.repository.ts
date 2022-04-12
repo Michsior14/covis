@@ -88,6 +88,10 @@ export class VisualizationRepository {
     return store.query((state) => state.maxTime);
   }
 
+  public get isDefaultMaxTime(): boolean {
+    return store.query((state) => state.maxTime === initialProps.maxTime);
+  }
+
   public get speed(): number {
     return store.query((state) => state.animationSpeed);
   }
@@ -135,6 +139,7 @@ export class VisualizationRepository {
   public set strategy(value: Strategy) {
     store.update(produce((state) => (state.strategy = value)));
   }
+
   public toggle(): void {
     const { state, needsRestart } = store.getValue();
     if (needsRestart && state === VisualizationState.paused) {
