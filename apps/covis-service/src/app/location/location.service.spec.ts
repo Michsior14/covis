@@ -78,7 +78,7 @@ describe('LocationService', () => {
               hour: area.hour,
               location: Raw(
                 (alias) =>
-                  `st_intersects(
+                  `ST_Within(
               ${alias},
               ST_MakeEnvelope(:lngw, :lats, :lnge, :latn, 4326)
             )`,
@@ -113,7 +113,7 @@ describe('LocationService', () => {
               hour: area.hour,
               location: Raw(
                 (alias) =>
-                  `st_intersects(
+                  `ST_Within(
               ${alias},
               ST_MakeEnvelope(:lngw, :lats, :lnge, :latn, 4326)
             )`,
@@ -144,7 +144,6 @@ describe('LocationService', () => {
         },
         skip: page.from,
         take: page.take,
-        cache: true,
       });
     });
 
@@ -155,8 +154,8 @@ describe('LocationService', () => {
           hour: 'ASC',
           personId: 'ASC',
         },
+        skip: undefined,
         take: 1000,
-        cache: true,
       });
     });
   });

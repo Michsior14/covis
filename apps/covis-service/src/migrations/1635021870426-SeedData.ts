@@ -1,4 +1,4 @@
-import { parse, stringify, transform } from 'csv';
+import { parse, stringify, transform, transformer } from 'csv';
 import { createReadStream } from 'fs';
 import { join } from 'path';
 import { Pool } from 'pg';
@@ -21,35 +21,38 @@ export class SeedData1635021870426 implements MigrationInterface {
       {
         table: 'location',
         stream: new PassThrough({ objectMode: true }),
-        changeLine: (line: string[]) => {
+        changeLine: (line: string[], cb: transformer.HandlerCallback) => {
           if (++count % reportOn === 0) {
             console.log(`${count / reportOn} milions of rows processed.`);
           }
-          return [
+          cb(null, [
             line[0], // hour
             line[1], // personId
             line[12].toLowerCase(), // diseasePhase
             this.createPointValue(line[9], line[8]), // currentLon, currentLat
-          ];
+          ]);
         },
       },
       {
         table: 'person',
         stream: new PassThrough({ objectMode: true }),
-        changeLine: (line: string[]) =>
-          line[0] === '0.0'
-            ? [
-                line[1], // personId
-                line[2].toLowerCase(), // personType
-                line[3], // age
-                line[4].toLowerCase(), // gender
-                line[5], // homeId
-                line[6], // homeSubId
-                line[13], // workId
-                line[14], // schoolId
-                this.createPointValue(line[11], line[10]), // homeLon, homeLat
-              ]
-            : null,
+        changeLine: (line: string[], cb: transformer.HandlerCallback) =>
+          cb(
+            null,
+            line[0] === '0.0'
+              ? [
+                  line[1], // personId
+                  line[2].toLowerCase(), // personType
+                  line[3], // age
+                  line[4].toLowerCase(), // gender
+                  line[5], // homeId
+                  line[6], // homeSubId
+                  line[13], // workId
+                  line[14], // schoolId
+                  this.createPointValue(line[11], line[10]), // homeLon, homeLat
+                ]
+              : null
+          ),
       },
     ];
 
@@ -69,7 +72,7 @@ export class SeedData1635021870426 implements MigrationInterface {
 
         await pipeline(
           stream,
-          transform(changeLine.bind(this)),
+          transform((line, cb) => changeLine(line, cb)),
           stringify(),
           client.query(from(`COPY ${table} FROM STDIN WITH (FORMAT csv)`))
         );

@@ -9,7 +9,11 @@ const port = process.env.PORT || 3000;
 const bootstrap = async () => {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    })
+  );
   app.setGlobalPrefix(globalPrefix);
 
   // Attach docs route

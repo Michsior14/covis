@@ -61,7 +61,7 @@ export class LocationService {
         hour,
         location: Raw(
           (alias) =>
-            `st_intersects(
+            `ST_Within(
               ${alias},
               ST_MakeEnvelope(:lngw, :lats, :lnge, :latn, 4326)
             )`,
