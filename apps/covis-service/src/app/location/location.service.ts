@@ -61,6 +61,7 @@ export class LocationService {
     return this.findAll(page, {
       where: {
         hour,
+        personId: { $mod: [detail, 0] },
         location: {
           $geoWithin: {
             $geometry: {
@@ -77,7 +78,6 @@ export class LocationService {
             },
           },
         },
-        personId: { $mod: [detail, 0] },
       } as ObjectLiteral,
     });
   }
@@ -88,10 +88,6 @@ export class LocationService {
   ): Promise<LocationEntity[]> {
     return this.repository.find({
       ...options,
-      order: {
-        hour: 'DESC',
-        personId: 'DESC',
-      },
       skip: from,
       take: take ?? 1000,
       cache: false,
@@ -123,20 +119,15 @@ export class LocationService {
       .aggregate<{
         _id: { hour: number; diseasePhase: DiseasePhase };
         value: number;
-      }>(
-        [
-          {
-            $sort: { hour: -1, diseasePhase: -1 },
+      }>([
+        { $sort: { hour: 1, diseasePhase: 1 } },
+        {
+          $group: {
+            _id: { hour: '$hour', diseasePhase: '$diseasePhase' },
+            value: { $count: {} },
           },
-          {
-            $group: {
-              _id: { hour: '$hour', diseasePhase: '$diseasePhase' },
-              value: { $count: {} },
-            },
-          },
-        ],
-        { allowDiskUse: true }
-      )
+        },
+      ])
       .toArray();
 
     const hourObject = stats.reduce<Record<string, StatsHourResponse>>(

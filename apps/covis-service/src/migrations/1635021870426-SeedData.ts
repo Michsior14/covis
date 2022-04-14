@@ -93,11 +93,11 @@ export class SeedData1635021870426 implements MigrationInterface {
     console.log(`Creating indexes for ${count} rows...`);
     await queryRunner.createCollectionIndexes('location', [
       {
-        key: { location: '2dsphere', hour: -1, personId: -1 },
-        name: 'location-hour-personId',
+        key: { hour: 1, location: '2dsphere', personId: 1 },
+        name: 'hour-location-personId',
       },
       {
-        key: { hour: -1, diseasePhase: -1 },
+        key: { hour: 1, diseasePhase: 1 },
         name: 'hour-diseasePhase',
       },
     ]);
