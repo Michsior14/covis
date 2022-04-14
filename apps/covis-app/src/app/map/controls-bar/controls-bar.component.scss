@@ -50,7 +50,8 @@
     &-toggle {
       padding: 5px;
       position: absolute;
-      bottom: 5px;
+      bottom: 17px;
+      z-index: 10;
     }
 
     &-body {
@@ -68,8 +69,8 @@
       margin-bottom: -25px;
 
       ::ng-deep .mat-slider-wrapper {
-        left: 12px;
-        right: 12px;
+        left: 15px;
+        right: 15px;
       }
 
       ::ng-deep
@@ -95,7 +96,7 @@
   }
 
   &-left {
-    justify-self: start;
+    justify-self: end;
   }
 
   &-center {
@@ -103,7 +104,7 @@
   }
 
   &-right {
-    justify-self: end;
+    justify-self: start;
   }
 
   &-buttons {

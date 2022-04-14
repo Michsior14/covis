@@ -33,7 +33,7 @@ import { ControlsBarRepository } from './controls-bar.repository';
   animations: [
     trigger('opened', [
       state('true', style({ height: '*' })),
-      state('false', style({ height: '0px' })),
+      state('false', style({ height: '38px' })),
       transition('true <=> false', animate('100ms ease-in-out')),
     ]),
   ],
