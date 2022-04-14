@@ -76,6 +76,9 @@ describe('LocationService', () => {
           {
             where: {
               hour: area.hour,
+              personId: Raw((alias) => `${alias} % :detail = 0`, {
+                detail: 500,
+              }),
               location: Raw(
                 (alias) =>
                   `ST_Within(
@@ -84,9 +87,6 @@ describe('LocationService', () => {
             )`,
                 { lats: 0, lngw: 0, latn: 0, lnge: 0 }
               ),
-              personId: Raw((alias) => `${alias} % :detail = 0`, {
-                detail: 500,
-              }),
             },
           },
         ])
@@ -111,6 +111,9 @@ describe('LocationService', () => {
           {
             where: {
               hour: area.hour,
+              personId: Raw((alias) => `${alias} % :detail = 0`, {
+                detail: 1000,
+              }),
               location: Raw(
                 (alias) =>
                   `ST_Within(
@@ -119,9 +122,6 @@ describe('LocationService', () => {
             )`,
                 { lats: 0, lngw: 0, latn: 0, lnge: 0 }
               ),
-              personId: Raw((alias) => `${alias} % :detail = 0`, {
-                detail: 1000,
-              }),
             },
           },
         ])
@@ -138,10 +138,6 @@ describe('LocationService', () => {
       const page: Page = { from: 0, take: 10 };
       expect(service.findAll(page)).resolves.toEqual([resultLocation]);
       expect(repository.find).toBeCalledWith({
-        order: {
-          hour: 'ASC',
-          personId: 'ASC',
-        },
         skip: page.from,
         take: page.take,
       });
@@ -150,10 +146,6 @@ describe('LocationService', () => {
     it('should return location if not all params are passed', () => {
       expect(service.findAll({})).resolves.toEqual([resultLocation]);
       expect(repository.find).toBeCalledWith({
-        order: {
-          hour: 'ASC',
-          personId: 'ASC',
-        },
         skip: undefined,
         take: 1000,
       });
