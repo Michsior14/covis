@@ -27,6 +27,7 @@ export class PointEntity implements Point {
 }
 
 @Entity({ name: 'location' })
+@Index('location_hour_personId_location_idx', { synchronize: false })
 export class LocationEntity implements Location {
   /**
    * The simulation hour
@@ -53,7 +54,6 @@ export class LocationEntity implements Location {
    * The current location
    */
   @ApiProperty()
-  @Index('location_location_idx', { spatial: true })
   @Column({
     type: 'geometry',
     spatialFeatureType: 'Point',

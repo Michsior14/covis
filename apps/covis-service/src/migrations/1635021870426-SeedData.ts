@@ -83,6 +83,12 @@ export class SeedData1635021870426 implements MigrationInterface {
 
     dataStream.destroy();
 
+    console.log('Creating indexes...');
+    await queryRunner.query(`create extension btree_gist;`);
+    await queryRunner.query(
+      `create index "location_hour_personId_location_idx" on location using gist (hour, "personId", location);`
+    );
+
     console.log(
       `Conversion + import took ${
         (performance.now() - start) / 1000 / 60
@@ -93,6 +99,7 @@ export class SeedData1635021870426 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.clearTable('person');
     await queryRunner.clearTable('location');
+    await queryRunner.query('drop extension btree_gist;');
   }
 
   private createPointValue(lon: string, lat: string): string {

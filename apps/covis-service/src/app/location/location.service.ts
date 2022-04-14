@@ -59,6 +59,7 @@ export class LocationService {
     return this.findAll(page, {
       where: {
         hour,
+        personId: Raw((alias) => `${alias} % :detail = 0`, { detail }),
         location: Raw(
           (alias) =>
             `ST_Within(
@@ -67,7 +68,6 @@ export class LocationService {
             )`,
           area
         ),
-        personId: Raw((alias) => `${alias} % :detail = 0`, { detail }),
       },
     });
   }
@@ -78,10 +78,6 @@ export class LocationService {
   ): Promise<LocationEntity[]> {
     return this.repository.find({
       ...options,
-      order: {
-        hour: 'ASC',
-        personId: 'ASC',
-      },
       skip: from,
       take: take ?? 1000,
     });

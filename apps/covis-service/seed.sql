@@ -25,7 +25,7 @@ from program 'gzip -dc /var/lib/postgresql/data/data.csv.gz'
 delimiter ',' csv header;
 
 
-DROP INDEX "public"."person_location_idx";
+drop index "public"."person_location_idx";
 
 
 insert into person (id, type, age, gender, "homeId", "homeSubId", "workId", "schoolId", location)
@@ -42,12 +42,9 @@ from tempdata
 where hour = 0;
 
 
-create index "person_location_idx" on "person" using GiST ("location");
+create index "person_location_idx" on "person" using gist ("location");
 
 vacuum analyze "person" [("location")];
-
-
-DROP INDEX "public"."location_location_idx";
 
 
 insert into location (hour,
@@ -61,7 +58,10 @@ select hour,
 from tempdata;
 
 
-create index "location_location_idx" on "location" using GiST ("location");
+create extension btree_gist;
+
+
+create index "location_hour_personId_location_idx" on location using gist (hour, "personId", location);
 
 vacuum analyze "location" [("location")];
 
