@@ -91,7 +91,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/covis-app"],
       "options": {
-        "jestConfig": "apps/covis-app/jest.config.js",
+        "jestConfig": "apps/covis-app/jest.config.ts",
         "codeCoverage": true
       }
     }

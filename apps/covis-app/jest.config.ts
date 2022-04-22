@@ -1,6 +1,6 @@
 module.exports = {
   displayName: 'covis-app',
-  preset: '../../jest.preset.js',
+  preset: '../../jest.preset.ts',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   globals: {
     'ts-jest': {
