@@ -1,6 +1,6 @@
 # Covis
 
-The visualization platform of covid simulation in The Hauge.
+The visualization platform of covid simulation in the Hague.
 
 ## Requirements
 
@@ -20,7 +20,7 @@ The visualization platform of covid simulation in The Hauge.
 
 ## Database
 
-The project uses `postgis` database to handle geolocation data.
+The project uses `postgis` database to handle geo-location data.
 
 ### Start w/ docker
 
@@ -32,7 +32,7 @@ docker-compose up # add '-d' if you want to run it in the background
 
 ### Start w/o docker
 
-Install postgis depending on your operating system and configure it as you wish.
+Install `postgis` depending on your operating system and configure it as you wish.
 
 ### Synchronize database schema
 
