@@ -4,7 +4,7 @@ import { THREE } from 'threebox-plugin';
 /**
  * The mapping from the `DiseasePhase` enum to a color.
  */
-export const dieaseColor: Record<DiseasePhase, number> = {
+export const diseaseColor: Record<DiseasePhase, number> = {
   [DiseasePhase.asymptomaticContagiousEarlyStage]: 0xffe599,
   [DiseasePhase.asymptomaticContagiousMiddleStage]: 0xffd966,
   [DiseasePhase.asymptomaticContagiousLateStage]: 0xf1c232,
@@ -67,6 +67,6 @@ export class MaterialHelper {
    * @param diseasePhase The current disease phase
    */
   static getColor(diseasePhase: DiseasePhase): THREE.Color {
-    return new THREE.Color(dieaseColor[diseasePhase] ?? dieaseColor.dead);
+    return new THREE.Color(diseaseColor[diseasePhase] ?? diseaseColor.dead);
   }
 }

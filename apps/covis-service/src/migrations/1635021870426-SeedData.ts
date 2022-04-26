@@ -23,7 +23,7 @@ export class SeedData1635021870426 implements MigrationInterface {
         stream: new PassThrough({ objectMode: true }),
         changeLine: (line: string[], cb: transformer.HandlerCallback) => {
           if (++count % reportOn === 0) {
-            console.log(`${count / reportOn} milions of rows processed.`);
+            console.log(`${count / reportOn} millions of rows processed.`);
           }
           cb(null, [
             line[0], // hour

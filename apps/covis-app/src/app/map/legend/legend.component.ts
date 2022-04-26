@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { DiseasePhase } from '@covis/shared';
 import { combineLatest, map } from 'rxjs';
-import { dieaseColor } from '../point/material';
+import { diseaseColor } from '../point/material';
 import { VisualizationRepository } from '../visualization/visualization.repository';
 import { LegendRepository } from './legend.repository';
 
@@ -55,12 +55,12 @@ export class LegendComponent {
     },
     {
       type: DiseasePhase.intensiveCareUnit,
-      color: dieaseColor.icu,
+      color: diseaseColor.icu,
       name: 'ICU',
     },
     {
       type: DiseasePhase.dead,
-      color: dieaseColor.dead,
+      color: diseaseColor.dead,
       name: 'Dead',
     },
     {
@@ -91,7 +91,7 @@ export class LegendComponent {
       type: DiseasePhase.symptomaticMiddleStage,
       name: 'Symptomatic (Late Stage)',
     },
-  ].map((legend) => ({ ...legend, color: dieaseColor[legend.type] }));
+  ].map((legend) => ({ ...legend, color: diseaseColor[legend.type] }));
 
   constructor(
     private readonly legendRepository: LegendRepository,
