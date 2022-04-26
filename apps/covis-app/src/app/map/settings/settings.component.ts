@@ -8,7 +8,7 @@ import {
 import { FormControl } from '@angular/forms';
 import { DetailLevel } from '@covis/shared';
 import { filter, merge, Subject, takeUntil, tap } from 'rxjs';
-import { Strategy } from '../point/point.strategy';
+import { StrategyType } from '../point/point.strategy';
 import { VisualizationRepository } from '../visualization/visualization.repository';
 
 const msPerSecond = 1000;
@@ -38,7 +38,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     {} as Record<keyof typeof this.initialValues, FormControl>
   );
 
-  public strategies = Object.values(Strategy);
+  public strategies = Object.values(StrategyType);
 
   #destroy = new Subject<void>();
 

@@ -9,7 +9,12 @@ import { ThreeboxService } from '../threebox.service';
 import { VisualizationRepository } from '../visualization/visualization.repository';
 import { MaterialHelper } from './material';
 import { Point } from './point';
-import { normalStrategy, randomStrategy, Strategy } from './point.strategy';
+import {
+  NormalStrategy,
+  RandomStrategy,
+  StrategyType,
+  Strategy,
+} from './point.strategy';
 
 /**
  * The shared geometry for all points.
@@ -27,7 +32,7 @@ export class PointService {
 
   #paused: Tween<THREE.Vector3>[] = [];
   #timer?: PausableTimer;
-  #strategy = normalStrategy();
+  #strategy: Strategy = new NormalStrategy();
 
   constructor(
     private readonly threeboxService: ThreeboxService,
@@ -38,13 +43,13 @@ export class PointService {
    * Sets the coordinates strategy for the points.
    * @param strategy
    */
-  public setStrategy(strategy: Strategy): void {
+  public setStrategy(strategy: StrategyType): void {
     switch (strategy) {
-      case Strategy.random:
-        this.#strategy = randomStrategy();
+      case StrategyType.random:
+        this.#strategy = new RandomStrategy();
         break;
-      case Strategy.normal:
-        this.#strategy = normalStrategy();
+      case StrategyType.normal:
+        this.#strategy = new NormalStrategy();
         break;
     }
   }

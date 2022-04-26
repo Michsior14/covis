@@ -4,7 +4,7 @@ import { createState, select, Store, withProps } from '@ngneat/elf';
 import { localStorageStrategy, persistState } from '@ngneat/elf-persist-state';
 import { map } from 'rxjs/operators';
 import { produce } from '../../shared/produce';
-import { Strategy } from '../point/point.strategy';
+import { StrategyType } from '../point/point.strategy';
 
 export enum VisualizationState {
   running = 'running',
@@ -26,7 +26,7 @@ export interface VisualizationProps {
   details: DetailLevel;
   preload: number;
   needsRestart: boolean;
-  strategy: Strategy;
+  strategy: StrategyType;
 }
 
 const initialProps = Object.freeze<VisualizationProps>({
@@ -42,7 +42,7 @@ const initialProps = Object.freeze<VisualizationProps>({
   details: DetailLevel.medium,
   preload: 1,
   needsRestart: false,
-  strategy: Strategy.normal,
+  strategy: StrategyType.normal,
 });
 
 const store = new Store({
@@ -132,11 +132,11 @@ export class VisualizationRepository {
     return store.query((state) => state.previousTime);
   }
 
-  public get strategy(): Strategy {
+  public get strategy(): StrategyType {
     return store.query((state) => state.strategy);
   }
 
-  public set strategy(value: Strategy) {
+  public set strategy(value: StrategyType) {
     store.update(produce((state) => (state.strategy = value)));
   }
 
