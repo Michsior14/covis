@@ -44,7 +44,7 @@ where hour = 0;
 
 create index "person_location_idx" on "person" using gist ("location");
 
-vacuum analyze "person" [("location")];
+vacuum analyze "person" ("location");
 
 
 insert into location (hour,
@@ -58,16 +58,17 @@ select hour,
 from tempdata;
 
 
-create extension btree_gist;
+create extension if not exists btree_gist;
 
 
 create index "location_hour_personId_location_idx" on location using gist (hour, "personId", location);
 
-vacuum analyze "location" [("location")];
+vacuum analyze "location" ("location");
 
 
 drop table tempdata;
 
+insert into migrations (timestamp, name) values (1635021870426, 'SeedData1635021870426')
 
 alter system
 reset all;

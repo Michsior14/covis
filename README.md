@@ -62,6 +62,11 @@ Make sure the database is running!
 1. Move gziped csv file to folder accessible on SQL server (for docker-compose: `./data`) and name it `data.csv.gz`.
 2. Move `apps/covis-service/seed.sql` to folder accessible on SQL server (for docker-compose: `./data`).
 3. Connect to the SQL server and execute the above script and be patient, it will take some time.
+   - To accomplish this with docker, use the following command:
+
+      ```sh
+      docker exec <container-name> psql -U <user> -d <database> -f /var/lib/postgresql/data/seed.sql
+      ```
 
 ## Run the apps in development mode
 
