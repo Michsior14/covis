@@ -1,6 +1,5 @@
 {
   "projectType": "application",
-  "root": "apps/covis-app",
   "sourceRoot": "apps/covis-app/src",
   "prefix": "covis",
   "targets": {
