@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Location } from '@covis/shared';
+import { DiseasePhase, Location } from '@covis/shared';
 import { Group, Tween } from '@tweenjs/tween.js';
 import { Position } from 'geojson';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { THREE } from 'threebox-plugin';
 import { PausableTimer } from '../../shared/timer';
 import { ThreeboxService } from '../threebox.service';
@@ -12,16 +12,9 @@ import { Point } from './point';
 import {
   NormalStrategy,
   RandomStrategy,
-  StrategyType,
   Strategy,
+  StrategyType,
 } from './point.strategy';
-
-/**
- * The shared geometry for all points.
- */
-const sharedGeometry = new THREE.BufferGeometry().setFromPoints([
-  new THREE.Vector3(),
-]);
 
 @Injectable({
   providedIn: 'root',
@@ -32,12 +25,29 @@ export class PointService {
 
   #paused: Tween<THREE.Vector3>[] = [];
   #timer?: PausableTimer;
+  #sharedObject!: Point['object'];
   #strategy: Strategy = new NormalStrategy();
+  #needsRepaint = new Subject<void>();
+
+  public needsRepaint = this.#needsRepaint.asObservable();
 
   constructor(
     private readonly threeboxService: ThreeboxService,
     private readonly visualizationRepository: VisualizationRepository
   ) {}
+
+  /**
+   * Initialize the shared threebox objects after the map is created.
+   */
+  public initialize(): void {
+    this.#sharedObject = this.threeboxService.threebox.Object3D({
+      obj: new THREE.Points(
+        new THREE.BufferGeometry().setFromPoints([new THREE.Vector3()]),
+        MaterialHelper.getMaterial(DiseasePhase.healthy)
+      ),
+    });
+    this.#sharedObject.matrixAutoUpdate = false;
+  }
 
   /**
    * Sets the coordinates strategy for the points.
@@ -87,14 +97,12 @@ export class PointService {
             personId,
             diseasePhase,
             hour,
-            object: this.threeboxService.threebox.Object3D({
-              obj: new THREE.Points(
-                sharedGeometry,
-                MaterialHelper.createMaterial(diseasePhase)
-              ),
-            }),
+            object: this.#sharedObject.duplicate(),
           };
+          point.object.model.material =
+            MaterialHelper.getMaterial(diseasePhase);
           point.object.setCoords(coords);
+          point.object.updateMatrix();
           this.threeboxService.threebox.add(point.object);
           this.#points.set(personId, point);
         } else {
@@ -105,8 +113,14 @@ export class PointService {
             diseasePhase,
           });
 
-          const { color } = point.object.model.material.uniforms;
-          const newColor = MaterialHelper.getColor(diseasePhase);
+          const updateMaterial = () => {
+            const { model } = point.object;
+            const newMaterial = MaterialHelper.getMaterial(diseasePhase);
+            if (model.material !== newMaterial) {
+              model.material = newMaterial;
+              this.#needsRepaint.next();
+            }
+          };
 
           if (!this.equals(point.location.coordinates, coords)) {
             started++;
@@ -126,18 +140,20 @@ export class PointService {
                     position
                   );
                 point.object.coordinates = newCoords;
+                point.object.updateMatrix();
+                this.#needsRepaint.next();
               })
               .start()
               .onComplete(() => {
                 finished++;
-                color.value = newColor;
+                updateMaterial();
                 if (finished === started) {
                   observer.next();
                   observer.complete();
                 }
               });
           } else {
-            color.value = newColor;
+            updateMaterial();
           }
         }
       }
@@ -162,6 +178,7 @@ export class PointService {
     this.#points.clear();
     this.#paused.length = 0;
     this.#timer = undefined;
+    this.#needsRepaint.next();
   }
 
   /**

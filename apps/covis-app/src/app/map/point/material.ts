@@ -21,12 +21,29 @@ export const diseaseColor: Record<DiseasePhase, number> = {
 
 export class MaterialHelper {
   /**
-   * Create the material for the point using shader material
-   *
-   * @param diseasePhase The current disease phase
+   * Materials for all disease phases
    */
-  static createMaterial(
-    diseasePhase = DiseasePhase.healthy
+  static #materials = Object.values(DiseasePhase).reduce(
+    (acc, phase) => ({ ...acc, [phase]: this.createMaterial(phase) }),
+    {} as Record<DiseasePhase, THREE.ShaderMaterial>
+  );
+
+  /**
+   * Gets the material for the given disease phase
+   *
+   * @param diseasePhase The disease phase
+   */
+  public static getMaterial(diseasePhase: DiseasePhase): THREE.ShaderMaterial {
+    return this.#materials[diseasePhase];
+  }
+
+  /**
+   * Create the material for the disease phase using shader material
+   *
+   * @param diseasePhase The disease phase
+   */
+  private static createMaterial(
+    diseasePhase: DiseasePhase
   ): THREE.ShaderMaterial {
     const color = this.getColor(diseasePhase);
     return new THREE.ShaderMaterial({
@@ -66,7 +83,7 @@ export class MaterialHelper {
    *
    * @param diseasePhase The current disease phase
    */
-  static getColor(diseasePhase: DiseasePhase): THREE.Color {
-    return new THREE.Color(diseaseColor[diseasePhase] ?? diseaseColor.dead);
+  private static getColor(diseasePhase: DiseasePhase): THREE.Color {
+    return new THREE.Color(diseaseColor[diseasePhase]);
   }
 }

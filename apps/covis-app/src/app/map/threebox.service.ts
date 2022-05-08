@@ -26,7 +26,7 @@ export class ThreeboxService {
   public initialize(map: Map): void {
     this.#threebox = new Threebox(map, map.getCanvas().getContext('webgl'), {
       defaultLights: true,
-      passiveRendering: false,
+      passiveRendering: true,
     });
     this.#window.tb = this.#threebox; // Needed due to a bug in threebox
   }

@@ -5,6 +5,7 @@ type Object3D = THREE.Object3D & {
   setCoords: (coords: number[]) => void;
   coordinates: number[];
   model: { material: ShaderMaterial };
+  duplicate: () => Object3D;
 };
 
 export type Point = Location & {

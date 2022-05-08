@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import {
   AttributionControl,
   LngLatBoundsLike,
   Map,
   NavigationControl,
 } from 'maplibre-gl';
+import { Subject, takeUntil, tap } from 'rxjs';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import { PointService } from './point/point.service';
 import { ThreeboxService } from './threebox.service';
@@ -17,7 +18,7 @@ const mapBounds: LngLatBoundsLike = [
 @Injectable({
   providedIn: 'root',
 })
-export class MapService {
+export class MapService implements OnDestroy {
   /**
    * The maplibre map instance
    */
@@ -27,6 +28,8 @@ export class MapService {
 
   #map!: Map;
   #stats = Stats();
+  #repaintMap = false;
+  #destroyer = new Subject<void>();
 
   constructor(
     private readonly threeboxService: ThreeboxService,
@@ -67,6 +70,7 @@ export class MapService {
       maxZoom: 18,
       maxBounds: mapBounds,
       antialias: true,
+      hash: true,
       dragRotate: false,
     })
       .addControl(
@@ -78,7 +82,6 @@ export class MapService {
       )
       .addControl(new NavigationControl({}))
       .on('style.load', () => {
-        this.#map.fitBounds(mapBounds, { animate: false });
         this.#map.addLayer({
           id: 'custom_layer',
           type: 'custom',
@@ -90,8 +93,21 @@ export class MapService {
         });
         container.appendChild(this.#stats.dom);
       });
+    this.pointsService.needsRepaint
+      .pipe(
+        tap(() => (this.#repaintMap = true)),
+        takeUntil(this.#destroyer)
+      )
+      .subscribe();
 
     this.threeboxService.initialize(this.#map);
+    this.pointsService.initialize();
+  }
+
+  public ngOnDestroy(): void {
+    this.dispose();
+    this.#destroyer.next();
+    this.#destroyer.complete();
   }
 
   /**
@@ -105,8 +121,12 @@ export class MapService {
    * The loop that updates the additional resources on each frame
    */
   private animationLoop(): void {
-    requestAnimationFrame(() => this.animationLoop());
     this.#stats.update();
     this.pointsService.update();
+    if (this.#repaintMap) {
+      this.#map.triggerRepaint();
+      this.#repaintMap = false;
+    }
+    requestAnimationFrame(() => this.animationLoop());
   }
 }
