@@ -28,7 +28,7 @@ export class ThreeboxService {
       defaultLights: true,
       passiveRendering: false,
     });
-    this.#window.tb = this.#threebox;
+    this.#window.tb = this.#threebox; // Needed due to a bug in threebox
   }
 
   /**

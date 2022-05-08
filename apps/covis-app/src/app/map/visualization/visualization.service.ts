@@ -99,8 +99,6 @@ export class VisualizationService implements OnDestroy {
    * Start the animation.
    *
    * @param sync Indicates if the preload time should be synced with the current time.
-   *
-   * @returns The animation queue.
    */
   private start(sync = false): void {
     this.visualizationRepository.loading = true;
