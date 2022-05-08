@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
-import { LngLatBoundsLike, Map, NavigationControl } from 'maplibre-gl';
+import {
+  AttributionControl,
+  LngLatBoundsLike,
+  Map,
+  NavigationControl,
+} from 'maplibre-gl';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import { PointService } from './point/point.service';
 import { ThreeboxService } from './threebox.service';
@@ -64,6 +69,13 @@ export class MapService {
       antialias: true,
       dragRotate: false,
     })
+      .addControl(
+        new AttributionControl({
+          customAttribution:
+            '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        }),
+        'top-right'
+      )
       .addControl(new NavigationControl({}))
       .on('style.load', () => {
         this.#map.fitBounds(mapBounds, { animate: false });
