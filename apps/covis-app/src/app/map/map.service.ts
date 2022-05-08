@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import {
   AttributionControl,
   LngLatBoundsLike,
@@ -33,7 +33,8 @@ export class MapService implements OnDestroy {
 
   constructor(
     private readonly threeboxService: ThreeboxService,
-    private readonly pointsService: PointService
+    private readonly pointsService: PointService,
+    private readonly ngZone: NgZone
   ) {}
 
   /**
@@ -86,7 +87,8 @@ export class MapService implements OnDestroy {
           id: 'custom_layer',
           type: 'custom',
           renderingMode: '3d',
-          onAdd: () => this.animationLoop(),
+          onAdd: () =>
+            requestAnimationFrame((time) => this.animationLoop(time)),
           render: () => this.threeboxService.update(),
           prerender: () => void 0,
           onRemove: () => this.threeboxService.dispose(),
@@ -120,13 +122,16 @@ export class MapService implements OnDestroy {
   /**
    * The loop that updates the additional resources on each frame
    */
-  private animationLoop(): void {
-    this.#stats.update();
-    this.pointsService.update();
-    if (this.#repaintMap) {
-      this.#map.triggerRepaint();
-      this.#repaintMap = false;
-    }
-    requestAnimationFrame(() => this.animationLoop());
+  private animationLoop(time: DOMHighResTimeStamp): void {
+    requestAnimationFrame((time) => this.animationLoop(time));
+
+    this.ngZone.runOutsideAngular(() => {
+      this.#stats.update();
+      this.pointsService.update(time);
+      if (this.#repaintMap) {
+        this.#map.triggerRepaint();
+        this.#repaintMap = false;
+      }
+    });
   }
 }

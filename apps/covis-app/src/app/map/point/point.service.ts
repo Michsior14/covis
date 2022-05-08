@@ -217,8 +217,8 @@ export class PointService {
   /**
    * Update the tweens.
    */
-  public update(): void {
-    this.#tweens.update();
+  public update(time?: number): void {
+    this.#tweens.update(time);
   }
 
   /**
