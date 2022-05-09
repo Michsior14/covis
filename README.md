@@ -28,6 +28,8 @@ To start the whole stack without much hustle you can use docker with docker-comp
     sh ./tools/scripts/docker-seed.sh
     ```
 
+5. Navigate to: <http://localhost>
+
 ## Advanced usage
 
 ### Requirements
