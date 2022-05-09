@@ -1,0 +1,10 @@
+/data
+/dist
+/tmp
+/out-tsc
+/node_modules
+/.idea
+.vscode/*
+/.angular/cache
+/.sass-cache
+.env

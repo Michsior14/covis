@@ -2,13 +2,41 @@
 
 The visualization platform of covid simulation in the Hague.
 
-## Requirements
+## Quick start
+
+To start the whole stack without much hustle you can use docker with docker-compose.
+
+1. Copy:
+   - `.env.example` to `.env` and change the variables to value of choose
+   - gziped csv file from simulation to `apps/covis-service/src/assets` and name it `data.csv.gz`
+
+2. Build the images:
+
+    ```sh
+    sh ./tools/scripts/docker-build.sh
+    ```
+
+3. Start (keep it running):
+
+    ```sh
+    docker-compose -f docker-compose.prod.yml up # add '-d' if you want to run it in the background
+    ```
+
+4. Seed (optional):
+
+    ```sh
+    sh ./tools/scripts/docker-seed.sh
+    ```
+
+## Advanced usage
+
+### Requirements
 
 - Node 16.x.x (preferably over nvm/asdf)
 - Yarn 3
 - Docker w/ docker-compose or pre-installed postgis endpoint
 
-## Setup
+### Setup
 
 1. Install dependencies
 
@@ -18,11 +46,11 @@ The visualization platform of covid simulation in the Hague.
 
 2. Copy `.env.example` to `.env` and change the variables to value of choose.
 
-## Database
+### Database
 
 The project uses `postgis` database to handle geo-location data.
 
-### Start w/ docker
+#### Start w/ docker
 
 It's as easy as just running provided `docker-compose.yml` file.
 
@@ -30,11 +58,11 @@ It's as easy as just running provided `docker-compose.yml` file.
 docker-compose up # add '-d' if you want to run it in the background
 ```
 
-### Start w/o docker
+#### Start w/o docker
 
 Install `postgis` depending on your operating system and configure it as you wish.
 
-### Synchronize database schema
+#### Synchronize database schema
 
 Make sure the database is running!
 
@@ -44,11 +72,11 @@ Execute the following command to create all needed db structures:
 yarn schema:sync
 ```
 
-### Seed the database
+#### Seed the database
 
 Make sure the database is running!
 
-### Using typescript (a bit slower)
+#### Using typescript (a bit slower)
 
 1. Move gziped csv file to `apps/covis-service/src/assets` and name it `data.csv.gz`.
 2. Run migration script and be patient, it will take some time.
@@ -57,7 +85,7 @@ Make sure the database is running!
    yarn migration:run
    ```
 
-### Using SQL (faster)
+#### Using SQL (faster)
 
 1. Move gziped csv file to folder accessible on SQL server (for docker-compose: `./data`) and name it `data.csv.gz`.
 2. Move `apps/covis-service/seed.sql` to folder accessible on SQL server (for docker-compose: `./data`).
@@ -68,7 +96,7 @@ Make sure the database is running!
       docker exec <container-name> psql -U <user> -d <database> -f /var/lib/postgresql/data/seed.sql
       ```
 
-## Run the apps in development mode
+### Run the apps in development mode
 
 Make sure the database is running!
 
@@ -87,7 +115,7 @@ yarn serve covis-app # start the frontend
 yarn serve covis-service # start the backend
 ```
 
-## Run the apps in production mode
+### Run the apps in production mode
 
 Build all apps using the following script:
 

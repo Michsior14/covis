@@ -20,12 +20,13 @@ select pg_reload_conf();
 
 create table tempdata (hour real, "personId" integer, "personType" text, age integer, gender text, "homeId" integer, "homeSubId" integer, "currentActivity" text, "currentLat" decimal, "currentLon" decimal, "homeLat" decimal, "homeLon" decimal, "diseasePhase" text, "workId" integer, "schoolId" integer);
 
+/* Adjust path to the data if needed */
 copy tempdata
 from program 'gzip -dc /var/lib/postgresql/data/data.csv.gz'
 delimiter ',' csv header;
 
 
-drop index "public"."person_location_idx";
+drop index if exists "public"."person_location_idx";
 
 
 insert into person (id, type, age, gender, "homeId", "homeSubId", "workId", "schoolId", location)
@@ -65,14 +66,12 @@ create index "location_hour_personId_location_idx" on location using gist (hour,
 
 vacuum analyze "location" ("location");
 
-
 drop table tempdata;
 
-insert into migrations (timestamp, name) values (1635021870426, 'SeedData1635021870426')
+create table if not exists migrations (id SERIAL, "timestamp" bigint, "name" varchar);
 
-alter system
-reset all;
+insert into migrations (timestamp, name) values (1635021870426, 'SeedData1635021870426');
 
+alter system reset all;
 
 select pg_reload_conf();
-

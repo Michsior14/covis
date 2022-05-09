@@ -5,10 +5,10 @@
   "scripts": {
     "ng": "nx",
     "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2015 browser module main",
-    "serve:all": "nx run-many --target=serve --all --parallel",
     "serve": "nx serve",
-    "build:all": "nx run-many --target=build --all --parallel",
+    "serve:all": "nx run-many --target=serve --all --parallel",
     "build": "nx build",
+    "build:all": "nx run-many --target=build --all --parallel",
     "test:all": "nx run-many --target=test --all",
     "test": "nx test",
     "lint": "nx lint",
@@ -18,7 +18,15 @@
     "schema:sync": "yarn typeorm schema:sync -d apps/covis-service/src/data-source.ts",
     "migration:run": "yarn typeorm migration:run -d apps/covis-service/src/data-source.ts",
     "migration:revert": "yarn typeorm migration:revert -d apps/covis-service/src/data-source.ts",
-    "typeorm": "ts-node -T -P ./tsconfig.typeorm.json -r tsconfig-paths/register -r dotenv/config $(yarn bin typeorm)"
+    "typeorm": "ts-node -T -P ./tsconfig.typeorm.json -r tsconfig-paths/register -r dotenv/config $(yarn bin typeorm)",
+    "docker:build": "yarn docker:build:base && yarn docker:build:app && yarn docker:build:service",
+    "docker:serve": "docker-compose -f docker-compose.prod.yml up",
+    "docker:seed": "yarn docker:schema:sync && yarn docker:db:seed",
+    "docker:build:base": "docker build -t covis-base:latest .",
+    "docker:build:app": "cd apps/covis-app && docker build -t covis-app:latest .",
+    "docker:build:service": "cd apps/covis-service && docker build -t covis-service:latest .",
+    "docker:schema:sync": "docker run --network host --env-file ./.env -t covis-base yarn schema:sync",
+    "docker:db:seed": "docker exec -it postgis bash -c 'psql -U $POSTGRES_USER -d $POSTGRES_DB -f /var/lib/postgresql/data/seed.sql'"
   },
   "private": true,
   "dependencies": {
