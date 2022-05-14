@@ -75,20 +75,14 @@ export class PointService {
     this.#timer = undefined;
 
     return new Observable((observer) => {
-      this.#strategy.reset();
-      this.#points.forEach((point) => {
-        if (!locations.some((l) => l.personId === point.personId)) {
-          this.#points.delete(point.personId);
-          this.threeboxService.threebox.remove(point.object);
-        }
-      });
-
       let started = 0;
       let finished = 0;
+      const ids = new Map<number, void>();
       for (const { location, personId, diseasePhase, hour } of locations) {
-        location.coordinates = this.#strategy.coord(location);
+        const coords = this.#strategy.coord(location);
+        location.coordinates = coords;
+        ids.set(personId);
 
-        const coords = location.coordinates;
         let point = this.#points.get(personId) as Point;
 
         if (!point) {
@@ -103,6 +97,8 @@ export class PointService {
             MaterialHelper.getMaterial(diseasePhase);
           point.object.setCoords(coords);
           point.object.updateMatrix();
+          point.object.visible =
+            this.visualizationRepository.shouldBeVisible(diseasePhase);
           this.threeboxService.threebox.add(point.object);
           this.#points.set(personId, point);
         } else {
@@ -118,6 +114,10 @@ export class PointService {
             const newMaterial = MaterialHelper.getMaterial(diseasePhase);
             if (model.material !== newMaterial) {
               model.material = newMaterial;
+
+              if (!point.object.visible) {
+                return;
+              }
               this.#needsRepaint.next();
             }
           };
@@ -141,6 +141,10 @@ export class PointService {
                   );
                 point.object.coordinates = newCoords;
                 point.object.updateMatrix();
+
+                if (!point.object.visible) {
+                  return;
+                }
                 this.#needsRepaint.next();
               })
               .start()
@@ -157,6 +161,19 @@ export class PointService {
           }
         }
       }
+
+      this.#points.forEach((point) => {
+        if (ids.has(point.personId)) {
+          return;
+        }
+        this.#points.delete(point.personId);
+        this.threeboxService.threebox.remove(point.object);
+      });
+
+      // Free some memory
+      locations.length = 0;
+      ids.clear();
+      this.#strategy.reset();
 
       if (started === 0) {
         this.#timer = new PausableTimer(() => {
@@ -219,6 +236,19 @@ export class PointService {
    */
   public update(time?: number): void {
     this.#tweens.update(time);
+  }
+
+  /**
+   * Change the visibility of the points based on filters.
+   */
+  public applyFilters(): void {
+    this.#points.forEach(
+      (point) =>
+        (point.object.visible = this.visualizationRepository.shouldBeVisible(
+          point.diseasePhase
+        ))
+    );
+    this.#needsRepaint.next();
   }
 
   /**

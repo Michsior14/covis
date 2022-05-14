@@ -53,7 +53,7 @@ export class VisualizationService implements OnDestroy {
   /**
    * When the visualization state changes, it will start, pause, or reset the visualization.
    *
-   * @returns An observable that emits the previous state and the current state.
+   * @returns An observable that emits the previous state and the current state and filters changes.
    */
   public initialize(): Observable<unknown> {
     if (
@@ -64,29 +64,34 @@ export class VisualizationService implements OnDestroy {
       this.visualizationRepository.finish();
     }
 
-    return this.visualizationRepository.stateChange.pipe(
-      startWith(VisualizationState.stopped),
-      pairwise(),
-      tap(([prev, state]) => {
-        switch (state) {
-          case VisualizationState.running:
-            switch (prev) {
-              case VisualizationState.paused:
-                return this.resume();
-              case VisualizationState.finished:
-                this.resetAndRemovePoints();
-                return this.start(true);
-              default:
-                return this.start(true);
-            }
-          case VisualizationState.paused:
-            return this.pause();
-          case VisualizationState.finished:
-            return this.reset();
-          case VisualizationState.stopped:
-            return this.resetAndRemovePoints();
-        }
-      })
+    return merge(
+      this.visualizationRepository.stateChange.pipe(
+        startWith(VisualizationState.stopped),
+        pairwise(),
+        tap(([prev, state]) => {
+          switch (state) {
+            case VisualizationState.running:
+              switch (prev) {
+                case VisualizationState.paused:
+                  return this.resume();
+                case VisualizationState.finished:
+                  this.resetAndRemovePoints();
+                  return this.start(true);
+                default:
+                  return this.start(true);
+              }
+            case VisualizationState.paused:
+              return this.pause();
+            case VisualizationState.finished:
+              return this.reset();
+            case VisualizationState.stopped:
+              return this.resetAndRemovePoints();
+          }
+        })
+      ),
+      this.visualizationRepository.filtersChange.pipe(
+        tap(() => this.pointService.applyFilters())
+      )
     );
   }
 
@@ -222,8 +227,7 @@ export class VisualizationService implements OnDestroy {
   private loadHour(): Observable<QueueItem> {
     const bounds = this.mapService.map.getBounds();
     const zoom = this.mapService.map.getZoom();
-    const hour = this.visualizationRepository.preloadHour;
-    const details = this.visualizationRepository.details;
+    const { preloadHour: hour, details } = this.visualizationRepository;
     this.visualizationRepository.preloadNextHour();
 
     if (hour > this.visualizationRepository.maxTime) {

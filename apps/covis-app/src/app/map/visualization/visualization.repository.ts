@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DetailLevel } from '@covis/shared';
+import { DetailLevel, DiseasePhase } from '@covis/shared';
 import { createState, select, Store, withProps } from '@ngneat/elf';
 import { localStorageStrategy, persistState } from '@ngneat/elf-persist-state';
 import { map } from 'rxjs/operators';
@@ -12,6 +12,8 @@ export enum VisualizationState {
   stopped = 'stopped',
   finished = 'finished',
 }
+
+export type Filters = Partial<Record<DiseasePhase, true>>;
 
 export interface VisualizationProps {
   state: VisualizationState;
@@ -27,6 +29,7 @@ export interface VisualizationProps {
   preload: number;
   needsRestart: boolean;
   strategy: StrategyType;
+  filters: Filters;
 }
 
 const initialProps = Object.freeze<VisualizationProps>({
@@ -43,6 +46,7 @@ const initialProps = Object.freeze<VisualizationProps>({
   preload: 1,
   needsRestart: false,
   strategy: StrategyType.normal,
+  filters: {},
 });
 
 const store = new Store({
@@ -71,6 +75,8 @@ export class VisualizationRepository {
   public minTimeChange = store.pipe(select((state) => state.minTime));
 
   public maxTimeChange = store.pipe(select((state) => state.maxTime));
+
+  public filtersChange = store.pipe(select((state) => state.filters));
 
   public get hour(): number {
     return store.query((state) => state.currentTime);
@@ -138,6 +144,10 @@ export class VisualizationRepository {
 
   public set strategy(value: StrategyType) {
     store.update(produce((state) => (state.strategy = value)));
+  }
+
+  public get filters(): Filters {
+    return store.query((state) => state.filters);
   }
 
   public toggle(): void {
@@ -257,6 +267,24 @@ export class VisualizationRepository {
 
   public needsRestart(): void {
     store.update(produce((state) => (state.needsRestart = true)));
+  }
+
+  public toggleFilter(phase: DiseasePhase) {
+    store.update(
+      produce((state) => {
+        if (state.filters[phase]) {
+          delete state.filters[phase];
+          return;
+        }
+        state.filters[phase] = true;
+      })
+    );
+  }
+
+  public shouldBeVisible(phase: DiseasePhase): boolean {
+    const { filters } = store.getValue();
+    const { length } = Object.keys(filters);
+    return !length || !!filters[phase];
   }
 
   private resetToCurrentTime(): void {

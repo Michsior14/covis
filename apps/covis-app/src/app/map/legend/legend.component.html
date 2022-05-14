@@ -3,7 +3,8 @@
   [class.covis-legend--open]="context.isOpen"
   *ngIf="{
     isOpen: isOpen | async,
-    stats: stats | async
+    stats: stats | async,
+    filters: filters | async
   } as context"
 >
   <div class="covis-legend-toggle" (click)="toggle()">
@@ -14,14 +15,23 @@
   </div>
   <div class="covis-legend-row-wrapper" [@opened]="context.isOpen">
     <div class="covis-legend-row" *ngFor="let row of legend">
-      <mat-icon
-        class="covis-legend-row-icon"
-        [style.color]="'#' + row.color.toString(16)"
-        >circle</mat-icon
-      >
-      <span class="covis-legend-row-title"
-        >{{ row.name }} - {{ context.stats?.[row.type] ?? 0 }}</span
+      <div class="covis-legend-row-filter" (click)="toggleFilter(row.type)">
+        <mat-icon
+          class="covis-legend-row-icon"
+          [class.covis-legend-row-icon--applied]="context.filters?.[row.type]"
+          [style.color]="'#' + row.color.toString(16)"
+          >circle</mat-icon
+        ><mat-icon
+          class="covis-legend-row-not-applied"
+          *ngIf="!context.filters?.[row.type]"
+          >close</mat-icon
+        >
+        <span class="covis-legend-row-title">{{ row.name }}</span>
+      </div>
+      <span class="covis-legend-row-counter"
+        >- {{ context.stats?.[row.type] ?? 0 }}</span
       >
     </div>
+    <span class="covis-legend-hint">Click on a row to toggle filter</span>
   </div>
 </div>

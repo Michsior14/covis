@@ -13,7 +13,10 @@ import {
 import { DiseasePhase } from '@covis/shared';
 import { combineLatest, map } from 'rxjs';
 import { diseaseColor } from '../point/material';
-import { VisualizationRepository } from '../visualization/visualization.repository';
+import {
+  Filters,
+  VisualizationRepository,
+} from '../visualization/visualization.repository';
 import { LegendRepository } from './legend.repository';
 
 @Component({
@@ -35,10 +38,23 @@ import { LegendRepository } from './legend.repository';
 })
 export class LegendComponent {
   public readonly isOpen = this.legendRepository.isOpen;
+
   public readonly stats = combineLatest([
     this.visualizationRepository.currentTimeChange,
     this.legendRepository.statsChange,
   ]).pipe(map(([time, stats]) => stats?.[time] ?? {}));
+
+  public readonly filters = this.visualizationRepository.filtersChange.pipe(
+    map(() => {
+      return Object.values(DiseasePhase).reduce(
+        (acc, key) => ({
+          ...acc,
+          [key]: this.visualizationRepository.shouldBeVisible(key),
+        }),
+        {} as Filters
+      );
+    })
+  );
 
   public readonly legend = [
     {
@@ -88,7 +104,7 @@ export class LegendComponent {
       name: 'Symptomatic (Middle Stage)',
     },
     {
-      type: DiseasePhase.symptomaticMiddleStage,
+      type: DiseasePhase.symptomaticLateStage,
       name: 'Symptomatic (Late Stage)',
     },
   ].map((legend) => ({ ...legend, color: diseaseColor[legend.type] }));
@@ -103,5 +119,14 @@ export class LegendComponent {
    */
   public toggle(): void {
     this.legendRepository.toggle();
+  }
+
+  /**
+   * Toggle the filter for the given phase.
+   *
+   * @param phase The disease phase.
+   */
+  public toggleFilter(phase: DiseasePhase): void {
+    this.visualizationRepository.toggleFilter(phase);
   }
 }
