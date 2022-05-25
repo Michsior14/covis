@@ -42,7 +42,12 @@ export class LegendComponent {
   public readonly stats = combineLatest([
     this.visualizationRepository.currentTimeChange,
     this.legendRepository.statsChange,
-  ]).pipe(map(([time, stats]) => stats?.[time] ?? {}));
+  ]).pipe(
+    map(
+      ([time, stats]) =>
+        stats[time - this.visualizationRepository.minTime] ?? {}
+    )
+  );
 
   public readonly filters = this.visualizationRepository.filtersChange.pipe(
     map(() => {
