@@ -10,6 +10,7 @@ import { VisualizationRepository } from '../visualization/visualization.reposito
 import { MaterialHelper } from './material';
 import { Point } from './point';
 import {
+  HashStrategy,
   NormalStrategy,
   RandomStrategy,
   Strategy,
@@ -61,6 +62,9 @@ export class PointService {
       case StrategyType.normal:
         this.#strategy = new NormalStrategy();
         break;
+      case StrategyType.hashed:
+        this.#strategy = new HashStrategy();
+        break;
     }
   }
 
@@ -79,7 +83,7 @@ export class PointService {
       let finished = 0;
       const ids = new Map<number, void>();
       for (const { location, personId, diseasePhase, hour } of locations) {
-        const coords = this.#strategy.coord(location);
+        const coords = this.#strategy.coord(location, personId);
         location.coordinates = coords;
         ids.set(personId);
 
