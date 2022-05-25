@@ -18,6 +18,17 @@ describe('covis-app', () => {
     );
   });
 
+  it('should toggle agent visibility', () => {
+    app.legend().click();
+    cy.get('.covis-legend-row-filter').first().click();
+
+    cy.get('.covis-legend-row-filter')
+      .last()
+      .children('mat-icon')
+      .its('length')
+      .should('eq', 2);
+  });
+
   it('should open and close the settings', () => {
     settings.dialog().should('not.exist');
     settings.openButton().click();
@@ -30,6 +41,8 @@ describe('covis-app', () => {
   it('should toggle fps metrics', () => {
     const toggle = () => {
       settings.openButton().click();
+      settings.basic().click();
+      settings.advanced().click();
       settings.fpsToggle().click();
       settings.saveButton().click();
     };

@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>Settings</h2>
 <mat-dialog-content class="settings mat-typography">
   <mat-accordion>
-    <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel class="settings-basic" [expanded]="true">
       <mat-expansion-panel-header>
         <mat-panel-title> Basic </mat-panel-title>
       </mat-expansion-panel-header>
@@ -48,7 +48,7 @@
         ></mat-slider>
       </div>
     </mat-expansion-panel>
-    <mat-expansion-panel>
+    <mat-expansion-panel class="settings-advanced">
       <mat-expansion-panel-header>
         <mat-panel-title> Advanced </mat-panel-title>
       </mat-expansion-panel-header>
