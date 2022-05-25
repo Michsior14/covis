@@ -43,9 +43,9 @@ const initialProps = Object.freeze<VisualizationProps>({
   loading: false,
   fps: false,
   details: DetailLevel.medium,
-  preload: 1,
+  preload: 2,
   needsRestart: false,
-  strategy: StrategyType.normal,
+  strategy: StrategyType.hashed,
   filters: {},
 });
 

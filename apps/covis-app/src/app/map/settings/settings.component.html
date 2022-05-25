@@ -1,62 +1,78 @@
 <h2 mat-dialog-title>Settings</h2>
 <mat-dialog-content class="settings mat-typography">
-  <div class="settings-row">
-    <mat-slide-toggle [formControl]="controls.fps">Show FPS</mat-slide-toggle>
-  </div>
-  <div class="settings-row">
-    <mat-form-field class="settings-strategy-select" appearance="fill">
-      <mat-label>Same cords strategy</mat-label>
-      <mat-select [formControl]="controls.strategy">
-        <mat-option *ngFor="let strategy of strategies" [value]="strategy">{{
-          strategy | titlecase
-        }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-  <div class="settings-row">
-    <div class="settings-label-wrapper">
-      <label id="preload-label">Hours to Preload</label>
-    </div>
-    <mat-slider
-      class="settings-slider"
-      [min]="1"
-      [max]="10"
-      [step]="1"
-      [thumbLabel]="true"
-      [formControl]="controls.preload"
-      aria-labelledby="preload-label"
-    ></mat-slider>
-  </div>
-  <div class="settings-row">
-    <div class="settings-label-wrapper">
-      <label id="speed-label">Animation Speed (s/h)</label>
-    </div>
-    <mat-slider
-      class="settings-slider"
-      [min]="0"
-      [max]="6"
-      [step]="1"
-      [thumbLabel]="true"
-      [displayWith]="speedFormatLabel"
-      [formControl]="controls.speed"
-      aria-labelledby="speed-label"
-    ></mat-slider>
-  </div>
-  <div class="settings-row">
-    <div class="settings-label-wrapper">
-      <label id="details-label">Details Level</label>
-    </div>
-    <mat-slider
-      class="settings-slider"
-      [min]="0"
-      [max]="2"
-      [step]="1"
-      [thumbLabel]="true"
-      [displayWith]="detailsFormatLabel"
-      [formControl]="controls.details"
-      aria-labelledby="details-label"
-    ></mat-slider>
-  </div>
+  <mat-accordion>
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title> Basic </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="settings-row">
+        <mat-form-field class="settings-strategy-select" appearance="fill">
+          <mat-label>Same cords strategy</mat-label>
+          <mat-select [formControl]="controls.strategy">
+            <mat-option
+              *ngFor="let strategy of strategies"
+              [value]="strategy"
+              >{{ strategy | titlecase }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="settings-row">
+        <div class="settings-label-wrapper">
+          <label id="speed-label">Animation Speed (s/h)</label>
+        </div>
+        <mat-slider
+          class="settings-slider"
+          [min]="0"
+          [max]="6"
+          [step]="1"
+          [thumbLabel]="true"
+          [displayWith]="speedFormatLabel"
+          [formControl]="controls.speed"
+          aria-labelledby="speed-label"
+        ></mat-slider>
+      </div>
+      <div class="settings-row">
+        <div class="settings-label-wrapper">
+          <label id="details-label">Details Level</label>
+        </div>
+        <mat-slider
+          class="settings-slider"
+          [min]="0"
+          [max]="2"
+          [step]="1"
+          [thumbLabel]="true"
+          [displayWith]="detailsFormatLabel"
+          [formControl]="controls.details"
+          aria-labelledby="details-label"
+        ></mat-slider>
+      </div>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title> Advanced </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="settings-row">
+        <mat-slide-toggle [formControl]="controls.fps"
+          >Show FPS</mat-slide-toggle
+        >
+      </div>
+      <div class="settings-row">
+        <div class="settings-label-wrapper">
+          <label id="preload-label">Hours to Preload</label>
+        </div>
+        <mat-slider
+          class="settings-slider"
+          [min]="1"
+          [max]="10"
+          [step]="1"
+          [thumbLabel]="true"
+          [formControl]="controls.preload"
+          aria-labelledby="preload-label"
+        ></mat-slider>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancel</button>

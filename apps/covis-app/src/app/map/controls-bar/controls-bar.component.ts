@@ -111,7 +111,7 @@ export class ControlsBarComponent implements OnInit, OnDestroy {
    */
   public openSettings(): void {
     this.visualizationRepository.pause();
-    this.dialog.open(SettingsComponent);
+    this.dialog.open(SettingsComponent, { width: '400px' });
   }
 
   private formatTime(time: number): string {

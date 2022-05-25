@@ -1,4 +1,6 @@
 .settings {
+  padding-bottom: 5px;
+
   &-row {
     margin: 20px 0;
 
@@ -12,7 +14,6 @@
   }
 
   &-slider {
-    max-width: 300px;
     width: 100%;
   }
 
