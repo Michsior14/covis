@@ -174,6 +174,10 @@ export class PointService {
         this.threeboxService.threebox.remove(point.object);
       });
 
+      if (locations.length === 0) {
+        this.#needsRepaint.next();
+      }
+
       // Free some memory
       locations.length = 0;
       ids.clear();
