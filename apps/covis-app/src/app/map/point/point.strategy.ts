@@ -11,6 +11,25 @@ export interface Strategy {
   coord(location: Point, personId: number): Position;
 }
 
+const epsilon = 0.0001;
+const halfEpsilon = epsilon / 2;
+
+/**
+ * Returns randomized coordinate modifiers.
+ *
+ * @param value The value to determine modifier sign.
+ * @param random The random function.
+ */
+const getModifiers = (
+  value: number,
+  random: () => number
+): [() => number, number, number] => {
+  const modifier = value % 2 ? -epsilon : epsilon;
+  const halfModifier = Math.sign(modifier) * halfEpsilon;
+  const sideSign = () => Math.sign((random() + 0.01) * 2 - 1); // +0.01 to avoid 0
+  return [sideSign, modifier, halfModifier];
+};
+
 /**
  * Noop strategy.
  */
@@ -41,7 +60,15 @@ export class RandomStrategy implements Strategy {
     this.#counts.set(coordsKey, count);
 
     if (count > 1) {
-      coordinates = coordinates.map((coord) => coord + Math.random() * 0.0001);
+      const [sideSign, modifier, halfModifier] = getModifiers(
+        count,
+        Math.random.bind(Math)
+      );
+
+      coordinates = coordinates.map(
+        (coord) =>
+          coord + sideSign() * (Math.random() * modifier - halfModifier)
+      );
     }
 
     return coordinates;
@@ -58,8 +85,16 @@ export class HashStrategy implements Strategy {
 
   public coord(location: Point, personId: number): Position {
     let { coordinates } = location;
+
     const next = this.random(personId);
-    coordinates = coordinates.map((coord) => coord + next() * 0.0001);
+    const [sideSign, modifier, halfModifier] = getModifiers(
+      personId,
+      next.bind(next)
+    );
+
+    coordinates = coordinates.map(
+      (coord) => coord + sideSign() * (next() * modifier - halfModifier)
+    );
     return coordinates;
   }
 
