@@ -20,8 +20,6 @@ export class SeedData1635021870426 implements MigrationInterface {
     const tasks = [
       {
         table: 'location',
-        index:
-          'create index if not exists "location_hour_personId_location_idx" on "location" using gist ("hour", "personId", "location")',
         stream: new PassThrough({ objectMode: true }),
         changeLine: (line: string[], cb: transformer.HandlerCallback) => {
           if (++count % reportOn === 0) {
@@ -37,8 +35,6 @@ export class SeedData1635021870426 implements MigrationInterface {
       },
       {
         table: 'person',
-        index:
-          'create index if not exists "person_location_idx" on "person" using gist ("location")',
         stream: new PassThrough({ objectMode: true }),
         changeLine: (line: string[], cb: transformer.HandlerCallback) =>
           cb(
@@ -70,8 +66,9 @@ export class SeedData1635021870426 implements MigrationInterface {
       .pipe(parse({ from: 2 }));
 
     await queryRunner.query('create extension if not exists btree_gist');
+
     await Promise.all(
-      tasks.map(async ({ table, index, changeLine, stream }) => {
+      tasks.map(async ({ table, changeLine, stream }) => {
         const client = await pool.connect();
         dataStream.pipe(stream);
 
@@ -82,14 +79,19 @@ export class SeedData1635021870426 implements MigrationInterface {
           client.query(from(`COPY ${table} FROM STDIN WITH (FORMAT csv)`))
         );
 
-        console.log(`Creating index for ${table}...`);
-        await queryRunner.query(index);
-
         client.release();
       })
     );
 
     dataStream.destroy();
+
+    console.log(`Creating indexes...`);
+    await queryRunner.query(
+      'create index if not exists "location_hour_personId_location_idx" on "location" using gist ("hour", "personId", "location")'
+    );
+    await queryRunner.query(
+      'create index if not exists "person_location_idx" on "person" using gist ("location")'
+    );
 
     console.log(
       `Conversion + import took ${
