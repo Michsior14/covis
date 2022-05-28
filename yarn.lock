@@ -155,25 +155,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@angular-devkit/core@npm:13.3.6":
-  version: 13.3.6
-  resolution: "@angular-devkit/core@npm:13.3.6"
-  dependencies:
-    ajv: 8.9.0
-    ajv-formats: 2.1.1
-    fast-json-stable-stringify: 2.1.0
-    magic-string: 0.25.7
-    rxjs: 6.6.7
-    source-map: 0.7.3
-  peerDependencies:
-    chokidar: ^3.5.2
-  peerDependenciesMeta:
-    chokidar:
-      optional: true
-  checksum: 263e12c255eb6603bade92b402591bdd2af44810495e07d607094db3ee1bb937cf45b4459c477f2edacebb8da8ea132f19b13dc4828b0158cd3bd34c67585de7
-  languageName: node
-  linkType: hard
-
 "@angular-devkit/core@npm:13.3.7":
   version: 13.3.7
   resolution: "@angular-devkit/core@npm:13.3.7"
@@ -206,20 +187,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@angular-devkit/schematics@npm:13.3.6, @angular-devkit/schematics@npm:~13.3.0":
-  version: 13.3.6
-  resolution: "@angular-devkit/schematics@npm:13.3.6"
-  dependencies:
-    "@angular-devkit/core": 13.3.6
-    jsonc-parser: 3.0.0
-    magic-string: 0.25.7
-    ora: 5.4.1
-    rxjs: 6.6.7
-  checksum: 8d64e1aa4b9369928a57699769a21765c48e1dbca73411bb6a77f4a0b293fc051e0967d8295f4f3fba62c3c18babf8104ae1f776e61c34f4ee1037b172e022a3
-  languageName: node
-  linkType: hard
-
-"@angular-devkit/schematics@npm:13.3.7":
+"@angular-devkit/schematics@npm:13.3.7, @angular-devkit/schematics@npm:~13.3.0":
   version: 13.3.7
   resolution: "@angular-devkit/schematics@npm:13.3.7"
   dependencies:
@@ -3372,7 +3340,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@schematics/angular@npm:13.3.7":
+"@schematics/angular@npm:13.3.7, @schematics/angular@npm:~13.3.0":
   version: 13.3.7
   resolution: "@schematics/angular@npm:13.3.7"
   dependencies:
@@ -3380,17 +3348,6 @@ __metadata:
     "@angular-devkit/schematics": 13.3.7
     jsonc-parser: 3.0.0
   checksum: b78700a4d6367f961806755252defce68e607dcbf25d62a6f07220725cf263929db6ef82837db5181b794ae478deca18cf48a89f7ec9ee90e8fe9aff64bbe738
-  languageName: node
-  linkType: hard
-
-"@schematics/angular@npm:~13.3.0":
-  version: 13.3.6
-  resolution: "@schematics/angular@npm:13.3.6"
-  dependencies:
-    "@angular-devkit/core": 13.3.6
-    "@angular-devkit/schematics": 13.3.6
-    jsonc-parser: 3.0.0
-  checksum: 4a5ac08fded6cfd4f40c6c2f086d7092f7ce2f97727f91a37f36916a392faa4dee58ec6c30cb0108f63349a1291135069363931b83ac3d8c09ef155b2137b1de
   languageName: node
   linkType: hard
 
