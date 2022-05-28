@@ -18,6 +18,11 @@ set work_mem = 1024;
 select pg_reload_conf();
 
 
+create extension if not exists btree_gist;
+
+/* Use one transaction to avoid WALs */
+begin;
+
 create table tempdata (hour real, "personId" integer, "personType" text, age integer, gender text, "homeId" integer, "homeSubId" integer, "currentActivity" text, "currentLat" decimal, "currentLon" decimal, "homeLat" decimal, "homeLon" decimal, "diseasePhase" text, "workId" integer, "schoolId" integer);
 
 /* Adjust path to the data if needed */
@@ -45,8 +50,8 @@ where hour = 0;
 
 create index "person_location_idx" on "person" using gist ("location");
 
-vacuum analyze "person" ("location");
 
+drop index if exists "public"."location_hour_personId_location_idx";
 
 insert into location (hour,
                       "personId",
@@ -59,18 +64,17 @@ select hour,
 from tempdata;
 
 
-create extension if not exists btree_gist;
-
-
-create index "location_hour_personId_location_idx" on location using gist (hour, "personId", location);
-
-vacuum analyze "location" ("location");
+create index "location_hour_personId_location_idx" on "location" using gist ("hour", "personId", "location");
 
 drop table tempdata;
 
 create table if not exists migrations (id SERIAL, "timestamp" bigint, "name" varchar);
 
 insert into migrations (timestamp, name) values (1635021870426, 'SeedData1635021870426');
+commit;
+
+vacuum analyze "person" ("location");
+vacuum analyze "location" ("location");
 
 alter system reset all;
 

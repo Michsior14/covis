@@ -20,6 +20,8 @@ export class SeedData1635021870426 implements MigrationInterface {
     const tasks = [
       {
         table: 'location',
+        index:
+          'create index if not exists "location_hour_personId_location_idx" on "location" using gist ("hour", "personId", "location")',
         stream: new PassThrough({ objectMode: true }),
         changeLine: (line: string[], cb: transformer.HandlerCallback) => {
           if (++count % reportOn === 0) {
@@ -35,6 +37,8 @@ export class SeedData1635021870426 implements MigrationInterface {
       },
       {
         table: 'person',
+        index:
+          'create index if not exists "person_location_idx" on "person" using gist ("location")',
         stream: new PassThrough({ objectMode: true }),
         changeLine: (line: string[], cb: transformer.HandlerCallback) =>
           cb(
@@ -65,8 +69,9 @@ export class SeedData1635021870426 implements MigrationInterface {
       .pipe(createGunzip())
       .pipe(parse({ from: 2 }));
 
+    await queryRunner.query('create extension if not exists btree_gist');
     await Promise.all(
-      tasks.map(async ({ table, changeLine, stream }) => {
+      tasks.map(async ({ table, index, changeLine, stream }) => {
         const client = await pool.connect();
         dataStream.pipe(stream);
 
@@ -77,17 +82,14 @@ export class SeedData1635021870426 implements MigrationInterface {
           client.query(from(`COPY ${table} FROM STDIN WITH (FORMAT csv)`))
         );
 
+        console.log(`Creating index for ${table}...`);
+        await queryRunner.query(index);
+
         client.release();
       })
     );
 
     dataStream.destroy();
-
-    console.log('Creating indexes...');
-    await queryRunner.query(`create extension if not exists btree_gist;`);
-    await queryRunner.query(
-      `create index "location_hour_personId_location_idx" on location using gist (hour, "personId", location);`
-    );
 
     console.log(
       `Conversion + import took ${
@@ -100,9 +102,10 @@ export class SeedData1635021870426 implements MigrationInterface {
     await queryRunner.clearTable('person');
     await queryRunner.clearTable('location');
     await queryRunner.query(
-      'drop index if exists "location_hour_personId_location_idx";'
+      'drop index if exists "location_hour_personId_location_idx"'
     );
-    await queryRunner.query('drop extension btree_gist;');
+    await queryRunner.query('drop index if exists "person_location_idx"');
+    await queryRunner.query('drop extension if exists btree_gist');
   }
 
   private createPointValue(lon: string, lat: string): string {

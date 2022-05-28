@@ -4,6 +4,7 @@ import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 import { PointEntity } from '../location/location.entity';
 
 @Entity({ name: 'person' })
+@Index('person_location_idx', { synchronize: false })
 export class PersonEntity implements Person {
   /**
    * The id
@@ -56,7 +57,6 @@ export class PersonEntity implements Person {
   /**
    * The home location
    */
-  @Index('person_location_idx', { spatial: true })
   @Column({
     type: 'geometry',
     spatialFeatureType: 'Point',
