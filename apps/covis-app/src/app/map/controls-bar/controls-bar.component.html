@@ -22,6 +22,7 @@
       [step]="1"
       [formControl]="sliderControl"
       [thumbLabel]="true"
+      (input)="onThumbChange()"
     ></mat-slider>
     <div class="covis-controls-bar-body">
       <div class="covis-controls-left"></div>

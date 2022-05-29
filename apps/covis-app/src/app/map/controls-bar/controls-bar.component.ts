@@ -114,6 +114,13 @@ export class ControlsBarComponent implements OnInit, OnDestroy {
     this.dialog.open(SettingsComponent, { width: '400px' });
   }
 
+  /**
+   * Pause the visualization if thumb is moved.
+   */
+  public onThumbChange(): void {
+    this.visualizationRepository.pause();
+  }
+
   private formatTime(time: number): string {
     const days = Math.floor(time / 24);
     const hours = time % 24;
