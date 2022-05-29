@@ -41,6 +41,7 @@ export class VisualizationService implements OnDestroy {
   #reset = new Subject<void>();
   #animationQueue = new Subject<QueueItem>();
   #animationPause = new BehaviorSubject<boolean>(false);
+  #inQueue = 0;
 
   constructor(
     private readonly pointService: PointService,
@@ -133,7 +134,8 @@ export class VisualizationService implements OnDestroy {
               // Do not start animation if the visualization is paused.
               this.#animationPause.pipe(
                 first((paused) => !paused),
-                switchMap(() => this.pointService.animate(item.locations))
+                switchMap(() => this.pointService.animate(item.locations)),
+                tap(() => this.#inQueue--)
               )
             ),
             map(() => item)
@@ -146,7 +148,9 @@ export class VisualizationService implements OnDestroy {
           }
 
           // Load the next hours after each animation batch
-          this.preload(this.visualizationRepository.preload - 1);
+          this.preload(
+            this.visualizationRepository.preload - this.#inQueue ?? 1
+          );
 
           this.visualizationRepository.nextHour();
         })
@@ -162,6 +166,7 @@ export class VisualizationService implements OnDestroy {
   private reset(): void {
     this.#animationPause.next(false);
     this.#reset.next();
+    this.#inQueue = 0;
   }
 
   /**
@@ -176,13 +181,8 @@ export class VisualizationService implements OnDestroy {
    * Resume the animation.
    */
   private resume(): void {
-    if (this.pointService.resume()) {
-      this.#animationPause.next(false);
-      return;
-    }
-
-    this.reset();
-    this.start();
+    this.pointService.resume();
+    this.#animationPause.next(false);
   }
 
   /**
@@ -214,7 +214,10 @@ export class VisualizationService implements OnDestroy {
    */
   private loadNext(): Observable<unknown> {
     return this.loadHour().pipe(
-      tap((item) => this.#animationQueue.next(item)),
+      tap((item) => {
+        this.#animationQueue.next(item);
+        this.#inQueue++;
+      }),
       takeUntil(this.#reset)
     );
   }
