@@ -28,7 +28,6 @@
     ]
   },
   "cli": {
-    "defaultCollection": "@nrwl/angular",
     "packageManager": "yarn"
   },
   "generators": {
@@ -58,5 +57,6 @@
       "style": "scss"
     }
   },
-  "defaultProject": "covis-app"
+  "defaultProject": "covis-app",
+  "$schema": "./node_modules/nx/schemas/nx-schema.json"
 }

@@ -35,7 +35,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   public readonly controls = Object.entries(this.initialValues).reduce(
     (acc, [key, value]) => ({ ...acc, [key]: new FormControl(value) }),
-    {} as Record<keyof typeof this.initialValues, FormControl>
+    {} as {
+      [key in keyof typeof this.initialValues]: FormControl<
+        typeof this.initialValues[key]
+      >;
+    }
   );
 
   public strategies = Object.values(StrategyType);

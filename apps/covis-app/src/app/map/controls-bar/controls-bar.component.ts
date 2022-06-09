@@ -71,7 +71,7 @@ export class ControlsBarComponent implements OnInit, OnDestroy {
       ),
       this.sliderControl.valueChanges.pipe(
         tap((value) => {
-          this.visualizationRepository.setTime(value);
+          this.visualizationRepository.setTime(value ?? 0);
           this.slider.blur();
         })
       )
