@@ -118,6 +118,10 @@ export class VisualizationRepository {
     store.update(produce((state) => (state.loading = value)));
   }
 
+  public get loading(): boolean {
+    return store.query((state) => state.loading);
+  }
+
   public get details(): DetailLevel {
     return store.query((state) => state.details);
   }

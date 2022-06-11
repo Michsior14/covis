@@ -3,15 +3,16 @@ import { Location } from '@covis/shared';
 import {
   asapScheduler,
   BehaviorSubject,
+  combineLatest,
   concatMap,
   EMPTY,
-  expand,
   first,
   map,
   merge,
   Observable,
   of,
   pairwise,
+  scheduled,
   startWith,
   Subject,
   switchMap,
@@ -122,14 +123,20 @@ export class VisualizationService implements OnDestroy {
       ),
       this.#animationQueue.pipe(
         concatMap((item) => {
-          if (this.visualizationRepository.previousTime !== item.hour - 1) {
+          const waitForTheFirstBatch =
+            this.visualizationRepository.loading &&
+            this.#inQueue < this.visualizationRepository.preload / 2;
+          const hourOutOfSync =
+            this.visualizationRepository.previousTime !== item.hour - 1;
+
+          if (waitForTheFirstBatch || hourOutOfSync) {
             this.#animationQueue.next(item);
             // Defer the execution to avoid infinite loop.
             return timer(0).pipe(switchMap(() => EMPTY));
           }
           this.visualizationRepository.loading = false;
           // Defer the animation to increase performance.
-          return timer(0).pipe(
+          return timer(0, asapScheduler).pipe(
             switchMap(() =>
               // Do not start animation if the visualization is paused.
               this.#animationPause.pipe(
@@ -198,15 +205,14 @@ export class VisualizationService implements OnDestroy {
    * @param hours The number of hours to preload.
    */
   private preload(hours: number): void {
-    this.loadNext()
-      .pipe(
-        expand(
-          (_, index) => (index < hours ? this.loadNext() : EMPTY),
-          Infinity,
-          asapScheduler
-        )
-      )
-      .subscribe();
+    if (hours <= 0) {
+      return;
+    }
+
+    scheduled(
+      combineLatest(new Array(hours).fill(0).map(() => this.loadNext())),
+      asapScheduler
+    ).subscribe();
   }
 
   /**
