@@ -125,7 +125,7 @@ export class VisualizationService implements OnDestroy {
         concatMap((item) => {
           const waitForTheFirstBatch =
             this.visualizationRepository.loading &&
-            this.#inQueue < this.visualizationRepository.preload / 2;
+            this.#inQueue < this.visualizationRepository.preload;
           const hourOutOfSync =
             this.visualizationRepository.previousTime !== item.hour - 1;
 
