@@ -117,15 +117,17 @@ export class VisualizationService implements OnDestroy {
 
     this.pointService.setStrategy(this.visualizationRepository.strategy);
 
+    const toPreload = Math.min(
+      this.visualizationRepository.preload,
+      this.visualizationRepository.maxTime - this.visualizationRepository.hour
+    );
+
     merge(
-      this.initStats().pipe(
-        tap(() => this.preload(this.visualizationRepository.preload))
-      ),
+      this.initStats().pipe(tap(() => this.preload(toPreload))),
       this.#animationQueue.pipe(
         concatMap((item) => {
           const waitForTheFirstBatch =
-            this.visualizationRepository.loading &&
-            this.#inQueue < this.visualizationRepository.preload;
+            this.visualizationRepository.loading && this.#inQueue < toPreload;
           const hourOutOfSync =
             this.visualizationRepository.previousTime !== item.hour - 1;
 
@@ -155,9 +157,7 @@ export class VisualizationService implements OnDestroy {
           }
 
           // Load the next hours after each animation batch
-          this.preload(
-            this.visualizationRepository.preload - this.#inQueue ?? 1
-          );
+          this.preload(toPreload - this.#inQueue ?? 1);
 
           this.visualizationRepository.nextHour();
         })
