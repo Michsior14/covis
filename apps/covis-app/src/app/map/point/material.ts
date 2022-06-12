@@ -51,23 +51,22 @@ export class MaterialHelper {
               uniform float size;
 
               void main() {
-                vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
                 gl_PointSize = size;
-                gl_Position = projectionMatrix * mvPosition;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
               }
             `,
       fragmentShader: `
               #extension GL_OES_standard_derivatives : enable
               uniform vec3 color;
+              float strokeStart = 0.6;
 
               void main() {
                 vec2 center = 2.0 * gl_PointCoord - 1.0;
-                float strokeSize = 0.6;
                 float distance = dot(center, center);
                 float delta = fwidth(distance);
                 float alpha = 0.7 - smoothstep(1.0 - delta, 1.0 + delta, distance);
-                float stroke = 1.0 - smoothstep(strokeSize - delta, strokeSize + delta, distance);
-                gl_FragColor = vec4(mix(vec3(0.0, 0.0, 0.0), color, stroke), alpha);
+                float stroke = smoothstep(strokeStart + delta, strokeStart - delta, distance);
+                gl_FragColor = vec4(mix(vec3(0), color, stroke), alpha);
               }
             `,
       uniforms: {
